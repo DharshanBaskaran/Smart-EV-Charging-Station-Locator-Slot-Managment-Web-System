@@ -1,0 +1,2002 @@
+[
+  {
+    "id": "s001",
+    "name": "Tata Power EZ - Connaught Place",
+    "address": "Connaught Place, New Delhi - 110001",
+    "lat": 28.6315,
+    "lng": 77.2167,
+    "operator": "Tata Power",
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "id": "s002",
+    "name": "Statiq - Saket Select Citywalk",
+    "address": "Select Citywalk Mall, Saket, New Delhi - 110017",
+    "lat": 28.5274,
+    "lng": 77.2191,
+    "operator": "Statiq",
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "id": "s003",
+    "name": "ChargeZone - Aerocity Delhi",
+    "address": "Hospitality District, Aerocity, New Delhi - 110037",
+    "lat": 28.5541,
+    "lng": 77.1065,
+    "operator": "ChargeZone",
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "id": "s004",
+    "name": "Ather Grid - Dwarka Sector 10",
+    "address": "Sector 10, Dwarka, New Delhi - 110075",
+    "lat": 28.5763,
+    "lng": 77.0419,
+    "operator": "Ather",
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "id": "s005",
+    "name": "BSES EV Charger - Lajpat Nagar",
+    "address": "Central Market, Lajpat Nagar II, New Delhi - 110024",
+    "lat": 28.5683,
+    "lng": 77.2434,
+    "operator": "BSES",
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "id": "s006",
+    "name": "Tata Power EZ - Rohini",
+    "address": "Sector 7, Rohini, New Delhi - 110085",
+    "lat": 28.7079,
+    "lng": 77.1157,
+    "operator": "Tata Power",
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "id": "s007",
+    "name": "ChargePoint - Nehru Place",
+    "address": "Nehru Place, New Delhi - 110019",
+    "lat": 28.5494,
+    "lng": 77.2519,
+    "operator": "ChargePoint",
+    "city": "Delhi",
+    "state": "Delhi"
+  },
+  {
+    "id": "s008",
+    "name": "Tata Power EZ - Bandra Kurla Complex",
+    "address": "BKC, Bandra East, Mumbai - 400051",
+    "lat": 19.0630,
+    "lng": 72.8655,
+    "operator": "Tata Power",
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s009",
+    "name": "Statiq - Phoenix Palladium",
+    "address": "Phoenix Palladium, Lower Parel, Mumbai - 400013",
+    "lat": 18.9940,
+    "lng": 72.8264,
+    "operator": "Statiq",
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s010",
+    "name": "ChargeZone - Powai Hiranandani",
+    "address": "Hiranandani Gardens, Powai, Mumbai - 400076",
+    "lat": 19.1176,
+    "lng": 72.9060,
+    "operator": "ChargeZone",
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s011",
+    "name": "Ather Grid - Andheri East",
+    "address": "J.B. Nagar, Andheri East, Mumbai - 400059",
+    "lat": 19.1131,
+    "lng": 72.8719,
+    "operator": "Ather",
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s012",
+    "name": "Tata Power EZ - Thane",
+    "address": "R Mall, Thane West - 400615",
+    "lat": 19.1933,
+    "lng": 72.9613,
+    "operator": "Tata Power",
+    "city": "Thane",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s013",
+    "name": "Zeon Charging - Navi Mumbai",
+    "address": "Inorbit Mall, Vashi, Navi Mumbai - 400703",
+    "lat": 19.0759,
+    "lng": 72.9985,
+    "operator": "Zeon",
+    "city": "Navi Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s014",
+    "name": "BEST EV Charger - Chembur",
+    "address": "Chembur Camp Bus Depot, Chembur, Mumbai - 400071",
+    "lat": 19.0626,
+    "lng": 72.8990,
+    "operator": "BEST",
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s015",
+    "name": "Tata Power EZ - Juhu",
+    "address": "Juhu Versova Link Road, Juhu, Mumbai - 400049",
+    "lat": 19.1025,
+    "lng": 72.8261,
+    "operator": "Tata Power",
+    "city": "Mumbai",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s016",
+    "name": "Ather Grid - Indiranagar",
+    "address": "12th Main Road, Indiranagar, Bengaluru - 560038",
+    "lat": 12.9719,
+    "lng": 77.6412,
+    "operator": "Ather",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s017",
+    "name": "Tata Power EZ - Koramangala",
+    "address": "80 Feet Road, Koramangala 4th Block, Bengaluru - 560034",
+    "lat": 12.9352,
+    "lng": 77.6245,
+    "operator": "Tata Power",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s018",
+    "name": "BESCOM DC Fast Charger - MG Road",
+    "address": "MG Road Metro Station, Bengaluru - 560001",
+    "lat": 12.9756,
+    "lng": 77.6066,
+    "operator": "BESCOM",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s019",
+    "name": "ChargeZone - Whitefield",
+    "address": "International Tech Park, Whitefield, Bengaluru - 560066",
+    "lat": 12.9698,
+    "lng": 77.7499,
+    "operator": "ChargeZone",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s020",
+    "name": "Zeon Charging - Malleshwaram",
+    "address": "Sampige Road, Malleshwaram, Bengaluru - 560003",
+    "lat": 13.0031,
+    "lng": 77.5643,
+    "operator": "Zeon",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s021",
+    "name": "Ather Grid - Jayanagar",
+    "address": "4th Block, Jayanagar, Bengaluru - 560041",
+    "lat": 12.9250,
+    "lng": 77.5938,
+    "operator": "Ather",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s022",
+    "name": "Statiq - Electronic City Phase 1",
+    "address": "Hosur Road, Electronic City Phase 1, Bengaluru - 560100",
+    "lat": 12.8452,
+    "lng": 77.6602,
+    "operator": "Statiq",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s023",
+    "name": "Tata Power EZ - Hebbal",
+    "address": "Outer Ring Road, Hebbal, Bengaluru - 560024",
+    "lat": 13.0358,
+    "lng": 77.5970,
+    "operator": "Tata Power",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s024",
+    "name": "ChargeZone - Marathahalli",
+    "address": "Outer Ring Road, Marathahalli, Bengaluru - 560037",
+    "lat": 12.9591,
+    "lng": 77.6974,
+    "operator": "ChargeZone",
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s025",
+    "name": "Tata Power EZ - T. Nagar",
+    "address": "Pondy Bazaar, T. Nagar, Chennai - 600017",
+    "lat": 13.0398,
+    "lng": 80.2330,
+    "operator": "Tata Power",
+    "city": "Chennai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s026",
+    "name": "Zeon Charging - Phoenix Marketcity Chennai",
+    "address": "Velachery Main Road, Velachery, Chennai - 600042",
+    "lat": 12.9915,
+    "lng": 80.2180,
+    "operator": "Zeon",
+    "city": "Chennai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s027",
+    "name": "Ather Grid - Anna Nagar",
+    "address": "2nd Avenue, Anna Nagar, Chennai - 600040",
+    "lat": 13.0850,
+    "lng": 80.2100,
+    "operator": "Ather",
+    "city": "Chennai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s028",
+    "name": "TANGEDCO EV Station - Adyar",
+    "address": "Gandhi Nagar, Adyar, Chennai - 600020",
+    "lat": 13.0012,
+    "lng": 80.2565,
+    "operator": "TANGEDCO",
+    "city": "Chennai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s029",
+    "name": "Shell Recharge - Poonamallee",
+    "address": "Trunk Road, Poonamallee, Chennai - 600056",
+    "lat": 13.0475,
+    "lng": 80.0890,
+    "operator": "Shell",
+    "city": "Chennai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s030",
+    "name": "ChargeZone - Sholinganallur",
+    "address": "Old Mahabalipuram Road, Sholinganallur, Chennai - 600119",
+    "lat": 12.9009,
+    "lng": 80.2277,
+    "operator": "ChargeZone",
+    "city": "Chennai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s031",
+    "name": "Tata Power EZ - Hitech City",
+    "address": "Cyber Towers, HITEC City, Hyderabad - 500081",
+    "lat": 17.4435,
+    "lng": 78.3772,
+    "operator": "Tata Power",
+    "city": "Hyderabad",
+    "state": "Telangana"
+  },
+  {
+    "id": "s032",
+    "name": "Statiq - Banjara Hills",
+    "address": "Road No. 12, Banjara Hills, Hyderabad - 500034",
+    "lat": 17.4126,
+    "lng": 78.4481,
+    "operator": "Statiq",
+    "city": "Hyderabad",
+    "state": "Telangana"
+  },
+  {
+    "id": "s033",
+    "name": "ChargeZone - Gachibowli Stadium",
+    "address": "Gachibowli, Financial District, Hyderabad - 500032",
+    "lat": 17.4401,
+    "lng": 78.3489,
+    "operator": "ChargeZone",
+    "city": "Hyderabad",
+    "state": "Telangana"
+  },
+  {
+    "id": "s034",
+    "name": "Ather Grid - Jubilee Hills",
+    "address": "Road No. 36, Jubilee Hills, Hyderabad - 500033",
+    "lat": 17.4239,
+    "lng": 78.4138,
+    "operator": "Ather",
+    "city": "Hyderabad",
+    "state": "Telangana"
+  },
+  {
+    "id": "s035",
+    "name": "TSREDCO Fast Charger - Secunderabad",
+    "address": "ST Bus Stand, Secunderabad - 500003",
+    "lat": 17.4399,
+    "lng": 78.4983,
+    "operator": "TSREDCO",
+    "city": "Hyderabad",
+    "state": "Telangana"
+  },
+  {
+    "id": "s036",
+    "name": "Tata Power EZ - Hinjewadi",
+    "address": "Rajiv Gandhi IT Park, Phase 1, Hinjewadi, Pune - 411057",
+    "lat": 18.5916,
+    "lng": 73.7380,
+    "operator": "Tata Power",
+    "city": "Pune",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s037",
+    "name": "ChargeZone - Viman Nagar",
+    "address": "Viman Nagar, Pune - 411014",
+    "lat": 18.5679,
+    "lng": 73.9143,
+    "operator": "ChargeZone",
+    "city": "Pune",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s038",
+    "name": "Statiq - Koregaon Park",
+    "address": "Lane No. 5, Koregaon Park, Pune - 411001",
+    "lat": 18.5362,
+    "lng": 73.8949,
+    "operator": "Statiq",
+    "city": "Pune",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s039",
+    "name": "Ather Grid - Kothrud",
+    "address": "Karve Road, Kothrud, Pune - 411038",
+    "lat": 18.5074,
+    "lng": 73.8077,
+    "operator": "Ather",
+    "city": "Pune",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s040",
+    "name": "Tata Power EZ - Law College Road",
+    "address": "Law College Road, Erandwane, Pune - 411004",
+    "lat": 18.5204,
+    "lng": 73.8272,
+    "operator": "Tata Power",
+    "city": "Pune",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s041",
+    "name": "Tata Power EZ - C G Road",
+    "address": "Chimanlal Girdharlal Road, Navrangpura, Ahmedabad - 380009",
+    "lat": 23.0395,
+    "lng": 72.5573,
+    "operator": "Tata Power",
+    "city": "Ahmedabad",
+    "state": "Gujarat"
+  },
+  {
+    "id": "s042",
+    "name": "ChargeZone - Prahlad Nagar",
+    "address": "Prahlad Nagar Corporate Road, Ahmedabad - 380015",
+    "lat": 23.0152,
+    "lng": 72.5083,
+    "operator": "ChargeZone",
+    "city": "Ahmedabad",
+    "state": "Gujarat"
+  },
+  {
+    "id": "s043",
+    "name": "Statiq - Vastrapur Lake",
+    "address": "Vastrapur, Ahmedabad - 380054",
+    "lat": 23.0318,
+    "lng": 72.5264,
+    "operator": "Statiq",
+    "city": "Ahmedabad",
+    "state": "Gujarat"
+  },
+  {
+    "id": "s044",
+    "name": "GSECL EV Charger - Gandhinagar",
+    "address": "Sector 18, Gandhinagar - 382018",
+    "lat": 23.2235,
+    "lng": 72.6494,
+    "operator": "GSECL",
+    "city": "Gandhinagar",
+    "state": "Gujarat"
+  },
+  {
+    "id": "s045",
+    "name": "Tata Power EZ - Surat",
+    "address": "VR Mall, Dumas Road, Surat - 395007",
+    "lat": 21.1702,
+    "lng": 72.8311,
+    "operator": "Tata Power",
+    "city": "Surat",
+    "state": "Gujarat"
+  },
+  {
+    "id": "s046",
+    "name": "ChargeZone - Vadodara",
+    "address": "Centre Square Mall, Old Padra Road, Vadodara - 390015",
+    "lat": 22.3072,
+    "lng": 73.1812,
+    "operator": "ChargeZone",
+    "city": "Vadodara",
+    "state": "Gujarat"
+  },
+  {
+    "id": "s047",
+    "name": "Tata Power EZ - Rajkot",
+    "address": "Astron Chowk, Rajkot - 360001",
+    "lat": 22.3039,
+    "lng": 70.8022,
+    "operator": "Tata Power",
+    "city": "Rajkot",
+    "state": "Gujarat"
+  },
+  {
+    "id": "s048",
+    "name": "Tata Power EZ - Malviya Nagar Jaipur",
+    "address": "Malviya Nagar, Jaipur - 302017",
+    "lat": 26.8507,
+    "lng": 75.8188,
+    "operator": "Tata Power",
+    "city": "Jaipur",
+    "state": "Rajasthan"
+  },
+  {
+    "id": "s049",
+    "name": "ChargeZone - Mansarovar",
+    "address": "Yudhisthir Marg, Mansarovar, Jaipur - 302020",
+    "lat": 26.8480,
+    "lng": 75.7698,
+    "operator": "ChargeZone",
+    "city": "Jaipur",
+    "state": "Rajasthan"
+  },
+  {
+    "id": "s050",
+    "name": "Statiq - Vaishali Nagar Jaipur",
+    "address": "Vaishali Nagar, Jaipur - 302021",
+    "lat": 26.9124,
+    "lng": 75.7318,
+    "operator": "Statiq",
+    "city": "Jaipur",
+    "state": "Rajasthan"
+  },
+  {
+    "id": "s051",
+    "name": "Tata Power EZ - Jodhpur",
+    "address": "Residency Road, Jodhpur - 342001",
+    "lat": 26.2389,
+    "lng": 73.0243,
+    "operator": "Tata Power",
+    "city": "Jodhpur",
+    "state": "Rajasthan"
+  },
+  {
+    "id": "s052",
+    "name": "Tata Power EZ - Lucknow Gomti Nagar",
+    "address": "Vibhuti Khand, Gomti Nagar, Lucknow - 226010",
+    "lat": 26.8727,
+    "lng": 81.0035,
+    "operator": "Tata Power",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s053",
+    "name": "ChargeZone - Hazratganj Lucknow",
+    "address": "Mahatma Gandhi Marg, Hazratganj, Lucknow - 226001",
+    "lat": 26.8467,
+    "lng": 80.9462,
+    "operator": "ChargeZone",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s054",
+    "name": "UPPCL EV Station - Kanpur",
+    "address": "Civil Lines, Kanpur - 208001",
+    "lat": 26.4499,
+    "lng": 80.3319,
+    "operator": "UPPCL",
+    "city": "Kanpur",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s055",
+    "name": "Statiq - Agra Taj Nagri",
+    "address": "Taj Nagri Phase 2, Agra - 282001",
+    "lat": 27.1767,
+    "lng": 78.0081,
+    "operator": "Statiq",
+    "city": "Agra",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s056",
+    "name": "Tata Power EZ - Varanasi",
+    "address": "Lanka, Varanasi - 221005",
+    "lat": 25.2677,
+    "lng": 82.9913,
+    "operator": "Tata Power",
+    "city": "Varanasi",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s057",
+    "name": "Tata Power EZ - Sector 18 Noida",
+    "address": "Sector 18, Noida - 201301",
+    "lat": 28.5708,
+    "lng": 77.3260,
+    "operator": "Tata Power",
+    "city": "Noida",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s058",
+    "name": "ChargeZone - Sector 62 Noida",
+    "address": "Sector 62, Noida - 201309",
+    "lat": 28.6270,
+    "lng": 77.3649,
+    "operator": "ChargeZone",
+    "city": "Noida",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s059",
+    "name": "Tata Power EZ - Gurugram Cyber Hub",
+    "address": "DLF Cyber City, Gurugram - 122002",
+    "lat": 28.4950,
+    "lng": 77.0882,
+    "operator": "Tata Power",
+    "city": "Gurugram",
+    "state": "Haryana"
+  },
+  {
+    "id": "s060",
+    "name": "Statiq - MG Road Gurugram",
+    "address": "MG Road, Gurugram - 122001",
+    "lat": 28.4741,
+    "lng": 77.0632,
+    "operator": "Statiq",
+    "city": "Gurugram",
+    "state": "Haryana"
+  },
+  {
+    "id": "s061",
+    "name": "ChargeZone - Sohna Road Gurugram",
+    "address": "Sohna Road, Sector 49, Gurugram - 122018",
+    "lat": 28.4095,
+    "lng": 77.0420,
+    "operator": "ChargeZone",
+    "city": "Gurugram",
+    "state": "Haryana"
+  },
+  {
+    "id": "s062",
+    "name": "Tata Power EZ - Faridabad",
+    "address": "NIT, Faridabad - 121001",
+    "lat": 28.4089,
+    "lng": 77.3178,
+    "operator": "Tata Power",
+    "city": "Faridabad",
+    "state": "Haryana"
+  },
+  {
+    "id": "s063",
+    "name": "Tata Power EZ - Chandigarh Sector 17",
+    "address": "Sector 17 Plaza, Chandigarh - 160017",
+    "lat": 30.7433,
+    "lng": 76.7788,
+    "operator": "Tata Power",
+    "city": "Chandigarh",
+    "state": "Punjab"
+  },
+  {
+    "id": "s064",
+    "name": "ChargeZone - Chandigarh Sector 35",
+    "address": "Sector 35, Chandigarh - 160022",
+    "lat": 30.7209,
+    "lng": 76.7649,
+    "operator": "ChargeZone",
+    "city": "Chandigarh",
+    "state": "Punjab"
+  },
+  {
+    "id": "s065",
+    "name": "Statiq - Ludhiana",
+    "address": "Ferozpur Road, Ludhiana - 141001",
+    "lat": 30.9010,
+    "lng": 75.8573,
+    "operator": "Statiq",
+    "city": "Ludhiana",
+    "state": "Punjab"
+  },
+  {
+    "id": "s066",
+    "name": "Tata Power EZ - Amritsar",
+    "address": "Lawrence Road, Amritsar - 143001",
+    "lat": 31.6340,
+    "lng": 74.8723,
+    "operator": "Tata Power",
+    "city": "Amritsar",
+    "state": "Punjab"
+  },
+  {
+    "id": "s067",
+    "name": "Tata Power EZ - Nakshatra Mall Nashik",
+    "address": "Gangapur Road, Nashik - 422013",
+    "lat": 19.9975,
+    "lng": 73.7898,
+    "operator": "Tata Power",
+    "city": "Nashik",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s068",
+    "name": "ChargeZone - Aurangabad",
+    "address": "Jalna Road, CIDCO, Aurangabad - 431001",
+    "lat": 19.8762,
+    "lng": 75.3433,
+    "operator": "ChargeZone",
+    "city": "Aurangabad",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s069",
+    "name": "Tata Power EZ - Nagpur",
+    "address": "Sitabuldi, Nagpur - 440012",
+    "lat": 21.1458,
+    "lng": 79.0882,
+    "operator": "Tata Power",
+    "city": "Nagpur",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s070",
+    "name": "Statiq - Kolhapur",
+    "address": "Tarabai Park, Kolhapur - 416003",
+    "lat": 16.6974,
+    "lng": 74.2277,
+    "operator": "Statiq",
+    "city": "Kolhapur",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s071",
+    "name": "Tata Power EZ - Salt Lake Kolkata",
+    "address": "Sector V, Salt Lake City, Kolkata - 700091",
+    "lat": 22.5726,
+    "lng": 88.4356,
+    "operator": "Tata Power",
+    "city": "Kolkata",
+    "state": "West Bengal"
+  },
+  {
+    "id": "s072",
+    "name": "ChargeZone - New Town Kolkata",
+    "address": "New Town Action Area I, Rajarhat, Kolkata - 700156",
+    "lat": 22.5879,
+    "lng": 88.4742,
+    "operator": "ChargeZone",
+    "city": "Kolkata",
+    "state": "West Bengal"
+  },
+  {
+    "id": "s073",
+    "name": "WBSEDCL EV Station - Park Street",
+    "address": "Park Street, Kolkata - 700016",
+    "lat": 22.5514,
+    "lng": 88.3614,
+    "operator": "WBSEDCL",
+    "city": "Kolkata",
+    "state": "West Bengal"
+  },
+  {
+    "id": "s074",
+    "name": "Statiq - Howrah",
+    "address": "GT Road, Shibpur, Howrah - 711102",
+    "lat": 22.5789,
+    "lng": 88.3143,
+    "operator": "Statiq",
+    "city": "Howrah",
+    "state": "West Bengal"
+  },
+  {
+    "id": "s075",
+    "name": "Tata Power EZ - Siliguri",
+    "address": "Hill Cart Road, Siliguri - 734001",
+    "lat": 26.7271,
+    "lng": 88.3953,
+    "operator": "Tata Power",
+    "city": "Siliguri",
+    "state": "West Bengal"
+  },
+  {
+    "id": "s076",
+    "name": "Tata Power EZ - Bhopal TT Nagar",
+    "address": "TT Nagar, Bhopal - 462003",
+    "lat": 23.2599,
+    "lng": 77.4126,
+    "operator": "Tata Power",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "id": "s077",
+    "name": "ChargeZone - Indore Vijay Nagar",
+    "address": "Vijay Nagar, Indore - 452010",
+    "lat": 22.7196,
+    "lng": 75.8577,
+    "operator": "ChargeZone",
+    "city": "Indore",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "id": "s078",
+    "name": "Statiq - Indore Palasia",
+    "address": "Palasia Square, Indore - 452001",
+    "lat": 22.7179,
+    "lng": 75.8833,
+    "operator": "Statiq",
+    "city": "Indore",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "id": "s079",
+    "name": "Tata Power EZ - Gwalior",
+    "address": "Lashkar, Gwalior - 474001",
+    "lat": 26.2183,
+    "lng": 78.1828,
+    "operator": "Tata Power",
+    "city": "Gwalior",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "id": "s080",
+    "name": "ChargeZone - Jabalpur",
+    "address": "Napier Town, Jabalpur - 482001",
+    "lat": 23.1815,
+    "lng": 79.9864,
+    "operator": "ChargeZone",
+    "city": "Jabalpur",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "id": "s081",
+    "name": "Tata Power EZ - Thiruvananthapuram",
+    "address": "Kowdiar, Thiruvananthapuram - 695003",
+    "lat": 8.5241,
+    "lng": 76.9366,
+    "operator": "Tata Power",
+    "city": "Thiruvananthapuram",
+    "state": "Kerala"
+  },
+  {
+    "id": "s082",
+    "name": "KSEB EV Charging - Kochi Marine Drive",
+    "address": "Marine Drive, Ernakulam, Kochi - 682031",
+    "lat": 9.9816,
+    "lng": 76.2999,
+    "operator": "KSEB",
+    "city": "Kochi",
+    "state": "Kerala"
+  },
+  {
+    "id": "s083",
+    "name": "Ather Grid - Kozhikode",
+    "address": "SM Street, Kozhikode - 673001",
+    "lat": 11.2588,
+    "lng": 75.7804,
+    "operator": "Ather",
+    "city": "Kozhikode",
+    "state": "Kerala"
+  },
+  {
+    "id": "s084",
+    "name": "ChargeZone - Thrissur",
+    "address": "Swaraj Round, Thrissur - 680001",
+    "lat": 10.5276,
+    "lng": 76.2144,
+    "operator": "ChargeZone",
+    "city": "Thrissur",
+    "state": "Kerala"
+  },
+  {
+    "id": "s085",
+    "name": "Statiq - Malappuram",
+    "address": "Kottakal Road, Malappuram - 676505",
+    "lat": 11.0667,
+    "lng": 76.0822,
+    "operator": "Statiq",
+    "city": "Malappuram",
+    "state": "Kerala"
+  },
+  {
+    "id": "s086",
+    "name": "Tata Power EZ - Coimbatore RS Puram",
+    "address": "Race Course Road, RS Puram, Coimbatore - 641002",
+    "lat": 11.0168,
+    "lng": 76.9558,
+    "operator": "Tata Power",
+    "city": "Coimbatore",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s087",
+    "name": "ChargeZone - Madurai Bypass",
+    "address": "Bypass Road, Madurai - 625010",
+    "lat": 9.9252,
+    "lng": 78.1198,
+    "operator": "ChargeZone",
+    "city": "Madurai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s088",
+    "name": "Ather Grid - Salem",
+    "address": "Omalur Road, Salem - 636004",
+    "lat": 11.6643,
+    "lng": 78.1460,
+    "operator": "Ather",
+    "city": "Salem",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s089",
+    "name": "Tata Power EZ - Tiruchirappalli",
+    "address": "Thillai Nagar, Tiruchirappalli - 620018",
+    "lat": 10.7905,
+    "lng": 78.7047,
+    "operator": "Tata Power",
+    "city": "Tiruchirappalli",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s090",
+    "name": "Statiq - Tirupati",
+    "address": "Akkayyapalem, Tirupati - 517501",
+    "lat": 13.6288,
+    "lng": 79.4192,
+    "operator": "Statiq",
+    "city": "Tirupati",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s091",
+    "name": "Tata Power EZ - Vijayawada",
+    "address": "MG Road, One Town, Vijayawada - 520001",
+    "lat": 16.5062,
+    "lng": 80.6480,
+    "operator": "Tata Power",
+    "city": "Vijayawada",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s092",
+    "name": "ChargeZone - Visakhapatnam",
+    "address": "Dwaraka Nagar, Visakhapatnam - 530016",
+    "lat": 17.7231,
+    "lng": 83.3012,
+    "operator": "ChargeZone",
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s093",
+    "name": "APSPDCL EV Charging - Guntur",
+    "address": "Brodipet, Guntur - 522002",
+    "lat": 16.3008,
+    "lng": 80.4428,
+    "operator": "APSPDCL",
+    "city": "Guntur",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s094",
+    "name": "Tata Power EZ - Mangalore Hampankatta",
+    "address": "Hampankatta, Mangaluru - 575001",
+    "lat": 12.8705,
+    "lng": 74.8426,
+    "operator": "Tata Power",
+    "city": "Mangaluru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s095",
+    "name": "ChargeZone - Mysuru",
+    "address": "Sayyaji Rao Road, Mysuru - 570001",
+    "lat": 12.2958,
+    "lng": 76.6394,
+    "operator": "ChargeZone",
+    "city": "Mysuru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s096",
+    "name": "Ather Grid - Hubballi",
+    "address": "Limbikoppa Road, Hubballi - 580029",
+    "lat": 15.3647,
+    "lng": 75.1240,
+    "operator": "Ather",
+    "city": "Hubballi",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s097",
+    "name": "Tata Power EZ - Patna",
+    "address": "Fraser Road, Patna - 800001",
+    "lat": 25.6093,
+    "lng": 85.1376,
+    "operator": "Tata Power",
+    "city": "Patna",
+    "state": "Bihar"
+  },
+  {
+    "id": "s098",
+    "name": "StatIQ - Gaya",
+    "address": "Station Road, Gaya - 823001",
+    "lat": 24.7914,
+    "lng": 84.9994,
+    "operator": "Statiq",
+    "city": "Gaya",
+    "state": "Bihar"
+  },
+  {
+    "id": "s099",
+    "name": "Tata Power EZ - Ranchi",
+    "address": "Main Road, Ranchi - 834001",
+    "lat": 23.3441,
+    "lng": 85.3096,
+    "operator": "Tata Power",
+    "city": "Ranchi",
+    "state": "Jharkhand"
+  },
+  {
+    "id": "s100",
+    "name": "ChargeZone - Jamshedpur",
+    "address": "Bistupur, Jamshedpur - 831001",
+    "lat": 22.8046,
+    "lng": 86.2029,
+    "operator": "ChargeZone",
+    "city": "Jamshedpur",
+    "state": "Jharkhand"
+  },
+  {
+    "id": "s101",
+    "name": "Tata Power EZ - Bhubaneswar",
+    "address": "Saheed Nagar, Bhubaneswar - 751007",
+    "lat": 20.2961,
+    "lng": 85.8245,
+    "operator": "Tata Power",
+    "city": "Bhubaneswar",
+    "state": "Odisha"
+  },
+  {
+    "id": "s102",
+    "name": "ChargeZone - Cuttack",
+    "address": "Buxi Bazar, Cuttack - 753001",
+    "lat": 20.4625,
+    "lng": 85.8828,
+    "operator": "ChargeZone",
+    "city": "Cuttack",
+    "state": "Odisha"
+  },
+  {
+    "id": "s103",
+    "name": "Tata Power EZ - Raipur",
+    "address": "Pandri, Raipur - 492001",
+    "lat": 21.2514,
+    "lng": 81.6296,
+    "operator": "Tata Power",
+    "city": "Raipur",
+    "state": "Chhattisgarh"
+  },
+  {
+    "id": "s104",
+    "name": "Statiq - Guwahati",
+    "address": "Paltan Bazar, Guwahati - 781008",
+    "lat": 26.1445,
+    "lng": 91.7362,
+    "operator": "Statiq",
+    "city": "Guwahati",
+    "state": "Assam"
+  },
+  {
+    "id": "s105",
+    "name": "Tata Power EZ - Dehradun",
+    "address": "Rajpur Road, Dehradun - 248001",
+    "lat": 30.3165,
+    "lng": 78.0322,
+    "operator": "Tata Power",
+    "city": "Dehradun",
+    "state": "Uttarakhand"
+  },
+  {
+    "id": "s106",
+    "name": "ChargeZone - Haridwar",
+    "address": "Rishikesh Road, Haridwar - 249401",
+    "lat": 29.9457,
+    "lng": 78.1642,
+    "operator": "ChargeZone",
+    "city": "Haridwar",
+    "state": "Uttarakhand"
+  },
+  {
+    "id": "s107",
+    "name": "Tata Power EZ - Shimla",
+    "address": "The Mall, Shimla - 171001",
+    "lat": 31.1048,
+    "lng": 77.1734,
+    "operator": "Tata Power",
+    "city": "Shimla",
+    "state": "Himachal Pradesh"
+  },
+  {
+    "id": "s108",
+    "name": "ChargeZone - Dharamshala",
+    "address": "Kotwali Bazar, Dharamshala - 176215",
+    "lat": 32.2190,
+    "lng": 76.3234,
+    "operator": "ChargeZone",
+    "city": "Dharamshala",
+    "state": "Himachal Pradesh"
+  },
+  {
+    "id": "s109",
+    "name": "Tata Power EZ - Jammu",
+    "address": "Gandhi Nagar, Jammu - 180004",
+    "lat": 32.7266,
+    "lng": 74.8570,
+    "operator": "Tata Power",
+    "city": "Jammu",
+    "state": "Jammu & Kashmir"
+  },
+  {
+    "id": "s110",
+    "name": "Statiq - Srinagar",
+    "address": "Residency Road, Srinagar - 190001",
+    "lat": 34.0837,
+    "lng": 74.7973,
+    "operator": "Statiq",
+    "city": "Srinagar",
+    "state": "Jammu & Kashmir"
+  },
+  {
+    "id": "s111",
+    "name": "ChargeZone - NH48 Surat-Mumbai",
+    "address": "NH48, Talasari, Maharashtra - 401606",
+    "lat": 20.0000,
+    "lng": 72.8195,
+    "operator": "ChargeZone",
+    "city": "Talasari",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s112",
+    "name": "Statiq - NH44 Bangalore-Hyderabad",
+    "address": "NH44, Kurnool Bypass, Andhra Pradesh - 518001",
+    "lat": 15.8281,
+    "lng": 78.0373,
+    "operator": "Statiq",
+    "city": "Kurnool",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s113",
+    "name": "Tata Power EZ - NH8 Delhi-Jaipur",
+    "address": "NH48, Shahjahanpur, Rajasthan - 301706",
+    "lat": 27.8965,
+    "lng": 76.3252,
+    "operator": "Tata Power",
+    "city": "Shahjahanpur",
+    "state": "Rajasthan"
+  },
+  {
+    "id": "s114",
+    "name": "ChargeZone - NH19 Delhi-Agra",
+    "address": "NH19, Mathura Bypass, Uttar Pradesh - 281001",
+    "lat": 27.5006,
+    "lng": 77.6814,
+    "operator": "ChargeZone",
+    "city": "Mathura",
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": "s115",
+    "name": "Shell Recharge - NH44 Chennai-Delhi",
+    "address": "NH44, Adilabad, Telangana - 504001",
+    "lat": 19.6640,
+    "lng": 78.5320,
+    "operator": "Shell",
+    "city": "Adilabad",
+    "state": "Telangana"
+  },
+  {
+    "id": "s116",
+    "name": "Tata Power EZ - NH4 Pune-Bangalore",
+    "address": "NH48, Dharwad Bypass, Karnataka - 580001",
+    "lat": 15.4589,
+    "lng": 75.0078,
+    "operator": "Tata Power",
+    "city": "Dharwad",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s117",
+    "name": "ChargeZone - NH66 Mumbai-Goa",
+    "address": "NH66, Ratnagiri, Maharashtra - 415612",
+    "lat": 16.9944,
+    "lng": 73.3003,
+    "operator": "ChargeZone",
+    "city": "Ratnagiri",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s118",
+    "name": "Tata Power EZ - Panaji Goa",
+    "address": "MG Road, Panaji, Goa - 403001",
+    "lat": 15.4909,
+    "lng": 73.8278,
+    "operator": "Tata Power",
+    "city": "Panaji",
+    "state": "Goa"
+  },
+  {
+    "id": "s119",
+    "name": "ChargeZone - Margao Goa",
+    "address": "Abade Faria Road, Margao, Goa - 403601",
+    "lat": 15.2832,
+    "lng": 73.9862,
+    "operator": "ChargeZone",
+    "city": "Margao",
+    "state": "Goa"
+  },
+  {
+    "id": "s120",
+    "name": "Tata Power EZ - Pondicherry",
+    "address": "Goubert Avenue, Puducherry - 605001",
+    "lat": 11.9340,
+    "lng": 79.8298,
+    "operator": "Tata Power",
+    "city": "Puducherry",
+    "state": "Puducherry"
+  },
+  {
+    "id": "s121",
+    "name": "ChargeZone - Vellore",
+    "address": "Gandhi Nagar, Vellore - 632006",
+    "lat": 12.9165,
+    "lng": 79.1325,
+    "operator": "ChargeZone",
+    "city": "Vellore",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s122",
+    "name": "Ather Grid - Sriperumbudur",
+    "address": "NH48, Queensland, Sriperumbudur - 602105",
+    "lat": 13.0130,
+    "lng": 80.0544,
+    "operator": "Ather",
+    "city": "Sriperumbudur",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s123",
+    "name": "Tata Power EZ - Nellore",
+    "address": "Pogathota, Nellore - 524001",
+    "lat": 14.4426,
+    "lng": 79.9865,
+    "operator": "Tata Power",
+    "city": "Nellore",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s124",
+    "name": "StatIQ - Mysuru Chamundi Hills",
+    "address": "Nazarbad Main Road, Mysuru - 570010",
+    "lat": 12.3112,
+    "lng": 76.6542,
+    "operator": "Statiq",
+    "city": "Mysuru",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s125",
+    "name": "ChargeZone - Davangere",
+    "address": "PJ Extension, Davangere - 577002",
+    "lat": 14.4644,
+    "lng": 75.9218,
+    "operator": "ChargeZone",
+    "city": "Davangere",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s126",
+    "name": "Tata Power EZ - Belgaum",
+    "address": "Camp Area, Belagavi - 590001",
+    "lat": 15.8497,
+    "lng": 74.4977,
+    "operator": "Tata Power",
+    "city": "Belagavi",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s127",
+    "name": "ChargeZone - Warangal",
+    "address": "Hanamkonda, Warangal - 506001",
+    "lat": 17.9784,
+    "lng": 79.6010,
+    "operator": "ChargeZone",
+    "city": "Warangal",
+    "state": "Telangana"
+  },
+  {
+    "id": "s128",
+    "name": "Tata Power EZ - Nanded",
+    "address": "Shivaji Nagar, Nanded - 431601",
+    "lat": 19.1383,
+    "lng": 77.3210,
+    "operator": "Tata Power",
+    "city": "Nanded",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s129",
+    "name": "Statiq - Amravati",
+    "address": "Jaistambha Square, Amravati - 444601",
+    "lat": 20.9374,
+    "lng": 77.7796,
+    "operator": "Statiq",
+    "city": "Amravati",
+    "state": "Maharashtra"
+  },
+  {
+    "id": "s130",
+    "name": "Tata Power EZ - Bhopal Hoshangabad Road",
+    "address": "Hoshangabad Road, Misrod, Bhopal - 462047",
+    "lat": 23.1758,
+    "lng": 77.4514,
+    "operator": "Tata Power",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh"
+  },
+  {
+    "id": "s131",
+    "name": "Zeon Charging - Salem Highway",
+    "address": "NH44, Omalur Bypass, Salem",
+    "lat": 11.6643,
+    "lng": 78.1460,
+    "operator": "Zeon",
+    "city": "Salem",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s132",
+    "name": "Tata Power EZ - Coimbatore",
+    "address": "Avinashi Road, Peelamedu, Coimbatore",
+    "lat": 11.0168,
+    "lng": 76.9558,
+    "operator": "Tata Power",
+    "city": "Coimbatore",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s133",
+    "name": "Statiq - Madurai Bypass",
+    "address": "Pandian Hotel, NH38, Madurai",
+    "lat": 9.9252,
+    "lng": 78.1198,
+    "operator": "Statiq",
+    "city": "Madurai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s134",
+    "name": "Ather Grid - Kanyakumari",
+    "address": "Cape Road, Kanyakumari",
+    "lat": 8.0883,
+    "lng": 77.5385,
+    "operator": "Ather",
+    "city": "Kanyakumari",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s135",
+    "name": "Zeon Charging - Trichy Expressway",
+    "address": "Chennai Bypass, Trichy",
+    "lat": 10.7905,
+    "lng": 78.7047,
+    "operator": "Zeon",
+    "city": "Trichy",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s136",
+    "name": "Relux - Hosur",
+    "address": "Attibele Border, Hosur",
+    "lat": 12.7409,
+    "lng": 77.8253,
+    "operator": "Relux",
+    "city": "Hosur",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s137",
+    "name": "Tata Power EZ - Kochi Lulumall",
+    "address": "Edappally, Kochi",
+    "lat": 10.0274,
+    "lng": 76.3080,
+    "operator": "Tata Power",
+    "city": "Kochi",
+    "state": "Kerala"
+  },
+  {
+    "id": "s138",
+    "name": "ChargeZone - Trivandrum Central",
+    "address": "Thampanoor, Trivandrum",
+    "lat": 8.4875,
+    "lng": 76.9525,
+    "operator": "ChargeZone",
+    "city": "Trivandrum",
+    "state": "Kerala"
+  },
+  {
+    "id": "s139",
+    "name": "KSEB EV - Wayanad",
+    "address": "Kalpetta Highway, Wayanad",
+    "lat": 11.6103,
+    "lng": 76.0825,
+    "operator": "KSEB",
+    "city": "Wayanad",
+    "state": "Kerala"
+  },
+  {
+    "id": "s140",
+    "name": "Ather Grid - Kozhikode",
+    "address": "Mavoor Road, Kozhikode",
+    "lat": 11.2588,
+    "lng": 75.7804,
+    "operator": "Ather",
+    "city": "Kozhikode",
+    "state": "Kerala"
+  },
+  {
+    "id": "s141",
+    "name": "Tata Power EZ - Mangalore",
+    "address": "City Center Mall, Mangalore",
+    "lat": 12.8700,
+    "lng": 74.8436,
+    "operator": "Tata Power",
+    "city": "Mangalore",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s142",
+    "name": "Zeon Charging - Udupi",
+    "address": "NH66, Udupi",
+    "lat": 13.3409,
+    "lng": 74.7421,
+    "operator": "Zeon",
+    "city": "Udupi",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s143",
+    "name": "ChargeZone - Hubli Bypass",
+    "address": "PB Road, Hubli",
+    "lat": 15.3647,
+    "lng": 75.1240,
+    "operator": "ChargeZone",
+    "city": "Hubli",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s144",
+    "name": "Ather Grid - Mysore",
+    "address": "Kalidasa Road, Mysore",
+    "lat": 12.2958,
+    "lng": 76.6394,
+    "operator": "Ather",
+    "city": "Mysore",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s145",
+    "name": "Statiq - Belgaum Highway",
+    "address": "NH48, Belgaum",
+    "lat": 15.8497,
+    "lng": 74.4977,
+    "operator": "Statiq",
+    "city": "Belgaum",
+    "state": "Karnataka"
+  },
+  {
+    "id": "s146",
+    "name": "Tata Power EZ - Panaji",
+    "address": "MG Road, Panaji",
+    "lat": 15.4909,
+    "lng": 73.8278,
+    "operator": "Tata Power",
+    "city": "Panaji",
+    "state": "Goa"
+  },
+  {
+    "id": "s147",
+    "name": "ChargeZone - Margao",
+    "address": "Fatorda, Margao",
+    "lat": 15.2736,
+    "lng": 73.9654,
+    "operator": "ChargeZone",
+    "city": "Margao",
+    "state": "Goa"
+  },
+  {
+    "id": "s148",
+    "name": "Statiq - Ponda Highway",
+    "address": "NH4A, Ponda",
+    "lat": 15.4015,
+    "lng": 74.0155,
+    "operator": "Statiq",
+    "city": "Ponda",
+    "state": "Goa"
+  },
+  {
+    "id": "s149",
+    "name": "Ather Grid - Vasco da Gama",
+    "address": "Swatantra Path, Vasco",
+    "lat": 15.3960,
+    "lng": 73.8118,
+    "operator": "Ather",
+    "city": "Vasco",
+    "state": "Goa"
+  },
+  {
+    "id": "s150",
+    "name": "Tata Power EZ - Canacona",
+    "address": "Palolem Beach Road, Canacona",
+    "lat": 15.0116,
+    "lng": 74.0232,
+    "operator": "Tata Power",
+    "city": "Canacona",
+    "state": "Goa"
+  },
+  {
+    "id": "s151",
+    "name": "ChargeZone - Tirupati",
+    "address": "Renigunta Road, Tirupati",
+    "lat": 13.6288,
+    "lng": 79.4192,
+    "operator": "ChargeZone",
+    "city": "Tirupati",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s152",
+    "name": "Tata Power EZ - Vijayawada",
+    "address": "Benz Circle, Vijayawada",
+    "lat": 16.5062,
+    "lng": 80.6480,
+    "operator": "Tata Power",
+    "city": "Vijayawada",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s153",
+    "name": "Statiq - Visakhapatnam",
+    "address": "Beach Road, Visakhapatnam",
+    "lat": 17.6868,
+    "lng": 83.2185,
+    "operator": "Statiq",
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s154",
+    "name": "Ather Grid - Guntur",
+    "address": "Brundavan Gardens, Guntur",
+    "lat": 16.3067,
+    "lng": 80.4365,
+    "operator": "Ather",
+    "city": "Guntur",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s155",
+    "name": "Zeon Charging - Nellore Bypass",
+    "address": "NH16, Nellore",
+    "lat": 14.4426,
+    "lng": 79.9865,
+    "operator": "Zeon",
+    "city": "Nellore",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s156",
+    "name": "Tata Power EZ - Warangal",
+    "address": "Hanamkonda, Warangal",
+    "lat": 18.0001,
+    "lng": 79.5815,
+    "operator": "Tata Power",
+    "city": "Warangal",
+    "state": "Telangana"
+  },
+  {
+    "id": "s157",
+    "name": "Statiq - Karimnagar",
+    "address": "Tower Circle, Karimnagar",
+    "lat": 18.4386,
+    "lng": 79.1288,
+    "operator": "Statiq",
+    "city": "Karimnagar",
+    "state": "Telangana"
+  },
+  {
+    "id": "s158",
+    "name": "ChargeZone - Nizamabad",
+    "address": "Kanteshwar, Nizamabad",
+    "lat": 18.6703,
+    "lng": 78.1009,
+    "operator": "ChargeZone",
+    "city": "Nizamabad",
+    "state": "Telangana"
+  },
+  {
+    "id": "s159",
+    "name": "Zeon Charging - Suryapet",
+    "address": "NH65 Highway, Suryapet",
+    "lat": 17.1360,
+    "lng": 79.6231,
+    "operator": "Zeon",
+    "city": "Suryapet",
+    "state": "Telangana"
+  },
+  {
+    "id": "s160",
+    "name": "Ather Grid - Mahbubnagar",
+    "address": "Bhootpur Road, Mahbubnagar",
+    "lat": 16.7371,
+    "lng": 78.0028,
+    "operator": "Ather",
+    "city": "Mahbubnagar",
+    "state": "Telangana"
+  },
+  {
+    "id": "s161",
+    "name": "Tata Power EZ - Kurnool Highway",
+    "address": "NH44, Kurnool",
+    "lat": 15.8281,
+    "lng": 78.0373,
+    "operator": "Tata Power",
+    "city": "Kurnool",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s162",
+    "name": "Relux - Anantapur",
+    "address": "Bellary Road, Anantapur",
+    "lat": 14.6819,
+    "lng": 77.6006,
+    "operator": "Relux",
+    "city": "Anantapur",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s163",
+    "name": "Statiq - Kadapa",
+    "address": "Trunk Road, Kadapa",
+    "lat": 14.4674,
+    "lng": 78.8241,
+    "operator": "Statiq",
+    "city": "Kadapa",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s164",
+    "name": "KSEB EV - Alappuzha",
+    "address": "NH66 Bypass, Alappuzha",
+    "lat": 9.4981,
+    "lng": 76.3388,
+    "operator": "KSEB",
+    "city": "Alappuzha",
+    "state": "Kerala"
+  },
+  {
+    "id": "s165",
+    "name": "Zeon Charging - Palakkad",
+    "address": "Coimbatore Road, Palakkad",
+    "lat": 10.7867,
+    "lng": 76.6548,
+    "operator": "Zeon",
+    "city": "Palakkad",
+    "state": "Kerala"
+  },
+  {
+    "id": "s166",
+    "name": "Tata Power EZ - Thrissur",
+    "address": "MG Road, Thrissur",
+    "lat": 10.5276,
+    "lng": 76.2144,
+    "operator": "Tata Power",
+    "city": "Thrissur",
+    "state": "Kerala"
+  },
+  {
+    "id": "s167",
+    "name": "Statiq - Tirunelveli",
+    "address": "NH44 Highway, Tirunelveli",
+    "lat": 8.7139,
+    "lng": 77.7567,
+    "operator": "Statiq",
+    "city": "Tirunelveli",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s168",
+    "name": "ChargeZone - Rajahmundry",
+    "address": "NH16 Godavari Bund, Rajahmundry",
+    "lat": 17.0005,
+    "lng": 81.8040,
+    "operator": "ChargeZone",
+    "city": "Rajahmundry",
+    "state": "Andhra Pradesh"
+  },
+  {
+    "id": "s169",
+    "name": "Ather Grid - Ooty",
+    "address": "Commercial Road, Ooty",
+    "lat": 11.4100,
+    "lng": 76.6950,
+    "operator": "Ather",
+    "city": "Ooty",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s170",
+    "name": "Relux - Dharmapuri",
+    "address": "NH44 Krishnagiri Bypass, Dharmapuri",
+    "lat": 12.1211,
+    "lng": 78.1583,
+    "operator": "Relux",
+    "city": "Dharmapuri",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s171",
+    "name": "Tata Power EZ - Vellore Highway",
+    "address": "NH48, Vellore",
+    "lat": 12.9165,
+    "lng": 79.1325,
+    "operator": "Tata Power",
+    "city": "Vellore",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s172",
+    "name": "ChargeZone - Tiruppur",
+    "address": "Avinashi Road, Tiruppur",
+    "lat": 11.1085,
+    "lng": 77.3411,
+    "operator": "ChargeZone",
+    "city": "Tiruppur",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s173",
+    "name": "Zeon Charging - Erode",
+    "address": "Perundurai Road, Erode",
+    "lat": 11.3410,
+    "lng": 77.7172,
+    "operator": "Zeon",
+    "city": "Erode",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s174",
+    "name": "Statiq - Thanjavur",
+    "address": "Trichy Main Road, Thanjavur",
+    "lat": 10.7828,
+    "lng": 79.1318,
+    "operator": "Statiq",
+    "city": "Thanjavur",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s175",
+    "name": "Ather Grid - Kanchipuram",
+    "address": "Gandhi Road, Kanchipuram",
+    "lat": 12.8342,
+    "lng": 79.7036,
+    "operator": "Ather",
+    "city": "Kanchipuram",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s176",
+    "name": "Tata Power EZ - Kumbakonam",
+    "address": "Chennai Bypass, Kumbakonam",
+    "lat": 10.9602,
+    "lng": 79.3845,
+    "operator": "Tata Power",
+    "city": "Kumbakonam",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s177",
+    "name": "ChargeZone - Nagercoil",
+    "address": "KP Road, Nagercoil",
+    "lat": 8.1833,
+    "lng": 77.4119,
+    "operator": "ChargeZone",
+    "city": "Nagercoil",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s178",
+    "name": "Zeon Charging - Dindigul",
+    "address": "Palani Road, Dindigul",
+    "lat": 10.3673,
+    "lng": 77.9803,
+    "operator": "Zeon",
+    "city": "Dindigul",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s179",
+    "name": "Relux - Karur Byepass",
+    "address": "Salem Bypass, Karur",
+    "lat": 10.9504,
+    "lng": 78.0833,
+    "operator": "Relux",
+    "city": "Karur",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s180",
+    "name": "Statiq - Thoothukudi",
+    "address": "Palayamkottai Road, Thoothukudi",
+    "lat": 8.7642,
+    "lng": 78.1348,
+    "operator": "Statiq",
+    "city": "Thoothukudi",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s181",
+    "name": "Tata Power EZ - Tiruvannamalai",
+    "address": "Girivalam Path, Tiruvannamalai",
+    "lat": 12.2300,
+    "lng": 79.0558,
+    "operator": "Tata Power",
+    "city": "Tiruvannamalai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s182",
+    "name": "ChargeZone - Villupuram",
+    "address": "Chennai-Trichy Highway, Villupuram",
+    "lat": 11.9401,
+    "lng": 79.4861,
+    "operator": "ChargeZone",
+    "city": "Villupuram",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s183",
+    "name": "Ather Grid - Pudukkottai",
+    "address": "Trichy Road, Pudukkottai",
+    "lat": 10.3797,
+    "lng": 78.8205,
+    "operator": "Ather",
+    "city": "Pudukkottai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s184",
+    "name": "Relux - Sivakasi",
+    "address": "Virudhunagar Main Road, Sivakasi",
+    "lat": 9.4533,
+    "lng": 77.8024,
+    "operator": "Relux",
+    "city": "Sivakasi",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s185",
+    "name": "Statiq - Tenkasi",
+    "address": "Courtallam Road, Tenkasi",
+    "lat": 8.9592,
+    "lng": 77.3117,
+    "operator": "Statiq",
+    "city": "Tenkasi",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s186",
+    "name": "Zeon Charging - Theni",
+    "address": "Munnar Highway, Theni",
+    "lat": 10.0104,
+    "lng": 77.4768,
+    "operator": "Zeon",
+    "city": "Theni",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s187",
+    "name": "Tata Power EZ - Ramanathapuram",
+    "address": "Rameswaram Road, Ramanathapuram",
+    "lat": 9.3782,
+    "lng": 78.8317,
+    "operator": "Tata Power",
+    "city": "Ramanathapuram",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s188",
+    "name": "Ather Grid - Neyveli",
+    "address": "Arch Gate, Neyveli",
+    "lat": 11.5947,
+    "lng": 79.4851,
+    "operator": "Ather",
+    "city": "Neyveli",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s189",
+    "name": "Statiq - Cuddalore",
+    "address": "Imperial Road, Cuddalore",
+    "lat": 11.7480,
+    "lng": 79.7714,
+    "operator": "Statiq",
+    "city": "Cuddalore",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s190",
+    "name": "Zeon Charging - Pollachi",
+    "address": "Palakkad Bypass, Pollachi",
+    "lat": 10.6622,
+    "lng": 77.0065,
+    "operator": "Zeon",
+    "city": "Pollachi",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s191",
+    "name": "ChargeZone - Hosur Bypass",
+    "address": "Krishnagiri NH, Hosur",
+    "lat": 12.7230,
+    "lng": 77.8383,
+    "operator": "ChargeZone",
+    "city": "Hosur",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s192",
+    "name": "Tata Power EZ - Ranipet",
+    "address": "Walajah Road, Ranipet",
+    "lat": 12.9248,
+    "lng": 79.3323,
+    "operator": "Tata Power",
+    "city": "Ranipet",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s193",
+    "name": "Relux - Ambur Highway",
+    "address": "NH48 Highway, Ambur",
+    "lat": 12.7885,
+    "lng": 78.7118,
+    "operator": "Relux",
+    "city": "Ambur",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s194",
+    "name": "Ather Grid - Yercaud",
+    "address": "Lake View Road, Yercaud",
+    "lat": 11.7753,
+    "lng": 78.2093,
+    "operator": "Ather",
+    "city": "Yercaud",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s195",
+    "name": "Statiq - Kodaikanal",
+    "address": "Laws Ghat Road, Kodaikanal",
+    "lat": 10.2381,
+    "lng": 77.4892,
+    "operator": "Statiq",
+    "city": "Kodaikanal",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s196",
+    "name": "Zeon Charging - Namakkal",
+    "address": "Trichy Road, Namakkal",
+    "lat": 11.2189,
+    "lng": 78.1674,
+    "operator": "Zeon",
+    "city": "Namakkal",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s197",
+    "name": "ChargeZone - Rajapalayam",
+    "address": "Tenkasi Highway, Rajapalayam",
+    "lat": 9.4478,
+    "lng": 77.5539,
+    "operator": "ChargeZone",
+    "city": "Rajapalayam",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s198",
+    "name": "Tata Power EZ - Virudhunagar",
+    "address": "Madurai Byepass, Virudhunagar",
+    "lat": 9.5855,
+    "lng": 77.9542,
+    "operator": "Tata Power",
+    "city": "Virudhunagar",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s199",
+    "name": "Ather Grid - Udumalaipettai",
+    "address": "Palani Road, Udumalaipettai",
+    "lat": 10.5828,
+    "lng": 77.2520,
+    "operator": "Ather",
+    "city": "Udumalaipettai",
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": "s200",
+    "name": "Zeon Charging - Krishnagiri",
+    "address": "Chennai-Bangalore NH, Krishnagiri",
+    "lat": 12.5278,
+    "lng": 78.2144,
+    "operator": "Zeon",
+    "city": "Krishnagiri",
+    "state": "Tamil Nadu"
+  }
+]

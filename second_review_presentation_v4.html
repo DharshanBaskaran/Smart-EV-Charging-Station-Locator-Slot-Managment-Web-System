@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second Review Presentation V4 HTML</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Mermaid JS for diagrams -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+        // Initialize with base theme, completely Black & White UML style
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#ffffff',      /* Node backgrounds pure white */
+                primaryTextColor: '#000000',  /* Text inside nodes pure black */
+                primaryBorderColor: '#000000',/* Node borders pure black */
+                lineColor: '#000000',         /* Lines pure black */
+                clusterBkg: '#ffffff',        /* Cluster backgrounds pure white */
+                clusterBorder: '#000000',     /* Cluster borders black */
+                edgeLabelBackground: '#ffffff'/* Label backgrounds pure white instead of transparent! */
+            }
+        });
+    </script>
+    <style>
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            .page-break {
+                page-break-after: always;
+            }
+
+            .shadow-lg {
+                box-shadow: none !important;
+                border: 1px solid #000000;
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            padding: 2rem;
+            text-rendering: optimizeLegibility;
+        }
+
+        .slide {
+            background: #ffffff;
+            max-width: 1000px;
+            margin: 0 auto 2rem auto;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #000000;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: #000000;
+        }
+
+        p,
+        li {
+            color: #000000;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        th,
+        td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #000000;
+        }
+
+        th {
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: bold;
+        }
+
+        .mermaid {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        /* STRICT BLACK AND WHITE UML OVERRIDES */
+
+        /* 1. Ensure solid white background for edge boxes so lines don't cross texts */
+        .mermaid .edgeLabel rect {
+            fill: #ffffff !important;
+            stroke: none !important;
+            opacity: 1 !important;
+        }
+
+        /* 1.5 Allow lifted texts to safely render outside strict bounding boxes */
+        .mermaid .edgeLabel foreignObject {
+            overflow: visible !important;
+        }
+
+        /* 2. Pure Black edge label texts perfectly centered */
+        .mermaid .edgeLabel span.edgeLabel,
+        .mermaid .edgeLabel .label {
+            background-color: transparent !important;
+            color: #000000 !important;
+            font-size: 0.95em;
+            font-weight: 700;
+        }
+
+        /* 3. Solid Black Borders for shapes */
+        .mermaid .node rect,
+        .mermaid .node circle,
+        .mermaid .node ellipse,
+        .mermaid .node polygon {
+            fill: #ffffff !important;
+            stroke: #000000 !important;
+            stroke-width: 1.5px !important;
+        }
+
+        /* 4. Ensure lines, dashes, and arrowheads are strictly black */
+        .mermaid .edgePath .path {
+            stroke: #000000 !important;
+            stroke-width: 1.5px !important;
+        }
+
+        .mermaid marker path {
+            fill: #000000 !important;
+            stroke: #000000 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="no-print text-center mb-8">
+        <button onclick="window.print()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded shadow-lg text-lg transition duration-200">
+            Export to PDF (Ctrl+P / Cmd+P)
+        </button>
+        <p class="text-sm text-gray-500 mt-2">Make sure to enable "Background graphics" and set Margins to "None" in the
+            print dialog for the best result.</p>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide page-break">
+        <div class="text-center top-1/4 relative mt-32">
+            <h1>Smart EV Locator</h1>
+            <h2>Second Review Presentation V4</h2>
+            <p class="mt-4 text-xl font-medium">Smart EV Charging Station Locator & Slot Management Platform</p>
+            <p class="mt-2" style="color: #000000;">Integrating Dashboards, Ledgers, WebSockets, Custom Modals, and PWA
+                Standards</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Data Flow Diagram Context -->
+    <div class="slide page-break">
+        <h2>1. Data Flow Diagram (DFD)</h2>
+        <h3>Level 0 – Context Diagram</h3>
+        <p>This contextual overview defines the absolute boundaries and external entities interfacing with the Valence
+            platform.</p>
+        <div class="mermaid">
+            flowchart LR
+            U["EV User<br>(PWA Web App)"] -->|"Use Platform Features"| S["Valence / Smart EV Locator<br>System"]
+            S -->|"Real-time Progress<br>Alerts & Routes"| U
+            A["Admin"] -->|"Monitor Platform"| S
+            S -->|"Platform Analytics"| A
+            S <-->|"<span style='display:inline-block; transform:translateY(-1.1em); font-weight:bold;'>Read / Write</span>"| DB[("MongoDB Atlas")]
+                S -->|"Map Tiles"| OSM["OpenStreetMap"]
+                S -->|"Navigation Redirects"| GM["Google Maps"]
+        </div>
+    </div>
+
+    <!-- Slide 3: DFD Level 1 -->
+    <div class="slide page-break">
+        <h3>Level 1 – Detailed DFD</h3>
+        <div class="mermaid">
+            flowchart TB
+            U["EV User"] -->|"Credentials"| P1["1.0 <br> Auth & Recovery"]
+            P1 <-->|"Verify hash"| D1[("Users Collection")]
+
+                U -->|"Deposit / Promo"| P2["2.0 <br> Wallet & Ledger"]
+                P2 <-->|"Record debit / credit"| D2[("Wallets & Transactions")]
+
+                    U -->|"Map filters"| P3["3.0 <br> Station Locator"]
+                    P3 <-->|"Fetch stations"| D3[("Stations & Reviews")]
+
+                        U -->|"Book slot"| P4["4.0 <br> Slot Reservation"]
+                        P4 <-->|"Check availability"| D4[("Ports Collection")]
+                            P4 <-->|"Create booking"| D5[("Reservations Collection")]
+                                P4 -.->|"Trigger alert"| P7
+
+                                U -->|"QR scan / Start charge"| P5["5.0 <br><br> Live Charging <br><br> (Socket.IO)"]
+                                P5 <-->|"Update progress"| D6[("Charging Sessions")]
+                                    P5 -.->|"Auto-deduct cost"| P2
+
+                                    U -->|"Route details"| P6["6.0 <br><br> Trip Planner <br><br> (>50km)"]
+                                    P6 <--->|"Read stations"| D3
+
+                                        U -->|"View alerts"| P7["7.0 <br> Notification Module"]
+                                        P7 <-->|"Read / Unread"| D7[("Notifications Collection")]
+
+                                            U -->|"Station details"| P8["8.0 <br> Add Community Station"]
+                                            P8 <---->|"Write station"| D3
+                                                P8 <--->|"Write default port"| D4
+        </div>
+    </div>
+
+    <!-- Slide 4: Application Flow Chart -->
+    <div class="slide page-break" style="padding-bottom: 50px;">
+        <h2>2. Flow Chart</h2>
+        <h3>Complete Application Flow</h3>
+        <div class="mermaid">
+            flowchart TD
+            START(["Start Client (PWA)"]) --> SW["Service Worker Caches Assets"]
+            SW --> CHECK{"Auth Token<br>Exists?"}
+
+            CHECK -->|"No"| LOGIN["Login / Register UI"]
+            CHECK -->|"Yes"| DASHBOARD["Initialize Dashboard<br>(Leaflet Map)"]
+
+            LOGIN --> LOGREQ{"Action?"}
+            LOGREQ -->|"Forgot PW"| FP["Input Username<br>Answer Security Question"]
+            FP --> RECOVER["Reset Password Hash"]
+            LOGREQ -->|"Create Account"| REG["Save Profile & Battery<br>Create Wallet"]
+            LOGREQ -->|"Login"| CRED["Enter Credentials<br>(Toggle Visibility)"]
+            CRED --> VALIDATE{"Valid Hash?"}
+            VALIDATE -->|"Yes"| DASHBOARD
+
+            DASHBOARD --> NAV{"Select Feature"}
+
+            NAV -->|"Map Panel"| MAP["Filter Stations by<br>Haversine Radius"]
+            MAP --> TAP["Click Station Marker"]
+            TAP --> DETAIL["Fetch Live Port Status,<br>Ratings, Reviews"]
+
+            DETAIL --> RES_ACT{"Action?"}
+            RES_ACT -->|"Toggle Favorite"| FAV["Add/Remove from Profile"]
+            RES_ACT -->|"Reserve Port"| R_SLOT["Fetch Slots"]
+            R_SLOT --> R_CONFIRM["User Selects Slot"]
+            R_CONFIRM --> C_MODAL["Success Modal<br>Trigger Notification"]
+
+            RES_ACT -->|"Start Charging"| C_START["Input Target Battery %"]
+            C_START --> SOCK["Open Socket.IO Connection"]
+            SOCK --> LIVE["Show Floating Live<br>Progress UI"]
+            LIVE --> C_STOP["Stop Charging"]
+            C_STOP --> INVOICE["Calculate Total INR<br>Auto-Deduct Wallet"]
+
+            NAV -->|"Stations Tab"| S_LIST["View Searchable List"]
+            S_LIST --> S_REV["Post Rating / Review"]
+
+            NAV -->|"Wallet"| WALLET["Open Ledger"]
+            WALLET --> W_ACTION{"Action?"}
+            W_ACTION -->|"Top Up"| ADD_FUNDS["Log Top Up Transaction"]
+            W_ACTION -->|"Promo"| PROMO["Check Promo Code<br>Log Promo Credit"]
+
+            NAV -->|"Trip Planner"| TRIP["Enter Origin / Dest<br>Input Range"]
+            TRIP --> T_VAL{"Range > 50km?"}
+            T_VAL -->|"No"| T_ERR["Custom Low Battery Modal"]
+            T_VAL -->|"Yes"| T_CALC["Plot Haversine Route<br>Drop Waypoint Markers"]
+
+            NAV -->|"Cancel Reservation"| RES_PANEL["View Bookings"]
+            RES_PANEL --> C_RES["Click Cancel"]
+            C_RES --> CONFIRM_MODAL["Confirm / Cancel Modal"]
+            CONFIRM_MODAL --> DEL["Set Status = Cancelled"]
+        </div>
+    </div>
+
+    <!-- Slide 5: UML Diagrams (Class) -->
+    <div class="slide page-break">
+        <h2>3. UML Diagrams</h2>
+        <h3>3.1 Extended Class Diagram (Database Models)</h3>
+        <div class="mermaid">
+            classDiagram
+            class User {
+            +userId: String
+            +username: String [UNIQUE]
+            +passwordHash: String
+            +batteryRangeKm: Number
+            +securityQuestion: String
+            +securityAnswer: Hash
+            +favoriteStations: Array
+            }
+
+            class Wallet {
+            +userId: String [UNIQUE]
+            +balance: Number
+            +currency: String
+            }
+
+            class Transaction {
+            +transactionId: String
+            +type: String
+            +amount: Number
+            +status: String
+            }
+
+            class ChargingSession {
+            +sessionId: String
+            +portId: String
+            +energyKwh: Number
+            +totalCostINR: Number
+            +progressPct: Number
+            +status: String
+            }
+
+            class Notification {
+            +notificationId: String
+            +userId: String
+            +message: String
+            +readStatus: Boolean
+            }
+
+            class PromoCode {
+            +code: String
+            +discountPct: Number
+            }
+
+            class Station {
+            +stationId: String
+            +lat: Number
+            +lng: Number
+            +averageRating: Number
+            }
+
+            class Review {
+            +reviewId: String
+            +stationId: String
+            +rating: Number
+            +comment: String
+            }
+
+            class Port {
+            +portId: String
+            +stationId: String
+            +status: String
+            }
+
+            class Reservation {
+            +reservationId: String
+            +portId: String
+            +startTime: Date
+            }
+
+            User "1" --> "1" Wallet : owns
+            User "1" --> "*" Transaction : creates
+            User "1" --> "*" Notification : receives
+            User "*" --> "*" PromoCode : applies
+            User "1" --> "*" Reservation : makes
+
+            Station "1" --> "*" Review : possesses
+            Station "1" --> "*" Port : contains
+
+            Port "1" --> "*" ChargingSession : provides
+            ChargingSession "*" <-- "1" User : initiates </div>
+        </div>
+
+        <!-- Slide 6: Enhanced Use Case Diagram -->
+        <div class="slide page-break">
+            <h3>3.2 Enhanced Use Case Diagram</h3>
+            <div class="mermaid">
+                flowchart LR
+                subgraph "Smart EV Locator (PWA System)"
+                UC1["Auth & Offline Recovery<br>(Security Questions)"]
+                UC2["Fund Wallet & Apply Promos"]
+                UC3["Scan QR / View Details"]
+
+                UC4["Toggle Favorite Stations"]
+                UC5["Rate & Review Stations"]
+                UC6["Reserve Time Slot<br>(Triggers Notification)"]
+
+                UC7["Start Live Charging<br>(WebSocket Telemetry)"]
+                UC8["Cancel Reservation via<br>Custom Modal"]
+                UC9["Plan Long Route<br>(Enforced >50km Limit)"]
+
+                UC10["Admin Analytics"]
+
+                %% Force 3x3 grid columns using invisible links
+                UC1 ~~~ UC4 ~~~ UC7
+                UC2 ~~~ UC5 ~~~ UC8
+                UC3 ~~~ UC6 ~~~ UC9
+                end
+
+                EV["EV User"] --> UC1
+                EV --> UC2
+                EV --> UC3
+                EV --> UC4
+                EV --> UC5
+                EV --> UC6
+                EV --> UC7
+                EV --> UC8
+                EV --> UC9
+
+                ADMIN["Admin"] --> UC1
+                ADMIN --> UC10
+
+                UC7 -.->|"triggers debit"| UC2
+            </div>
+        </div>
+
+        <!-- Slide 7: Software Justification -->
+        <div class="slide page-break">
+            <h2>4. Software Used & Justifications</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Software / Tech</th>
+                        <th>Description</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>HTML5/CSS3/Vanilla JS</strong></td>
+                        <td>Application PWA Environment</td>
+                        <td>Circumvents native browser popups with fully custom modals. Uses internal Service Workers
+                            for robust offline caching capabilities.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Node.js + Express</strong></td>
+                        <td>High-concurrency Backend</td>
+                        <td>Modular routing efficiently divides domains (wallet, reviews, notifications, qr).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Socket.IO</strong></td>
+                        <td>WebSocket Engine</td>
+                        <td>Allows instant telemetry & live progression updates for active charging sessions organically
+                            instead of using degraded HTTP polling.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MongoDB Atlas</strong></td>
+                        <td>NoSQL Database Cloud</td>
+                        <td>Easily models shifting datasets like Ledger systems with advanced Mongoose schemas and
+                            cascading array validations.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>bcryptjs / crypto</strong></td>
+                        <td>Data Assurance</td>
+                        <td>Ensures passwords and security answers are aggressively hashed before DB entry.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Leaflet / Nominatim</strong></td>
+                        <td>Map Analytics</td>
+                        <td>Renders interactive map markers, trip-polylines, and active geographic bounding filters
+                            entirely client-side.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 8: Testing & Next Steps -->
+        <div class="slide page-break">
+            <h2>5. Core Integrations & Testing</h2>
+
+            <h3>Crucial Validations Performed:</h3>
+            <ul>
+                <li><strong>Dynamic Haversine Operations:</strong> Modifying vehicle battery range instantly updates
+                    strict radius limits across map features. PWA enforces limits reliably.</li>
+                <li><strong>Offline Mode Preservation:</strong> Loading the platform URL without network connectivity
+                    immediately falls gracefully to cached `sw.js` handlers.</li>
+                <li><strong>Trip Constraints:</strong> Plotted routes > 50km are allowed; attempting 30km ranges
+                    triggers Custom Low Battery Interruption Modals.</li>
+                <li><strong>WebSocket Telemetry:</strong> Starting a session opens 2-way data flow mapping precise
+                    incremental percentage and cost (INR) into the floating Action view.</li>
+                <li><strong>Immutable Ledger Logic:</strong> Ending a session mathematically restricts and triggers
+                    automatic valid transaction debits based on usage, validating > ₹0 balances before initiation.</li>
+            </ul>
+
+            <h3 class="mt-8">Implementation Summary</h3>
+            <p>The system robustly enforces data boundaries avoiding any overlapping reservations and prevents offline
+                errors via standardized PWA protocols. Anticipated future iterations include expanding generic device
+                camera parsing capabilities and integrating direct financial gateway API pipelines to productionize the
+                internal wallet system.</p>
+        </div>
+</body>
+
+</html>

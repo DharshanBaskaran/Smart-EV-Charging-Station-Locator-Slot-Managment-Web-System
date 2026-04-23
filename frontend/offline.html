@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valence — Offline</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: var(--bg); color: var(--text); }
+    .offline-card { text-align: center; max-width: 400px; padding: 2rem; }
+    .offline-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .offline-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .offline-text { color: var(--text-muted); margin-bottom: 1.5rem; }
+    .retry-btn { padding: 0.75rem 2rem; border-radius: 10px; background: var(--accent); color: #000; font-weight: 700; border: none; cursor: pointer; font-size: 1rem; }
+    .retry-btn:hover { filter: brightness(1.1); }
+  </style>
+</head>
+<body>
+  <div class="offline-card">
+    <div class="offline-icon">📡</div>
+    <div class="offline-title">You're Offline</div>
+    <p class="offline-text">Valence needs an internet connection to load charging station data. Please check your connection and try again.</p>
+    <button class="retry-btn" onclick="location.reload()">Retry Connection</button>
+  </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valence – Admin</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-page { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+    .admin-page h1 { color: var(--accent); margin-bottom: 0.5rem; }
+    .admin-page a { color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--surface2); }
+    th { color: var(--text-muted); font-weight: 600; font-size: 0.85rem; }
+    .admin-error { color: var(--danger); margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>Valence</h1>
+      <p class="tagline">Admin – User management</p>
+    </div>
+    <div class="header-right">
+      <a href="/" class="btn btn-small btn-secondary">Back to app</a>
+      <a href="#" id="admin-logout" class="btn btn-small btn-secondary">Logout</a>
+    </div>
+  </header>
+  <main class="admin-page">
+    <h1>User records</h1>
+    <p>Manage user accounts (view only in this demo).</p>
+    <div id="admin-content"></div>
+  </main>
+  <script>
+    const API = window.location.origin + '/api';
+    const token = localStorage.getItem('valence_token');
+    const user = (() => { try { return JSON.parse(localStorage.getItem('valence_user') || 'null'); } catch { return null; } })();
+    if (!token || !user) {
+      window.location.href = '/login.html';
+    }
+    document.getElementById('admin-logout').addEventListener('click', (e) => {
+      e.preventDefault();
+      fetch(API + '/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }).catch(() => {});
+      localStorage.removeItem('valence_token');
+      localStorage.removeItem('valence_user');
+      window.location.href = '/login.html';
+    });
+    fetch(API + '/users', { headers: { Authorization: 'Bearer ' + token } })
+      .then(res => {
+        if (res.status === 403) {
+          document.getElementById('admin-content').innerHTML = '<p class="admin-error">Admin access required.</p>';
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to load users');
+        return res.json();
+      })
+      .then(users => {
+        if (!users) return;
+        document.getElementById('admin-content').innerHTML = `
+          <table>
+            <thead>
+              <tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th>Vehicle</th><th>Range (km)</th></tr>
+            </thead>
+            <tbody>
+              ${users.map(u => `
+                <tr>
+                  <td>${u.username || '-'}</td>
+                  <td>${u.name || '-'}</td>
+                  <td>${u.email || '-'}</td>
+                  <td>${u.role || 'user'}</td>
+                  <td>${u.vehicleType || ''} ${u.vehicleModel || ''}</td>
+                  <td>${u.batteryRangeKm ?? '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      })
+      .catch(err => {
+        document.getElementById('admin-content').innerHTML = '<p class="admin-error">' + err.message + '</p>';
+      });
+  </script>
+</body>
+</html>

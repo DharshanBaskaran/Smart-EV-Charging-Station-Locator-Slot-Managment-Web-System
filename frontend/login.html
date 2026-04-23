@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valence – Smart EV Charging Platform</title>
+  <meta name="description" content="Valence – Find, book, and navigate to EV charging stations. Real-time availability, smart route planning, and seamless slot management." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #060b12;
+      --surface:  #0c1520;
+      --surface2: #131f30;
+      --surface3: #1a2940;
+      --accent:   #00e676;
+      --accent-dim: #00b85c;
+      --accent2:  #00b0ff;
+      --accent3:  #7c4dff;
+      --danger:   #ff5252;
+      --text:     #e8f0fe;
+      --muted:    #6b7fa3;
+      --border:   rgba(255,255,255,0.07);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LEFT HERO PANEL
+    ═══════════════════════════════════════════════ */
+    .hero-panel {
+      flex: 1.15;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 3.5rem;
+      overflow: hidden;
+      background: linear-gradient(160deg, #060e18 0%, #0a1628 40%, #0d1e38 100%);
+    }
+
+    /* Animated gradient orbs */
+    .hero-panel::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      top: -150px; left: -100px;
+      background: radial-gradient(circle, rgba(0,230,118,0.12) 0%, transparent 70%);
+      animation: float1 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      bottom: -100px; right: -80px;
+      background: radial-gradient(circle, rgba(0,176,255,0.1) 0%, transparent 70%);
+      animation: float2 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(40px, 30px) scale(1.1); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-30px, -40px) scale(1.15); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 540px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0,230,118,0.08);
+      border: 1px solid rgba(0,230,118,0.2);
+      color: var(--accent);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeInDown 0.6s ease;
+    }
+
+    .hero-badge .pulse-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 1rem;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 2.5rem;
+      max-width: 440px;
+      animation: fadeInDown 1s ease;
+    }
+
+    /* Feature cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 1.2s ease;
+    }
+
+    .feature-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
+    }
+
+    .feature-card:hover {
+      background: rgba(0,230,118,0.04);
+      border-color: rgba(0,230,118,0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card h3 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* Stats strip */
+    .stats-strip {
+      display: flex;
+      gap: 2rem;
+      animation: fadeInUp 1.4s ease;
+    }
+
+    .stat-item {
+      text-align: left;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .stat-value .counter-suffix {
+      font-size: 1rem;
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+      font-weight: 500;
+    }
+
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: drift linear infinite;
+      opacity: 0.15;
+    }
+
+    @keyframes drift {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.15; }
+      90% { opacity: 0.15; }
+      100% { transform: translateY(-20px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Grid pattern overlay */
+    .grid-pattern {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Road animation strip */
+    .road-strip {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--accent) 20%,
+        var(--accent2) 50%,
+        var(--accent3) 80%,
+        transparent 100%
+      );
+      opacity: 0.4;
+      animation: roadGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes roadGlow {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.6; }
+    }
+
+    /* ═══════════════════════════════════════════════
+       RIGHT FORM PANEL
+    ═══════════════════════════════════════════════ */
+    .form-panel-wrap {
+      flex: 0 0 480px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+      padding: 1rem 0;
+    }
+
+    /* ── Brand ── */
+    .brand {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .brand-logo {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(0,230,118,0.15), rgba(0,176,255,0.1));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 0.6rem;
+      border: 1px solid rgba(0,230,118,0.2);
+      box-shadow: 0 4px 20px rgba(0,230,118,0.1);
+    }
+
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .brand p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      background: var(--surface2);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.55rem;
+      border: none;
+      border-radius: 9px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 2px 12px rgba(0,230,118,0.3);
+    }
+
+    /* ── Forms ── */
+    .form-panel-inner { display: none; }
+    .form-panel-inner.active { display: block; animation: fadeIn 0.35s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .form-group {
+      margin-bottom: 0.9rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,230,118,0.1);
+    }
+
+    .form-group input::placeholder {
+      color: rgba(107,127,163,0.6);
+    }
+
+    .form-group select option { background: var(--surface2); }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.4rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+      color: #000;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0,230,118,0.3);
+    }
+
+    .btn-submit:hover::before {
+      left: 100%;
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Alerts ── */
+    .alert {
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      margin-bottom: 0.85rem;
+      display: none;
+      font-weight: 500;
+    }
+
+    .alert-error   { background: rgba(255,82,82,0.1);  border: 1px solid rgba(255,82,82,0.25);  color: var(--danger); }
+    .alert-success { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.25); color: var(--accent); }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1rem 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+    .divider::before,
+    .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Hint ── */
+    .hint-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 1.1rem;
+      line-height: 1.5;
+    }
+    .hint-box strong { color: var(--accent2); }
+
+    /* ── Password wrapper & eye toggle ── */
+    .pw-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .pw-wrap input {
+      flex: 1;
+      padding-right: 2.8rem !important;
+    }
+    .eye-btn {
+      position: absolute;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      transition: color 0.2s, transform 0.15s;
+      line-height: 0;
+    }
+    .eye-btn:hover {
+      color: var(--accent);
+      transform: scale(1.15);
+    }
+    .eye-btn svg { width: 18px; height: 18px; }
+
+    /* ── Password strength ── */
+    .strength-bar {
+      height: 3px;
+      border-radius: 2px;
+      margin-top: 6px;
+      background: var(--surface2);
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+      width: 0%;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer links ── */
+    .form-footer {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .form-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .form-footer a:hover { text-decoration: underline; }
+
+    /* Social proof */
+    .trust-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .trust-item span { font-size: 0.85rem; }
+
+    /* ═══════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════ */
+    @media (max-width: 960px) {
+      body { flex-direction: column; overflow-y: auto; }
+      .hero-panel {
+        padding: 2rem 1.5rem;
+        min-height: auto;
+      }
+      .hero-title { font-size: 2rem; }
+      .hero-subtitle { font-size: 0.9rem; margin-bottom: 1.5rem; }
+      .feature-grid { gap: 0.5rem; }
+      .form-panel-wrap {
+        flex: none;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding: 1.5rem 1rem;
+      }
+      .stats-strip { gap: 1.5rem; }
+    }
+
+    @media (max-width: 600px) {
+      .hero-panel { padding: 1.5rem 1rem; }
+      .hero-title { font-size: 1.7rem; letter-spacing: -1px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .form-panel-wrap { flex: none; padding: 1rem; }
+      .card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     LEFT HERO PANEL
+═══════════════════════════════════════════════ -->
+<div class="hero-panel">
+  <div class="grid-pattern"></div>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="pulse-dot"></span>
+      Live Charging Network
+    </div>
+
+    <h1 class="hero-title">
+      Power Your Journey with <span class="highlight">Valence</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Discover, book, and navigate to EV charging stations in real-time.
+      Smart route planning that keeps you charged throughout your trip.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3>Station Locator</h3>
+        <p>Find nearby charging stations with real-time port availability and status updates.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3>Smart Booking</h3>
+        <p>Reserve charging slots ahead of time. No more waiting — just plug in and go.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3>Trip Planner</h3>
+        <p>Plan long-distance trips with automatic charging stops based on your battery range.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Live Status</h3>
+        <p>Real-time port monitoring — see which connectors are free, occupied, or defective.</p>
+      </div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-item">
+        <div class="stat-value" id="stat-stations">130<span class="counter-suffix">+</span></div>
+        <div class="stat-label">Charging Stations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="stat-cities">45<span class="counter-suffix">+</span></div>
+        <div class="stat-label">Cities Covered</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="stat-uptime">99.5<span class="counter-suffix">%</span></div>
+        <div class="stat-label">Network Uptime</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">24<span class="counter-suffix">/7</span></div>
+        <div class="stat-label">Availability</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="road-strip"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     RIGHT FORM PANEL
+═══════════════════════════════════════════════ -->
+<div class="form-panel-wrap">
+  <div class="card">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-logo">⚡</div>
+      <h1>Valence</h1>
+      <p id="auth-subtitle">Welcome &bull; Sign in to continue</p>
+    </div>
+
+    <!-- Tabs (hidden initially, shown when switching) -->
+    <div class="tabs" id="auth-tabs" style="display:none;">
+      <button class="tab-btn active" id="tab-login"    onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn"        id="tab-register" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- ── LOGIN FORM ── -->
+    <div class="form-panel-inner active" id="panel-login">
+      <div class="alert alert-error"   id="login-error"></div>
+      <div class="alert alert-success" id="login-success"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" placeholder="Enter your username" required autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password" oninput="toggleEyeIcon(this.value, 'eye-login', 'login-password')" />
+            <button type="button" class="eye-btn" id="eye-login" style="display: none;" onclick="togglePassword('login-password','eye-login')" aria-label="Toggle password visibility" title="Show / hide password">
+              <svg id="icon-login" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+              </svg>
+            </button>
+           </div>
+        </div>
+        <div style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
+          <a href="#" onclick="switchTab('forgot');return false;" style="font-size: 0.85rem; color: var(--accent);">Forgot Password?</a>
+        </div>
+        <button type="submit" class="btn-submit" id="login-btn">Sign In</button>
+      </form>
+
+      <div class="form-footer">
+        Don't have an account? <a href="#" onclick="switchTab('register');return false;">Create one</a>
+      </div>
+
+      <div class="trust-bar">
+        <div class="trust-item"><span>🔋</span> 130+ Stations</div>
+        <div class="trust-item"><span>⚡</span> Real-time Status</div>
+        <div class="trust-item"><span>🗺️</span> Smart Routing</div>
+      </div>
+    </div>
+
+    <!-- ── REGISTER FORM ── -->
+    <div class="form-panel-inner" id="panel-register">
+      <div class="alert alert-error"   id="reg-error"></div>
+      <div class="alert alert-success" id="reg-success"></div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" placeholder="Your name" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email</label>
+            <input type="email" id="reg-email" placeholder="you@email.com" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" placeholder="Choose a username" required autocomplete="username" />
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="reg-password" placeholder="Min 6 characters" required autocomplete="new-password" oninput="checkStrength(this.value); toggleEyeIcon(this.value, 'eye-reg', 'reg-password')" />
+            <button type="button" class="eye-btn" id="eye-reg" style="display: none;" onclick="togglePassword('reg-password','eye-reg')" aria-label="Toggle password visibility" title="Show / hide password">
+              <svg id="icon-reg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+              </svg>
+            </button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+        </div>
+
+        <div class="divider">Security Question (Mandatory)</div>
+        <div class="form-group">
+          <label for="reg-sec-question">Select Question</label>
+          <select id="reg-sec-question" required>
+            <option value="">Loading questions...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="reg-sec-answer">Answer</label>
+          <input type="text" id="reg-sec-answer" placeholder="Your answer" required minlength="2" />
+        </div>
+
+        <div class="divider">Vehicle Info (optional)</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-vehicle-type">Vehicle Type</label>
+            <select id="reg-vehicle-type">
+              <option value="car">🚗 Car</option>
+              <option value="bike">🏍 Bike / Scooter</option>
+              <option value="bus">🚌 Bus / Van</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-range">Battery Range (km)</label>
+            <input type="number" id="reg-range" placeholder="e.g. 150" min="0" max="1000" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-model">Vehicle Model</label>
+          <input type="text" id="reg-model" placeholder="e.g. Tata Nexon EV, Ather 450X" />
+        </div>
+
+        <button type="submit" class="btn-submit" id="reg-btn">Create Account</button>
+      </form>
+
+      <div class="form-footer">
+        Already have an account? <a href="#" onclick="switchTab('login');return false;">Sign in</a>
+      </div>
+    </div>
+
+    <!-- ── FORGOT PASSWORD FORM ── -->
+    <div class="form-panel-inner" id="panel-forgot">
+      <div class="alert alert-error"   id="forgot-error"></div>
+      <div class="alert alert-success" id="forgot-success"></div>
+
+      <!-- Step 1: Verify Email -->
+      <div id="forgot-step-1">
+        <form id="forgot-form-email" onsubmit="handleForgotEmail(event)">
+          <div class="form-group">
+            <label for="forgot-email">Enter your registered email</label>
+            <input type="email" id="forgot-email" placeholder="you@email.com" required />
+          </div>
+          <button type="submit" class="btn-submit" id="forgot-btn-email">Continue</button>
+        </form>
+      </div>
+
+      <!-- Step 2: Answer Security Question -->
+      <div id="forgot-step-2" style="display:none;">
+        <form id="forgot-form-answer" onsubmit="handleForgotAnswer(event)">
+          <div class="form-group">
+            <label id="forgot-question-label">Security Question</label>
+            <input type="text" id="forgot-answer" placeholder="Your answer" required />
+          </div>
+          <button type="submit" class="btn-submit" id="forgot-btn-answer">Verify Answer</button>
+        </form>
+      </div>
+
+      <!-- Step 3: Reset Password -->
+      <div id="forgot-step-3" style="display:none;">
+        <form id="forgot-form-reset" onsubmit="handleForgotReset(event)">
+          <div class="form-group">
+            <label for="forgot-new-password">New Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="forgot-new-password" placeholder="Min 6 characters" required minlength="6" oninput="toggleEyeIcon(this.value, 'eye-forgot', 'forgot-new-password')"/>
+              <button type="button" class="eye-btn" id="eye-forgot" style="display: none;" onclick="togglePassword('forgot-new-password','eye-forgot')" aria-label="Toggle password visibility">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                  <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="forgot-confirm-password">Confirm New Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="forgot-confirm-password" placeholder="Re-enter password" required minlength="6" oninput="toggleEyeIcon(this.value, 'eye-forgot-confirm', 'forgot-confirm-password')"/>
+              <button type="button" class="eye-btn" id="eye-forgot-confirm" style="display: none;" onclick="togglePassword('forgot-confirm-password','eye-forgot-confirm')" aria-label="Toggle password visibility">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                  <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="forgot-btn-reset">Reset Password</button>
+        </form>
+      </div>
+
+      <div class="form-footer">
+        Remembered your password? <a href="#" onclick="switchTab('login');return false;">Sign in</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Custom Alert Modal (replaces browser alert) -->
+<div id="login-alert-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--surface2);border-radius:14px;padding:1.5rem;max-width:340px;width:90%;text-align:center;">
+    <div id="login-alert-icon" style="font-size:2.5rem;margin-bottom:0.5rem;">ℹ️</div>
+    <h3 id="login-alert-title" style="margin-bottom:0.5rem; font-weight: 700; color: white;">Notification</h3>
+    <p id="login-alert-msg" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;"></p>
+    <button class="btn btn-submit" onclick="document.getElementById('login-alert-modal').style.display='none'" style="padding:0.5rem 2rem; border-radius:8px; border:none; background:var(--accent); color:#000; font-weight:700; cursor:pointer;">OK</button>
+  </div>
+</div>
+
+<script>
+  // Override alert() — no more "localhost says" popups
+  window.alert = function(msg) {
+    const modal = document.getElementById('login-alert-modal');
+    const msgEl = document.getElementById('login-alert-msg');
+    const iconEl = document.getElementById('login-alert-icon');
+    if (modal && msgEl) {
+      iconEl.textContent = (msg.includes('Error') || msg.includes('fail') || msg.includes('Incorrect') || msg.includes('required')) ? '⚠️' : msg.includes('success') ? '✅' : 'ℹ️';
+      msgEl.textContent = msg;
+      modal.style.display = 'flex';
+    }
+  };
+
+  const API = window.location.origin + '/api';
+
+  // ── Generate floating particles ─────────────────────────────────────────
+  (function createParticles() {
+    const container = document.getElementById('particles');
+    const colors = ['#00e676', '#00b0ff', '#7c4dff', '#ffffff'];
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 2;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        background: ${color};
+        left: ${Math.random() * 100}%;
+        animation-duration: ${Math.random() * 15 + 10}s;
+        animation-delay: ${Math.random() * 10}s;
+      `;
+      container.appendChild(p);
+    }
+  })();
+
+  // ── Animated counter ─────────────────────────────────────────────────────
+  function animateCounter(id, target, suffix, duration = 1500) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const isFloat = target % 1 !== 0;
+    let start = 0;
+    const startTime = performance.now();
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      const current = start + (target - start) * eased;
+      el.innerHTML = (isFloat ? current.toFixed(1) : Math.floor(current)) + `<span class="counter-suffix">${suffix}</span>`;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+
+  // Start counters after a short delay
+  setTimeout(() => {
+    animateCounter('stat-stations', 130, '+', 2000);
+    animateCounter('stat-cities', 45, '+', 1800);
+    animateCounter('stat-uptime', 99.5, '%', 2200);
+  }, 500);
+
+  // ── Password visibility toggle ───────────────────────────────────────────
+  // EYE_CLOSED = default (password hidden) — shows eye with slash line
+  const EYE_CLOSED = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>`;
+  // EYE_OPEN = password visible — shows full open eye
+  const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+
+  function togglePassword(inputId, btnId) {
+    const input = document.getElementById(inputId);
+    const icon  = document.getElementById(btnId).querySelector('svg');
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    // When showing password → open eye; when hiding → closed eye with slash
+    icon.innerHTML = isHidden ? EYE_OPEN : EYE_CLOSED;
+    document.getElementById(btnId).style.color = isHidden ? 'var(--accent)' : 'var(--muted)';
+  }
+
+  function toggleEyeIcon(val, btnId, inputId) {
+    const btn = document.getElementById(btnId);
+    btn.style.display = val.length > 0 ? 'flex' : 'none';
+    if (val.length === 0) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('svg');
+      input.type = 'password';
+      icon.innerHTML = EYE_CLOSED;
+      btn.style.color = 'var(--muted)';
+    }
+  }
+
+  // ── Tab switching ──────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    // Show tabs only when on register; hide when back on login
+    document.getElementById('auth-tabs').style.display = tab === 'register' ? 'flex' : 'none';
+    document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+    document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+    
+    const panelForgot = document.getElementById('panel-forgot');
+    if (panelForgot) panelForgot.classList.toggle('active', tab === 'forgot');
+    
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    // Update subtitle
+    const subtitle = document.getElementById('auth-subtitle') || document.querySelector('.brand p');
+    if (subtitle) {
+      if (tab === 'forgot') subtitle.innerHTML = 'Account Recovery &bull; Reset password';
+      else subtitle.innerHTML = tab === 'login'
+        ? 'Welcome &bull; Sign in to continue'
+        : 'Join the network &bull; Create an account';
+    }
+  }
+
+  // ── Password strength ──────────────────────────────────────────────────────
+  function checkStrength(val) {
+    const fill = document.getElementById('strength-fill');
+    let score = 0;
+    if (val.length >= 6)  score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const colors = ['#ff5252','#ff5252','#ffab00','#00b0ff','#00e676'];
+    const widths = ['20%','35%','55%','75%','100%'];
+    fill.style.width      = val ? widths[score - 1] || '10%' : '0%';
+    fill.style.background = val ? colors[score - 1] || '#ff5252' : 'transparent';
+  }
+
+  // ── Alert helpers ──────────────────────────────────────────────────────────
+  function showAlert(id, msg, type = 'error') {
+    const el = document.getElementById(id);
+    if (!msg) { el.style.display = 'none'; return; }
+    el.textContent = msg;
+    el.className = `alert alert-${type}`;
+    el.style.display = 'block';
+  }
+  function hideAlert(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+
+  function setLoading(btnId, loading, label) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.innerHTML = loading ? `<span class="spinner"></span> Please wait…` : label;
+  }
+
+  // ── LOGIN ──────────────────────────────────────────────────────────────────
+  async function handleLogin(e) {
+    e.preventDefault();
+    hideAlert('login-error');
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    if (!username || !password) return showAlert('login-error', 'Please fill all fields.');
+    setLoading('login-btn', true, 'Sign In');
+
+    try {
+      const res  = await fetch(API + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        showAlert('login-error', data.error || 'Invalid username or password.');
+        return;
+      }
+
+      localStorage.setItem('valence_token', data.token);
+      localStorage.setItem('valence_user',  JSON.stringify(data.user));
+      showAlert('login-success', '✅ Logged in! Redirecting…', 'success');
+      setTimeout(() => window.location.href = '/', 800);
+    } catch {
+      showAlert('login-error', 'Network error. Is the server running?');
+    } finally {
+      setLoading('login-btn', false, 'Sign In');
+    }
+  }
+
+  // ── REGISTER ───────────────────────────────────────────────────────────────
+  async function handleRegister(e) {
+    e.preventDefault();
+    hideAlert('reg-error');
+
+    const name          = document.getElementById('reg-name').value.trim();
+    const email         = document.getElementById('reg-email').value.trim();
+    const username      = document.getElementById('reg-username').value.trim();
+    const password      = document.getElementById('reg-password').value;
+    const vehicleType   = document.getElementById('reg-vehicle-type').value;
+    const vehicleModel  = document.getElementById('reg-model').value.trim();
+    const batteryRangeKm = Number(document.getElementById('reg-range').value) || 0;
+    const securityQuestion = document.getElementById('reg-sec-question').value;
+    const securityAnswer = document.getElementById('reg-sec-answer').value.trim();
+
+    if (!name || !username || !password || !securityQuestion || !securityAnswer) return showAlert('reg-error', 'Please fill all mandatory fields.');
+    if (password.length < 6) return showAlert('reg-error', 'Password must be at least 6 characters.');
+
+    setLoading('reg-btn', true, 'Create Account');
+
+    try {
+      const res  = await fetch(API + '/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, username, password, vehicleType, vehicleModel, batteryRangeKm, securityQuestion, securityAnswer }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        showAlert('reg-error', data.error || 'Registration failed.');
+        return;
+      }
+
+      localStorage.setItem('valence_token', data.token);
+      localStorage.setItem('valence_user',  JSON.stringify(data.user));
+      showAlert('reg-success', `🎉 Welcome, ${name}! Redirecting…`, 'success');
+      setTimeout(() => window.location.href = '/', 900);
+    } catch {
+      showAlert('reg-error', 'Network error. Is the server running?');
+    } finally {
+      setLoading('reg-btn', false, 'Create Account');
+    }
+  }
+
+  // ── Auto-redirect if already logged in ────────────────────────────────────
+  if (localStorage.getItem('valence_token')) window.location.href = '/';
+
+  // ── Fetch Security Questions ────────────────────────────────────────────────
+  async function loadSecurityQuestions() {
+    try {
+      const res = await fetch(API + '/auth/security-questions');
+      const data = await res.json();
+      const select = document.getElementById('reg-sec-question');
+      if (data && data.questions) {
+        select.innerHTML = '<option value="">Select a question</option>' + 
+                           data.questions.map(q => `<option value="${q}">${q}</option>`).join('');
+      } else {
+        select.innerHTML = '<option value="">Failed to load questions</option>';
+      }
+    } catch(e) {
+      document.getElementById('reg-sec-question').innerHTML = '<option value="">Network error loading questions</option>';
+    }
+  }
+  loadSecurityQuestions();
+
+  // ── Forgot Password Logic ──────────────────────────────────────────────────
+  let resetState = { email: '', resetToken: '' };
+
+  async function handleForgotEmail(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) return showAlert('forgot-error', 'Email is required');
+
+    setLoading('forgot-btn-email', true, 'Continue');
+    try {
+      const res = await fetch(API + '/auth/forgot-password/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert('forgot-error', data.error);
+
+      resetState.email = data.email;
+      document.getElementById('forgot-question-label').textContent = data.securityQuestion;
+      
+      document.getElementById('forgot-step-1').style.display = 'none';
+      document.getElementById('forgot-step-2').style.display = 'block';
+      showAlert('forgot-error', ''); // clear error
+    } catch (err) {
+      showAlert('forgot-error', 'System error. Try again later.');
+    } finally {
+      setLoading('forgot-btn-email', false, 'Continue');
+    }
+  }
+
+  async function handleForgotAnswer(e) {
+    e.preventDefault();
+    const answer = document.getElementById('forgot-answer').value.trim();
+    if (!answer) return showAlert('forgot-error', 'Answer is required');
+
+    setLoading('forgot-btn-answer', true, 'Verify Answer');
+    try {
+      const res = await fetch(API + '/auth/forgot-password/verify-answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetState.email, securityAnswer: answer })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        // As requested: if security qns ans fails show an pop msg with wrong answer
+        window.alert(data.error); 
+        return showAlert('forgot-error', data.error);
+      }
+
+      resetState.resetToken = data.resetToken;
+      document.getElementById('forgot-step-2').style.display = 'none';
+      document.getElementById('forgot-step-3').style.display = 'block';
+      showAlert('forgot-error', ''); // clear error
+    } catch (err) {
+      showAlert('forgot-error', 'System error. Try again later.');
+    } finally {
+      setLoading('forgot-btn-answer', false, 'Verify Answer');
+    }
+  }
+
+  async function handleForgotReset(e) {
+    e.preventDefault();
+    const newPassword = document.getElementById('forgot-new-password').value;
+    const confirmPassword = document.getElementById('forgot-confirm-password').value;
+    if (newPassword.length < 6) return showAlert('forgot-error', 'Password must be at least 6 characters.');
+    if (newPassword !== confirmPassword) {
+      window.alert('Passwords do not match!');
+      return showAlert('forgot-error', 'Passwords do not match. Please try again.');
+    }
+
+    setLoading('forgot-btn-reset', true, 'Reset Password');
+    try {
+      const res = await fetch(API + '/auth/forgot-password/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resetToken: resetState.resetToken, newPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) return showAlert('forgot-error', data.error);
+
+      showAlert('forgot-success', '✅ Password reset successfully! Redirecting to login...', 'success');
+      document.getElementById('forgot-step-3').style.display = 'none';
+      
+      setTimeout(() => switchTab('login'), 2000);
+    } catch (err) {
+      showAlert('forgot-error', 'System error. Try again later.');
+    } finally {
+      setLoading('forgot-btn-reset', false, 'Reset Password');
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valence – Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+
+    .dash-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; background: var(--surface); border-bottom: 1px solid var(--surface2);
+    }
+    .dash-header h1 { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+    .dash-header .nav-links { display: flex; gap: 0.5rem; align-items: center; }
+    .dash-header .nav-links a {
+      padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+      color: var(--text-muted); text-decoration: none; transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .dash-header .nav-links a:hover { background: var(--surface2); color: var(--text); }
+    .dash-header .nav-links a.active { background: var(--accent); color: #000; }
+
+    .dash-container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+    .welcome-bar {
+      background: linear-gradient(135deg, rgba(0,230,118,0.08), rgba(0,176,255,0.06));
+      border: 1px solid rgba(0,230,118,0.15); border-radius: 14px;
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .welcome-bar h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .welcome-bar p { font-size: 0.82rem; color: var(--text-muted); }
+    .welcome-bar .vehicle-badge {
+      padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.78rem;
+      font-weight: 600; background: var(--surface2); color: var(--accent);
+      border: 1px solid rgba(0,230,118,0.2);
+    }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.85rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--surface2);
+      border-radius: 12px; padding: 1.1rem; transition: all 0.2s;
+    }
+    .stat-card:hover { border-color: rgba(0,230,118,0.2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+    .stat-card .stat-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+    .stat-card .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 0.15rem; }
+    .stat-card .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    @media(max-width:768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .panel-card {
+      background: var(--surface); border: 1px solid var(--surface2);
+      border-radius: 12px; padding: 1.25rem; overflow: hidden;
+    }
+    .panel-card h3 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--text-muted); margin-bottom: 1rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--surface2);
+    }
+
+    .activity-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .activity-item:last-child { border: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .activity-dot.confirmed { background: var(--accent); }
+    .activity-dot.cancelled { background: var(--danger); }
+    .activity-info { flex: 1; }
+    .activity-info .port-name { font-size: 0.85rem; font-weight: 600; }
+    .activity-info .time { font-size: 0.75rem; color: var(--text-muted); }
+
+    .battery-bar-wrap {
+      background: var(--surface2); border-radius: 8px; height: 12px;
+      overflow: hidden; margin-top: 0.5rem;
+    }
+    .battery-bar-fill {
+      height: 100%; border-radius: 8px; transition: width 1s ease;
+    }
+
+    .notif-list { max-height: 300px; overflow-y: auto; }
+    .notif-item {
+      padding: 0.6rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.82rem; display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .notif-item.unread { background: rgba(0,230,118,0.04); border-radius: 6px; }
+    .notif-item .notif-icon { font-size: 1rem; flex-shrink: 0; }
+    .notif-item .notif-text { flex: 1; }
+    .notif-item .notif-title { font-weight: 600; font-size: 0.82rem; }
+    .notif-item .notif-msg { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .notif-item .notif-time { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    .fav-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .fav-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 0.6rem; background: var(--surface2); border-radius: 8px;
+      font-size: 0.83rem; cursor: pointer; transition: all 0.15s;
+    }
+    .fav-item:hover { border-color: var(--accent); background: rgba(0,230,118,0.04); }
+    .fav-item .fav-name { font-weight: 600; }
+    .fav-item .fav-city { font-size: 0.72rem; color: var(--text-muted); }
+
+    .empty-state { text-align: center; color: var(--text-muted); padding: 1.5rem; font-size: 0.85rem; }
+    .empty-state .icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+
+    .chart-wrap { position: relative; height: 200px; }
+  </style>
+</head>
+<body>
+
+<div class="dash-header">
+  <h1>⚡ Valence</h1>
+  <div class="nav-links">
+    <a href="/dashboard.html" class="active">📊 Dashboard</a>
+    <a href="/">🗺 Map</a>
+    <a href="/history.html">⚡ History</a>
+    <a href="#" id="btn-logout">🚪 Logout</a>
+  </div>
+</div>
+
+<div class="dash-container">
+
+  <!-- Welcome Bar -->
+  <div class="welcome-bar">
+    <div>
+      <h2 id="welcome-name">Welcome!</h2>
+      <p id="welcome-sub">Here's your charging overview</p>
+    </div>
+    <div class="vehicle-badge" id="vehicle-badge">—</div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid" id="stats-grid">
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="s-total-res">—</div><div class="stat-label">Total Bookings</div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-value" id="s-active-res">—</div><div class="stat-label">Active Bookings</div></div>
+    <div class="stat-card"><div class="stat-icon">📍</div><div class="stat-value" id="s-nearby">—</div><div class="stat-label">Stations in Range</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="s-reviews">—</div><div class="stat-label">Reviews Given</div></div>
+    <div class="stat-card"><div class="stat-icon">🔖</div><div class="stat-value" id="s-favs">—</div><div class="stat-label">Favorite Stations</div></div>
+    <div class="stat-card">
+      <div class="stat-icon">🔋</div>
+      <div class="stat-value" id="s-battery">—</div>
+      <div class="stat-label">Battery Health</div>
+      <div class="battery-bar-wrap"><div class="battery-bar-fill" id="battery-bar" style="width:0%;background:#00e676;"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-value" id="s-sessions">—</div>
+      <div class="stat-label">Charging Sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔌</div>
+      <div class="stat-value" id="s-energy">—</div>
+      <div class="stat-label">Energy Consumed (kWh)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-value" id="s-spent">—</div>
+      <div class="stat-label">Total Spent (₹)</div>
+    </div>
+  </div>
+
+  <!-- ── Wallet Section (Month 3) ── -->
+  <div class="panel-card" style="margin-bottom: 1.5rem;">
+    <h3>💰 My Wallet</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+      <!-- Balance -->
+      <div style="background: linear-gradient(135deg, rgba(0,230,118,0.1), rgba(0,176,255,0.08)); border: 1px solid rgba(0,230,118,0.2); border-radius: 12px; padding: 1.25rem; text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem;">Balance</div>
+        <div id="wallet-balance" style="font-size: 1.8rem; font-weight: 800; color: var(--accent);">₹0</div>
+      </div>
+      <!-- Top Up -->
+      <div style="background: var(--surface2); border-radius: 12px; padding: 1rem;">
+        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Add Money</div>
+        <div style="display: flex; gap: 0.3rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-small" onclick="quickTopup(100)" style="font-size: 0.72rem;">+₹100</button>
+          <button class="btn btn-small" onclick="quickTopup(500)" style="font-size: 0.72rem;">+₹500</button>
+          <button class="btn btn-small" onclick="quickTopup(1000)" style="font-size: 0.72rem;">+₹1000</button>
+        </div>
+        <div style="display: flex; gap: 0.3rem;">
+          <input type="number" id="topup-amount" placeholder="Amount" min="10" max="10000" style="flex: 1; padding: 0.35rem 0.5rem; background: var(--bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: var(--text); font-size: 0.8rem;" />
+          <button class="btn btn-primary btn-small" onclick="customTopup()" style="font-size: 0.72rem;">Add</button>
+        </div>
+      </div>
+      <!-- Promo Code -->
+      <div style="background: var(--surface2); border-radius: 12px; padding: 1rem;">
+        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Promo Code</div>
+        <div style="display: flex; gap: 0.3rem;">
+          <input type="text" id="promo-code" placeholder="Enter code" style="flex: 1; padding: 0.35rem 0.5rem; background: var(--bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: var(--text); font-size: 0.8rem; text-transform: uppercase;" />
+          <button class="btn btn-primary btn-small" onclick="applyPromo()" style="font-size: 0.72rem;">Apply</button>
+        </div>
+        <div id="promo-result" style="font-size: 0.72rem; margin-top: 0.4rem; color: var(--accent); display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Monthly Summary -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+      <div style="background: var(--surface2); border-radius: 8px; padding: 0.5rem; text-align: center;">
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">This Month Spent</div>
+        <div id="month-spent" style="font-size: 1rem; font-weight: 700; color: #ff5252;">₹0</div>
+      </div>
+      <div style="background: var(--surface2); border-radius: 8px; padding: 0.5rem; text-align: center;">
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Top-ups</div>
+        <div id="month-topups" style="font-size: 1rem; font-weight: 700; color: #00e676;">₹0</div>
+      </div>
+      <div style="background: var(--surface2); border-radius: 8px; padding: 0.5rem; text-align: center;">
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Refunds</div>
+        <div id="month-refunds" style="font-size: 1rem; font-weight: 700; color: #00b0ff;">₹0</div>
+      </div>
+      <div style="background: var(--surface2); border-radius: 8px; padding: 0.5rem; text-align: center;">
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Transactions</div>
+        <div id="month-txns" style="font-size: 1rem; font-weight: 700;">0</div>
+      </div>
+    </div>
+
+    <!-- Transaction History -->
+    <h4 style="font-size: 0.82rem; margin-bottom: 0.5rem; color: var(--text-muted);">Recent Transactions</h4>
+    <div id="txn-list" style="max-height: 200px; overflow-y: auto;">
+      <div class="empty-state" style="padding: 1rem;"><div class="icon">💳</div>No transactions yet</div>
+    </div>
+  </div>
+  <!-- Two Column Panels -->
+  <div class="grid-2">
+    <!-- Recent Activity -->
+    <div class="panel-card">
+      <h3>📋 Recent Activity</h3>
+      <div id="recent-activity">
+        <div class="empty-state"><div class="icon">📋</div>Loading…</div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="panel-card">
+      <h3>🔔 Notifications <span id="notif-badge" style="background:var(--accent);color:#000;font-size:0.7rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:0.4rem;display:none;"></span></h3>
+      <div id="notif-list" class="notif-list">
+        <div class="empty-state"><div class="icon">🔔</div>Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Favorite Stations -->
+    <div class="panel-card">
+      <h3>🔖 Favorite Stations</h3>
+      <div id="fav-list" class="fav-list">
+        <div class="empty-state"><div class="icon">🔖</div>Loading…</div>
+      </div>
+    </div>
+
+    <!-- Reservation History Chart -->
+    <div class="panel-card">
+      <h3>📈 Your Booking Breakdown</h3>
+      <div class="chart-wrap"><canvas id="chart-bookings"></canvas></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Custom Alert Modal (replaces browser alert) -->
+<div id="dash-alert-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:none;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border:1px solid var(--surface2);border-radius:14px;padding:1.5rem;max-width:340px;width:90%;text-align:center;">
+    <div id="dash-alert-icon" style="font-size:2.5rem;margin-bottom:0.5rem;">ℹ️</div>
+    <h3 id="dash-alert-title" style="margin-bottom:0.5rem;">Notification</h3>
+    <p id="dash-alert-msg" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;"></p>
+    <button class="btn btn-primary" onclick="document.getElementById('dash-alert-modal').style.display='none'" style="padding:0.5rem 2rem;border-radius:8px;border:none;background:var(--accent);color:#000;font-weight:700;cursor:pointer;">OK</button>
+  </div>
+</div>
+
+<script>
+  // Override alert() — no more "localhost says" popups
+  window.alert = function(msg) {
+    const modal = document.getElementById('dash-alert-modal');
+    const msgEl = document.getElementById('dash-alert-msg');
+    const iconEl = document.getElementById('dash-alert-icon');
+    if (modal && msgEl) {
+      iconEl.textContent = (msg.includes('Error') || msg.includes('fail')) ? '⚠️' : msg.includes('success') ? '✅' : 'ℹ️';
+      msgEl.textContent = msg;
+      modal.style.display = 'flex';
+    }
+  };
+
+  const API = window.location.origin + '/api';
+  const token = localStorage.getItem('valence_token');
+  let currentUser = null;
+  try { currentUser = JSON.parse(localStorage.getItem('valence_user') || 'null'); } catch(_) {}
+  if (!token || !currentUser) { window.location.href = '/login.html'; }
+
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+  }
+
+  function timeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return mins + 'm ago';
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    const days = Math.floor(hrs / 24);
+    return days + 'd ago';
+  }
+
+  // Logout
+  document.getElementById('btn-logout').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try { await fetch(API + '/auth/logout', { method: 'POST', headers: authHeaders() }); } catch(_) {}
+    localStorage.removeItem('valence_token');
+    localStorage.removeItem('valence_user');
+    window.location.href = '/login.html';
+  });
+
+  async function loadDashboard() {
+    try {
+      // Welcome bar
+      document.getElementById('welcome-name').textContent = `Welcome, ${currentUser.name || currentUser.username}!`;
+      const veh = currentUser.vehicleModel || currentUser.vehicleType || 'EV';
+      document.getElementById('vehicle-badge').textContent = `🚗 ${veh} • ${currentUser.batteryRangeKm || '?'} km range`;
+
+      // Dashboard stats
+      const dashRes = await fetch(API + '/dashboard', { headers: authHeaders() });
+      const dash = await dashRes.json();
+
+      document.getElementById('s-total-res').textContent = dash.totalReservations || 0;
+      document.getElementById('s-active-res').textContent = dash.activeReservations || 0;
+      document.getElementById('s-nearby').textContent = dash.nearbyStations || 0;
+      document.getElementById('s-reviews').textContent = dash.totalReviews || 0;
+      document.getElementById('s-favs').textContent = dash.favoriteStations || 0;
+
+      const bh = dash.batteryHealth || 100;
+      document.getElementById('s-battery').textContent = bh + '%';
+      const bar = document.getElementById('battery-bar');
+      bar.style.width = bh + '%';
+      bar.style.background = bh > 70 ? '#00e676' : bh > 40 ? '#ffab00' : '#ff5252';
+
+      // Charging session stats (Month 2)
+      document.getElementById('s-sessions').textContent = dash.totalSessions || 0;
+      document.getElementById('s-energy').textContent = dash.totalEnergyKwh || 0;
+      document.getElementById('s-spent').textContent = '₹' + (dash.totalSpentINR || 0);
+
+      // Recent activity
+      const actEl = document.getElementById('recent-activity');
+      if (dash.recentReservations && dash.recentReservations.length > 0) {
+        actEl.innerHTML = dash.recentReservations.map(r => `
+          <div class="activity-item">
+            <div class="activity-dot ${r.status}"></div>
+            <div class="activity-info">
+              <div class="port-name">Port: ${r.portId}</div>
+              <div class="time">${new Date(r.startTime).toLocaleString()} • ${r.status}</div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        actEl.innerHTML = '<div class="empty-state"><div class="icon">📋</div>No recent bookings</div>';
+      }
+
+      // Booking breakdown chart
+      const total = dash.totalReservations || 0;
+      const active = dash.activeReservations || 0;
+      const cancelled = dash.cancelledReservations || 0;
+      const completed = Math.max(0, total - active - cancelled);
+
+      if (total > 0) {
+        new Chart(document.getElementById('chart-bookings'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Active', 'Completed', 'Cancelled'],
+            datasets: [{
+              data: [active, completed, cancelled],
+              backgroundColor: ['#00e676', '#00b0ff', '#ff5252'],
+              borderWidth: 0,
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#6b7fa3', font: { size: 11 } } }
+            }
+          }
+        });
+      } else {
+        document.getElementById('chart-bookings').parentElement.innerHTML =
+          '<div class="empty-state"><div class="icon">📈</div>Make your first booking to see stats</div>';
+      }
+
+      // Notifications
+      const notifRes = await fetch(API + '/notifications', { headers: authHeaders() });
+      const notifData = await notifRes.json();
+      const notifEl = document.getElementById('notif-list');
+      const badge = document.getElementById('notif-badge');
+
+      if (notifData.unreadCount > 0) {
+        badge.textContent = notifData.unreadCount;
+        badge.style.display = 'inline';
+      }
+
+      if (notifData.notifications && notifData.notifications.length > 0) {
+        notifEl.innerHTML = notifData.notifications.slice(0, 10).map(n => `
+          <div class="notif-item ${n.read ? '' : 'unread'}">
+            <div class="notif-icon">${n.type === 'reservation_confirmed' ? '✅' : n.type === 'reservation_cancelled' ? '❌' : n.type === 'review_posted' ? '⭐' : n.type === 'station_added' ? '📍' : '🔔'}</div>
+            <div class="notif-text">
+              <div class="notif-title">${n.title}</div>
+              <div class="notif-msg">${n.message}</div>
+              <div class="notif-time">${timeAgo(n.createdAt)}</div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        notifEl.innerHTML = '<div class="empty-state"><div class="icon">🔔</div>No notifications yet</div>';
+      }
+
+      // Mark all as read
+      if (notifData.unreadCount > 0) {
+        await fetch(API + '/notifications/read-all', { method: 'PUT', headers: authHeaders() });
+      }
+
+      // Favorites
+      const favRes = await fetch(API + '/favorites', { headers: authHeaders() });
+      const favs = await favRes.json();
+      const favEl = document.getElementById('fav-list');
+
+      if (favs && favs.length > 0) {
+        favEl.innerHTML = favs.map(s => `
+          <div class="fav-item" onclick="window.location.href='/'">
+            <div>
+              <div class="fav-name">⚡ ${s.name}</div>
+              <div class="fav-city">${s.city || s.address}</div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        favEl.innerHTML = '<div class="empty-state"><div class="icon">🔖</div>No favorites yet. Star stations from the map!</div>';
+      }
+
+    } catch(e) {
+      console.error('Dashboard error:', e);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  WALLET FUNCTIONS (Month 3)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  async function loadWallet() {
+    try {
+      // Balance
+      const balRes = await fetch(API + '/wallet/balance', { headers: authHeaders() });
+      if (balRes.ok) {
+        const bal = await balRes.json();
+        document.getElementById('wallet-balance').textContent = '₹' + (bal.balance || 0);
+      }
+
+      // Monthly summary
+      const sumRes = await fetch(API + '/wallet/summary', { headers: authHeaders() });
+      if (sumRes.ok) {
+        const sum = await sumRes.json();
+        const ms = sum.monthlyStats || {};
+        document.getElementById('month-spent').textContent = '₹' + (ms.chargingSpent || 0);
+        document.getElementById('month-topups').textContent = '₹' + (ms.topups || 0);
+        document.getElementById('month-refunds').textContent = '₹' + (ms.refunds || 0);
+        document.getElementById('month-txns').textContent = ms.transactionCount || 0;
+      }
+
+      // Transaction history
+      const txnRes = await fetch(API + '/wallet/transactions?limit=10', { headers: authHeaders() });
+      if (txnRes.ok) {
+        const txnData = await txnRes.json();
+        const txnEl = document.getElementById('txn-list');
+        if (txnData.transactions && txnData.transactions.length > 0) {
+          txnEl.innerHTML = txnData.transactions.map(t => {
+            const isCredit = t.direction === 'credit';
+            const icon = t.type === 'topup' ? '💳' : t.type === 'charging_debit' ? '⚡' : t.type === 'refund' ? '↩️' : t.type === 'promo_credit' ? '🎁' : '📋';
+            return `
+              <div style="display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-size: 1.1rem;">${icon}</span>
+                <div style="flex: 1;">
+                  <div style="font-size: 0.8rem; font-weight: 600;">${t.description || t.type}</div>
+                  <div style="font-size: 0.68rem; color: var(--text-muted);">${timeAgo(t.createdAt)}</div>
+                </div>
+                <div style="font-weight: 700; font-size: 0.85rem; color: ${isCredit ? '#00e676' : '#ff5252'};">
+                  ${isCredit ? '+' : '-'}₹${t.amount}
+                </div>
+              </div>`;
+          }).join('');
+        }
+      }
+    } catch (e) {
+      console.error('Wallet load error:', e);
+    }
+  }
+
+  async function quickTopup(amount) {
+    try {
+      const res = await fetch(API + '/wallet/topup', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ amount, paymentMethod: 'upi' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'Top-up failed'); return; }
+      document.getElementById('wallet-balance').textContent = '₹' + data.balance;
+      loadWallet(); // Refresh all wallet data
+    } catch (e) {
+      alert('Top-up failed: ' + e.message);
+    }
+  }
+  window.quickTopup = quickTopup;
+
+  async function customTopup() {
+    const input = document.getElementById('topup-amount');
+    const amount = parseFloat(input.value);
+    if (!amount || amount < 10 || amount > 10000) {
+      alert('Enter an amount between ₹10 and ₹10,000');
+      return;
+    }
+    await quickTopup(amount);
+    input.value = '';
+  }
+  window.customTopup = customTopup;
+
+  async function applyPromo() {
+    const input = document.getElementById('promo-code');
+    const code = input.value.trim();
+    if (!code) { alert('Enter a promo code'); return; }
+
+    const resultEl = document.getElementById('promo-result');
+    try {
+      const res = await fetch(API + '/wallet/apply-promo', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        resultEl.style.display = 'block';
+        resultEl.style.color = '#ff5252';
+        resultEl.textContent = data.error || 'Invalid code';
+        return;
+      }
+      resultEl.style.display = 'block';
+      resultEl.style.color = 'var(--accent)';
+      resultEl.textContent = data.message;
+      document.getElementById('wallet-balance').textContent = '₹' + data.balance;
+      input.value = '';
+      loadWallet();
+    } catch (e) {
+      resultEl.style.display = 'block';
+      resultEl.style.color = '#ff5252';
+      resultEl.textContent = 'Error: ' + e.message;
+    }
+  }
+  window.applyPromo = applyPromo;
+
+  loadDashboard();
+  loadWallet();
+</script>
+</body>
+</html>

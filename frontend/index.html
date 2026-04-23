@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Valence — Find EV charging stations, reserve slots, track charging sessions, and manage your wallet. Smart EV charging platform.">
+  <meta name="theme-color" content="#00e676">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Valence">
+  <link rel="manifest" href="/manifest.json">
+  <title>Valence – EV Charging Locator & Slot Management</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Nav Tabs ─────────────────────────────── */
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0.6rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--surface2);
+    }
+    .nav-tab {
+      padding: 0.45rem 1.1rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: all 0.18s;
+    }
+    .nav-tab:hover { background: var(--surface2); color: var(--text); }
+    .nav-tab.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    /* ── Stations Tab Panel ───────────────────── */
+    #stations-tab-panel {
+      display: none;
+      flex: 1;
+      overflow: hidden;
+    }
+    #stations-tab-panel.active { display: flex; }
+
+    .stations-full-list {
+      width: 320px;
+      min-width: 260px;
+      background: var(--surface);
+      border-right: 1px solid var(--surface2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sfl-header {
+      padding: 0.85rem 1rem 0.6rem;
+      border-bottom: 1px solid var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .sfl-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .sfl-count {
+      background: var(--accent);
+      color: #000;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+    }
+
+    .sfl-search {
+      padding: 0.5rem 0.8rem;
+      border-bottom: 1px solid var(--surface2);
+      flex-shrink: 0;
+    }
+
+    .sfl-search input {
+      width: 100%;
+      padding: 0.45rem 0.7rem;
+      background: var(--bg);
+      border: 1px solid var(--surface2);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.83rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .sfl-search input:focus { border-color: var(--accent); }
+    .sfl-search input::placeholder { color: var(--text-muted); }
+
+    .sfl-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .sfl-item {
+      padding: 0.65rem 0.8rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .sfl-item:hover { border-color: var(--accent-dim); }
+
+    .sfl-item-name {
+      font-size: 0.87rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sfl-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .sfl-operator {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.06);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .sfl-city {
+      font-size: 0.72rem;
+      color: var(--accent);
+    }
+
+    /* ── Station Detail Right Pane ──────────────── */
+    .sfl-detail {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      background: var(--bg);
+    }
+
+    .sfl-detail-placeholder {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .sfl-detail-placeholder .icon { font-size: 2.5rem; }
+
+    .sfl-detail-card {
+      max-width: 540px;
+    }
+
+    .sfl-detail-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+
+    .sfl-detail-address {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .sfl-detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tag {
+      padding: 0.25rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.77rem;
+      font-weight: 600;
+    }
+    .tag-operator { background: rgba(0,176,255,0.15); color: #00b0ff; }
+    .tag-city     { background: rgba(0,230,118,0.12); color: var(--accent); }
+    .tag-state    { background: rgba(255,255,255,0.07); color: var(--text-muted); }
+    .tag-coord    { background: rgba(255,171,0,0.12); color: #ffab00; font-family: monospace; }
+
+    .sfl-detail-section { margin-top: 1.25rem; }
+    .sfl-detail-section h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--surface2);
+    }
+
+    .port-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .port-card {
+      background: var(--surface);
+      border: 1px solid var(--surface2);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+
+    .port-card-type {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .port-card-power {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .port-card-power span {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .port-status {
+      font-size: 0.72rem;
+      margin-top: 0.3rem;
+      font-weight: 600;
+    }
+    .port-status.free     { color: var(--accent); }
+    .port-status.occupied { color: var(--danger); }
+    .port-status.defective{ color: var(--text-muted); }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>Valence</h1>
+      <p class="tagline">Smart EV Charging Station Locator & Slot Management</p>
+    </div>
+    <div class="header-right">
+      <div style="text-align:right; margin-right:0.25rem;">
+        <div id="header-fullname" style="font-size:0.9rem; font-weight:600; color:var(--text);"></div>
+        <div id="header-username" style="font-size:0.75rem; color:var(--text-muted);"></div>
+      </div>
+      <a href="#" id="btn-profile" class="btn btn-small btn-secondary">Profile</a>
+      <a href="#" id="btn-admin" class="btn btn-small btn-secondary" style="display:none;">Admin</a>
+      <a href="#" id="btn-logout" class="btn btn-small btn-secondary">Logout</a>
+    </div>
+  </header>
+
+  <!-- ── Nav Tabs ── -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="navtab-map"      onclick="switchNavTab('map')">🗺 Map</button>
+    <button class="nav-tab"        id="navtab-stations" onclick="switchNavTab('stations')">📍 Stations</button>
+  </div>
+
+  <!-- ── MAP TAB ── -->
+  <main class="main" id="map-tab-panel">
+    <aside class="panel">
+      <section class="panel-section range-section">
+        <h2>Battery range</h2>
+        <p class="hint">Enter your current range (km) to see stations within reach.</p>
+        <div class="range-row">
+          <input type="number" id="input-range-km" min="1" max="9990" placeholder="e.g. 80" />
+          <button type="button" class="btn btn-primary" id="btn-locate">Locate stations</button>
+          <button type="button" class="btn btn-secondary" id="btn-my-location" style="margin-left: 0.5rem;"
+            title="Use my current location">📍</button>
+        </div>
+      </section>
+      <section class="panel-section trip-planner-section">
+        <h2>Trip Planner</h2>
+        <p class="hint">Going somewhere far? Plan your charging stops.</p>
+        <button type="button" class="btn btn-secondary" id="btn-open-trip" style="width:100%;">Plan Long Trip</button>
+      </section>
+      <section class="panel-section" style="display:none">
+        <h2>Stations <span id="station-count"></span></h2>
+        <div id="station-list" class="station-list"></div>
+      </section>
+      <section class="panel-section detail-panel" id="detail-panel" hidden>
+        <h2 id="detail-title">Station details</h2>
+        <div id="detail-body"></div>
+        <div class="actions" style="display:none;"></div>
+      </section>
+      <section class="panel-section">
+        <h2>My reservations</h2>
+        <div id="reservations-list" class="reservations-list"></div>
+      </section>
+      <section class="panel-section">
+        <button type="button" class="btn btn-secondary" id="btn-add-station">+ Add charging station</button>
+      </section>
+    </aside>
+    <div id="map" class="map"></div>
+  </main>
+
+  <!-- ── STATIONS TAB ── -->
+  <div id="stations-tab-panel">
+
+    <!-- Left: full list -->
+    <div class="stations-full-list">
+      <div class="sfl-header">
+        <span class="sfl-title">All Stations</span>
+        <span class="sfl-count" id="sfl-count">—</span>
+      </div>
+      <div class="sfl-search">
+        <input type="text" id="sfl-search-input" placeholder="🔍  Search by name, city, operator…" oninput="filterStationsList()" />
+      </div>
+      <div class="sfl-list" id="sfl-list"></div>
+      <!-- Pagination -->
+      <div id="sfl-pagination" style="
+        display:flex; align-items:center; justify-content:space-between;
+        padding:0.6rem 0.75rem; border-top:1px solid var(--surface2);
+        flex-shrink:0; gap:0.4rem;
+      ">
+        <button id="sfl-prev" onclick="sflChangePage(-1)" style="
+          padding:0.35rem 0.75rem; border-radius:7px; border:1px solid var(--surface2);
+          background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.82rem;
+          font-family:inherit; transition:all 0.15s;
+        ">‹ Prev</button>
+        <span id="sfl-page-info" style="font-size:0.78rem; color:var(--text-muted);"></span>
+        <button id="sfl-next" onclick="sflChangePage(1)" style="
+          padding:0.35rem 0.75rem; border-radius:7px; border:1px solid var(--surface2);
+          background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.82rem;
+          font-family:inherit; transition:all 0.15s;
+        ">Next ›</button>
+      </div>
+    </div>
+
+    <!-- Right: detail -->
+    <div class="sfl-detail" id="sfl-detail">
+      <div class="sfl-detail-placeholder">
+        <div class="icon">⚡</div>
+        <div>Click a station on the left to see its details</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3 id="modal-title">Reserve a slot</h3>
+      <div id="modal-body"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="modal-cancel"
+          onclick="window.voltPathCloseModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="modal-confirm"
+          onclick="window.voltPathReserve()">Reserve</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-profile" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Profile & vehicle</h3>
+      <div id="profile-form-body"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="window.voltPathCloseProfile()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="profile-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-add-station" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Add charging station</h3>
+      <div id="add-station-form-body"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="window.voltPathCloseAddStation()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="add-station-submit">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-trip" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h3>Plan Long Trip</h3>
+      <div id="trip-body">
+        <p>1. Enter your battery range (km).</p>
+        <p>2. Enter your Start Location.</p>
+        <p>3. Enter your End Location.</p>
+        <p>4. We will calculate the route and suggest charging stops.</p>
+        <div style="margin-top: 1rem;">
+          <label>Battery Range (km)</label>
+          <input type="number" id="trip-range" value="80" min="50" style="width: 100%; box-sizing: border-box;" />
+          <span id="trip-range-warning" style="display:none; color:var(--danger); font-size:0.75rem; margin-top:0.25rem;">Minimum range for long trips is 50 km.</span>
+        </div>
+        <div style="margin-top: 1rem;">
+          <label>Start Location</label>
+          <div style="display:flex; gap: 0.5rem; width:100%;">
+            <input type="text" id="trip-start-text" placeholder="e.g. Bangalore" style="flex:1; box-sizing: border-box;" />
+            <button type="button" class="btn btn-secondary" id="btn-use-my-loc-trip" title="Use My Location" style="padding: 0 0.75rem;">📍</button>
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <label>End Location</label>
+          <input type="text" id="trip-end-text" placeholder="e.g. Mysore" style="width: 100%; box-sizing: border-box;" />
+        </div>
+        <div style="margin-top: 1.5rem; text-align: center;">
+          <button class="btn btn-primary" id="btn-calc-trip-route" style="width: 100%;">Calculate Trip</button>
+        </div>
+        <div id="trip-loading" style="display:none; text-align:center; margin-top:1rem;">Calculating...</div>
+        <div id="trip-results" style="margin-top: 1rem; display: none;">
+          <h4>Trip Plan</h4>
+          <div id="trip-stops-list"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="btn-navigate-trip" style="display:none;">Navigate Route</button>
+        <button type="button" class="btn btn-secondary" onclick="window.voltPathCloseTrip()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Custom Confirm Cancel Modal ── -->
+  <div id="modal-confirm-cancel" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⚠️</div>
+      <h3 style="margin-bottom: 0.5rem;">Cancel Reservation?</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Are you sure you want to cancel this slot? This action cannot be undone.
+      </p>
+      <div class="modal-actions" style="justify-content: center;">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-confirm-cancel').style.display='none'; document.body.classList.remove('modal-open');">No, Keep It</button>
+        <button type="button" class="btn btn-primary" id="btn-confirm-cancel" style="background: var(--danger); color: white;">Yes, Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Custom Success Modal ── -->
+  <div id="modal-success-reserve" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
+      <h3 style="margin-bottom: 0.5rem; color: var(--accent);">Reservation Confirmed!</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Your charging slot has been successfully booked. You can view and manage it under "My reservations" on the side panel.
+      </p>
+      <div class="modal-actions" style="justify-content: center;">
+        <button type="button" class="btn btn-primary" onclick="document.getElementById('modal-success-reserve').style.display='none'; document.body.classList.remove('modal-open');">Awesome!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Custom Alert Modal ── -->
+  <div id="modal-custom-alert" class="modal" style="display: none; z-index: 9999;">
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" id="custom-alert-icon">ℹ️</div>
+      <h3 style="margin-bottom: 0.5rem;" id="custom-alert-title">Notification</h3>
+      <p id="custom-alert-message" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Alert message
+      </p>
+      <div class="modal-actions" style="justify-content: center;">
+        <button type="button" class="btn btn-primary" onclick="window.closeCustomAlert()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Charging Session Modal ── -->
+  <div id="modal-charging" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+      <div id="charging-modal-body">
+        <!-- Start Charging Form -->
+        <div id="charging-start-form">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⚡</div>
+          <h3 style="margin-bottom: 0.25rem; color: var(--accent);">Start Charging</h3>
+          <p id="charging-port-info" style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 1rem;"></p>
+
+          <label style="font-size: 0.82rem; color: var(--text-muted); display: block; text-align: left;">Duration (minutes)</label>
+          <input type="number" id="charging-duration" value="30" min="5" max="180" style="margin-bottom: 0.5rem;" />
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div>
+              <label style="font-size: 0.82rem; color: var(--text-muted); display: block; text-align: left;">Current Battery %</label>
+              <input type="number" id="charging-battery-start" value="20" min="0" max="99" />
+            </div>
+            <div>
+              <label style="font-size: 0.82rem; color: var(--text-muted); display: block; text-align: left;">Target Battery %</label>
+              <input type="number" id="charging-battery-target" value="80" min="1" max="100" />
+            </div>
+          </div>
+
+          <div id="charging-cost-preview" style="background: var(--surface2); border-radius: 8px; padding: 0.75rem; margin: 0.75rem 0; font-size: 0.85rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+              <span style="color: var(--text-muted);">Est. Energy:</span>
+              <span id="preview-energy" style="font-weight: 600;">—</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-muted);">Est. Cost:</span>
+              <span id="preview-cost" style="font-weight: 600; color: var(--accent);">—</span>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="justify-content: center; gap: 0.5rem;">
+            <button type="button" class="btn btn-secondary" onclick="closeChargingModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btn-start-charging">⚡ Start Charging</button>
+          </div>
+        </div>
+
+        <!-- Active Charging Progress -->
+        <div id="charging-progress-view" style="display: none;">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;" id="charging-progress-icon">⚡</div>
+          <h3 style="margin-bottom: 0.25rem; color: var(--accent);" id="charging-progress-title">Charging in Progress...</h3>
+          <p id="charging-progress-port" style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 1rem;"></p>
+
+          <!-- Progress Bar -->
+          <div style="background: var(--surface2); border-radius: 10px; height: 20px; overflow: hidden; margin-bottom: 0.75rem; position: relative;">
+            <div id="charging-bar" style="height: 100%; border-radius: 10px; background: linear-gradient(90deg, #00e676, #00b0ff); width: 0%; transition: width 0.5s ease;"></div>
+            <span id="charging-bar-label" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.72rem; font-weight: 700; color: #000;">0%</span>
+          </div>
+
+          <!-- Live Stats -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <div style="background: var(--surface2); border-radius: 8px; padding: 0.6rem;">
+              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Energy</div>
+              <div id="live-energy" style="font-size: 1.1rem; font-weight: 700; color: var(--accent);">0 kWh</div>
+            </div>
+            <div style="background: var(--surface2); border-radius: 8px; padding: 0.6rem;">
+              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Cost</div>
+              <div id="live-cost" style="font-size: 1.1rem; font-weight: 700; color: var(--accent);">₹0</div>
+            </div>
+            <div style="background: var(--surface2); border-radius: 8px; padding: 0.6rem;">
+              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Battery</div>
+              <div id="live-battery" style="font-size: 1.1rem; font-weight: 700;">20%</div>
+            </div>
+            <div style="background: var(--surface2); border-radius: 8px; padding: 0.6rem;">
+              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Remaining</div>
+              <div id="live-remaining" style="font-size: 1.1rem; font-weight: 700;">— min</div>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="justify-content: center; gap: 0.5rem;">
+            <button type="button" class="btn btn-secondary" onclick="closeChargingModal()">Minimize</button>
+            <button type="button" class="btn btn-primary" id="btn-stop-charging" style="background: var(--danger); color: white;">⏹ Stop Charging</button>
+          </div>
+        </div>
+
+        <!-- Charging Complete -->
+        <div id="charging-complete-view" style="display: none;">
+          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
+          <h3 style="margin-bottom: 0.5rem; color: var(--accent);">Charging Complete!</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 1rem 0;">
+            <div style="background: var(--surface2); border-radius: 8px; padding: 0.6rem;">
+              <div style="font-size: 0.7rem; color: var(--text-muted);">ENERGY</div>
+              <div id="complete-energy" style="font-size: 1.1rem; font-weight: 700; color: var(--accent);">0 kWh</div>
+            </div>
+            <div style="background: var(--surface2); border-radius: 8px; padding: 0.6rem;">
+              <div style="font-size: 0.7rem; color: var(--text-muted);">TOTAL COST</div>
+              <div id="complete-cost" style="font-size: 1.1rem; font-weight: 700; color: var(--accent);">₹0</div>
+            </div>
+          </div>
+          <div class="modal-actions" style="justify-content: center;">
+            <button type="button" class="btn btn-primary" onclick="closeChargingModal()">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Floating Active Session Indicator ── -->
+  <div id="floating-session" style="display: none; position: fixed; bottom: 24px; right: 24px; z-index: 9998; background: linear-gradient(135deg, rgba(0,230,118,0.15), rgba(0,176,255,0.1)); border: 1px solid rgba(0,230,118,0.3); border-radius: 16px; padding: 0.75rem 1.25rem; cursor: pointer; box-shadow: 0 8px 32px rgba(0,0,0,0.4); backdrop-filter: blur(10px); transition: all 0.3s; min-width: 200px;" onclick="openChargingProgress()">
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <div style="font-size: 1.3rem; animation: pulse 2s infinite;">⚡</div>
+      <div>
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--accent);">Charging Active</div>
+        <div style="display: flex; gap: 0.75rem; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem;">
+          <span id="float-progress">0%</span>
+          <span id="float-energy">0 kWh</span>
+          <span id="float-cost">₹0</span>
+        </div>
+      </div>
+    </div>
+    <div style="background: var(--surface2); border-radius: 6px; height: 4px; margin-top: 0.5rem; overflow: hidden;">
+      <div id="float-bar" style="height: 100%; border-radius: 6px; background: linear-gradient(90deg, #00e676, #00b0ff); width: 0%; transition: width 0.5s ease;"></div>
+    </div>
+  </div>
+
+  <!-- ── Toast Container ── -->
+  <div id="toast-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('⚙️ Service Worker registered', reg.scope))
+        .catch(err => console.log('SW registration failed:', err));
+    }
+  </script>
+</body>
+
+</html>

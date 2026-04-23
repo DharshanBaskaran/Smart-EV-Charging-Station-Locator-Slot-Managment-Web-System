@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Valence — Your charging session history, invoices, and energy consumption data.">
+  <meta name="theme-color" content="#00e676">
+  <link rel="manifest" href="/manifest.json">
+  <title>Valence — Charging History</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .history-container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .history-header h1 { font-size: 1.4rem; font-weight: 800; }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 0.85rem; }
+    .back-link:hover { text-decoration: underline; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .summary-card { background: var(--surface); border-radius: 12px; padding: 1rem; text-align: center; border: 1px solid var(--surface2); }
+    .summary-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem; }
+    .summary-value { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+
+    .session-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .session-card {
+      background: var(--surface);
+      border: 1px solid var(--surface2);
+      border-radius: 12px;
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .session-card:hover { border-color: rgba(0,230,118,0.3); }
+
+    .session-icon { font-size: 1.8rem; }
+    .session-status {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .session-status.completed { background: rgba(0,230,118,0.15); color: #00e676; }
+    .session-status.charging { background: rgba(0,176,255,0.15); color: #00b0ff; }
+    .session-status.cancelled { background: rgba(255,82,82,0.15); color: #ff5252; }
+    .session-status.failed { background: rgba(255,171,0,0.15); color: #ffab00; }
+
+    .session-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+    .session-cost { font-size: 1.15rem; font-weight: 700; color: var(--accent); text-align: right; }
+    .session-energy { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
+
+    .invoice-btn {
+      margin-top: 0.4rem;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.68rem;
+      border-radius: 5px;
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .invoice-btn:hover { background: var(--accent); color: #000; }
+
+    .empty-history {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+    .empty-history .icon { font-size: 3rem; margin-bottom: 0.75rem; }
+
+    @media (max-width: 640px) {
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .session-card { grid-template-columns: 1fr; gap: 0.5rem; }
+      .session-cost { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="history-container">
+    <div class="history-header">
+      <h1>⚡ Charging History</h1>
+      <div>
+        <a href="/dashboard.html" class="back-link">← Dashboard</a>
+        <a href="/" class="back-link" style="margin-left: 1rem;">← Map</a>
+      </div>
+    </div>
+
+    <!-- Lifetime Summary -->
+    <div class="summary-grid" id="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">Total Sessions</div>
+        <div class="summary-value" id="h-total">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Energy (kWh)</div>
+        <div class="summary-value" id="h-energy">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Total Spent</div>
+        <div class="summary-value" id="h-spent">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Avg Cost/Session</div>
+        <div class="summary-value" id="h-avg">—</div>
+      </div>
+    </div>
+
+    <!-- Session List -->
+    <div class="session-list" id="session-list">
+      <div class="empty-history"><div class="icon">⏳</div>Loading sessions...</div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div id="hist-alert" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border:1px solid var(--surface2);border-radius:14px;padding:1.5rem;max-width:340px;width:90%;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.5rem;">⚠️</div>
+      <p id="hist-alert-msg" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;"></p>
+      <button onclick="document.getElementById('hist-alert').style.display='none'" style="padding:0.5rem 2rem;border-radius:8px;border:none;background:var(--accent);color:#000;font-weight:700;cursor:pointer;">OK</button>
+    </div>
+  </div>
+
+  <script>
+    // Override alert()
+    window.alert = function(msg) {
+      const m = document.getElementById('hist-alert');
+      document.getElementById('hist-alert-msg').textContent = msg;
+      if (m) m.style.display = 'flex';
+    };
+
+    const API = window.location.origin + '/api';
+    const token = localStorage.getItem('valence_token');
+    if (!token) { window.location.href = '/login.html'; throw new Error('redirect'); }
+
+    function authHeaders() {
+      return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+    }
+
+    async function loadHistory() {
+      try {
+        const res = await fetch(API + '/sessions/history', { headers: authHeaders() });
+        const sessions = await res.json();
+
+        if (!sessions || sessions.length === 0) {
+          document.getElementById('session-list').innerHTML = '<div class="empty-history"><div class="icon">⚡</div>No charging sessions yet. Start one from the map!</div>';
+          return;
+        }
+
+        // Summary
+        const completed = sessions.filter(s => s.status === 'completed');
+        const totalEnergy = completed.reduce((sum, s) => sum + (s.energyKwh || 0), 0);
+        const totalCost = completed.reduce((sum, s) => sum + (s.totalCostINR || 0), 0);
+
+        document.getElementById('h-total').textContent = sessions.length;
+        document.getElementById('h-energy').textContent = totalEnergy.toFixed(1);
+        document.getElementById('h-spent').textContent = '₹' + totalCost.toFixed(0);
+        document.getElementById('h-avg').textContent = completed.length > 0 ? '₹' + (totalCost / completed.length).toFixed(0) : '—';
+
+        // Render sessions
+        document.getElementById('session-list').innerHTML = sessions.map(s => {
+          const date = new Date(s.startedAt || s.createdAt);
+          const dateStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+          const timeStr = date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+          return `
+            <div class="session-card">
+              <div class="session-icon">${s.status === 'completed' ? '✅' : s.status === 'charging' ? '⚡' : '❌'}</div>
+              <div>
+                <div style="font-weight: 600; font-size: 0.9rem;">${s.connectorType || 'Unknown'} • ${s.powerKw || 0} kW</div>
+                <div class="session-meta">${dateStr} at ${timeStr} • ${s.durationMin || 0} min</div>
+                <div style="margin-top: 0.3rem;">
+                  <span class="session-status ${s.status}">${s.status}</span>
+                  ${s.status === 'completed' ? `<button class="invoice-btn" onclick="viewInvoice('${s.sessionId}')">📄 Invoice</button>` : ''}
+                </div>
+              </div>
+              <div>
+                <div class="session-cost">₹${(s.totalCostINR || 0).toFixed(0)}</div>
+                <div class="session-energy">${(s.energyKwh || 0).toFixed(1)} kWh</div>
+              </div>
+            </div>`;
+        }).join('');
+
+      } catch (e) {
+        document.getElementById('session-list').innerHTML = '<div class="empty-history"><div class="icon">❌</div>Error loading history: ' + e.message + '</div>';
+      }
+    }
+
+    async function viewInvoice(sessionId) {
+      try {
+        const res = await fetch(API + '/wallet/invoice/' + sessionId, { headers: authHeaders() });
+        const inv = await res.json();
+        if (!res.ok) { alert(inv.error); return; }
+
+        // Open invoice in a new window
+        const w = window.open('', '_blank');
+        w.document.write(`
+          <html><head><title>Invoice ${inv.invoiceId}</title>
+          <style>
+            body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 2rem auto; padding: 1.5rem; color: #222; }
+            h1 { color: #00c853; font-size: 1.5rem; }
+            table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+            th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #eee; }
+            th { color: #666; font-size: 0.8rem; text-transform: uppercase; }
+            .total { font-size: 1.3rem; font-weight: 700; color: #00c853; }
+            .print-btn { padding: 0.5rem 1.5rem; background: #00c853; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+          </style></head><body>
+          <h1>⚡ Valence Invoice</h1>
+          <p><strong>${inv.invoiceId}</strong> • ${new Date(inv.date).toLocaleDateString()}</p>
+          <hr>
+          <table>
+            <tr><th>Station</th><td>${inv.station.name}</td></tr>
+            <tr><th>Address</th><td>${inv.station.address}</td></tr>
+            <tr><th>Connector</th><td>${inv.session.connectorType} • ${inv.session.powerKw} kW</td></tr>
+            <tr><th>Duration</th><td>${inv.session.durationMin} minutes</td></tr>
+            <tr><th>Energy</th><td>${inv.billing.energyKwh} kWh @ ₹${inv.billing.pricePerKwh}/kWh</td></tr>
+            <tr><th>Subtotal</th><td>₹${inv.billing.subtotal}</td></tr>
+            <tr><th>GST (18%)</th><td>₹${inv.billing.tax}</td></tr>
+            <tr><th>Total</th><td class="total">₹${inv.billing.total}</td></tr>
+            <tr><th>Payment</th><td>${inv.billing.paymentMethod.toUpperCase()}</td></tr>
+          </table>
+          <p style="color:#666;font-size:0.8rem;">Transaction ID: ${inv.billing.transactionId || 'N/A'}</p>
+          <button class="print-btn" onclick="window.print()">🖨️ Print Invoice</button>
+          </body></html>
+        `);
+      } catch (e) {
+        alert('Failed to load invoice: ' + e.message);
+      }
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>
