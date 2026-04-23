@@ -181,21 +181,16 @@
             print dialog for the best result.</p>
     </div>
 
-    <!-- Slide 1: Title -->
+    <!-- Slide 1: Blank -->
     <div class="slide page-break">
-        <div class="text-center top-1/4 relative mt-32">
-            <h1>Smart EV Locator</h1>
-            <h2>Second Review Presentation V4</h2>
-            <p class="mt-4 text-xl font-medium">Smart EV Charging Station Locator & Slot Management Platform</p>
-            <p class="mt-2" style="color: #000000;">Integrating Dashboards, Ledgers, WebSockets, Custom Modals, and PWA
-                Standards</p>
-        </div>
     </div>
 
     <!-- Slide 2: Data Flow Diagram Context -->
     <div class="slide page-break">
-        <h2>1. Data Flow Diagram (DFD)</h2>
-        <h3>Level 0 – Context Diagram</h3>
+        <h2>1. Diagrams</h2>
+        <h3>1.1 Data Flow Diagram (DFD)</h3>
+        <p><strong>Level 0 – Context Diagram</strong></p>
+
         <p>This contextual overview defines the absolute boundaries and external entities interfacing with the Valence
             platform.</p>
         <div class="mermaid">
@@ -212,7 +207,7 @@
 
     <!-- Slide 3: DFD Level 1 -->
     <div class="slide page-break">
-        <h3>Level 1 – Detailed DFD</h3>
+        <p><strong>Level 1 – Detailed DFD</strong></p>
         <div class="mermaid">
             flowchart TB
             U["EV User"] -->|"Credentials"| P1["1.0 <br> Auth & Recovery"]
@@ -247,8 +242,8 @@
 
     <!-- Slide 4: Application Flow Chart -->
     <div class="slide page-break" style="padding-bottom: 50px;">
-        <h2>2. Flow Chart</h2>
-        <h3>Complete Application Flow</h3>
+        <h3>1.2 Flow Chart</h3>
+        <p><strong>Complete Application Flow</strong></p>
         <div class="mermaid">
             flowchart TD
             START(["Start Client (PWA)"]) --> SW["Service Worker Caches Assets"]
@@ -305,8 +300,8 @@
 
     <!-- Slide 5: UML Diagrams (Class) -->
     <div class="slide page-break">
-        <h2>3. UML Diagrams</h2>
-        <h3>3.1 Extended Class Diagram (Database Models)</h3>
+        <h3>1.3 UML Diagrams</h3>
+        <p><strong>1.3.1 Extended Class Diagram (Database Models)</strong></p>
         <div class="mermaid">
             classDiagram
             class User {
@@ -394,7 +389,7 @@
 
         <!-- Slide 6: Enhanced Use Case Diagram -->
         <div class="slide page-break">
-            <h3>3.2 Enhanced Use Case Diagram</h3>
+            <p><strong>1.3.2 Enhanced Use Case Diagram</strong></p>
             <div class="mermaid">
                 flowchart LR
                 subgraph "Smart EV Locator (PWA System)"
@@ -435,7 +430,263 @@
             </div>
         </div>
 
-        <!-- Slide 7: Software Justification -->
+
+        <!-- Slide: Complete Detailed Design -->
+        <div class="slide page-break">
+            <h2>2. Complete Detailed Design</h2>
+
+            <h3>2.1 System Architecture</h3>
+<pre style="font-family: monospace; font-size: 0.9rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+┌──────────────────────────────────────────────────────┐
+│                     FRONTEND                          │
+│   HTML5 + CSS3 + Vanilla JavaScript + Leaflet.js     │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────┐  │
+│  │ Login /  │ │ Map View │ │ Stations │ │  Trip  │  │
+│  │ Register │ │ + Detail │ │ List Tab │ │Planner │  │
+│  └──────────┘ └──────────┘ └──────────┘ └────────┘  │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐             │
+│  │ Profile  │ │Reserva-  │ │ Add Stn  │             │
+│  │  Modal   │ │tion Panel│ │  Modal   │             │
+│  └──────────┘ └──────────┘ └──────────┘             │
+└──────────────────────┬───────────────────────────────┘
+                       │ REST API (JSON over HTTP)
+┌──────────────────────▼───────────────────────────────┐
+│                     BACKEND                           │
+│             Node.js + Express.js                      │
+│  ┌────────────────────────────────────────────┐      │
+│  │ Routes: /api/auth  /api/me  /api/stations  │      │
+│  │         /api/ports  /api/reservations       │      │
+│  └────────────────────────────────────────────┘      │
+│  ┌────────────────────────────────────────────┐      │
+│  │ Middleware: requireAuth, requireAdmin       │      │
+│  │ Helpers: hashPassword, haversineKm,         │      │
+│  │          getPortStatus, getSlotsForPort      │      │
+│  └────────────────────────────────────────────┘      │
+│  ┌────────────────────────────────────────────┐      │
+│  │ Session Store: In-memory (token → userId)   │      │
+│  └────────────────────────────────────────────┘      │
+└──────────────────────┬───────────────────────────────┘
+                       │ Mongoose ODM
+┌──────────────────────▼───────────────────────────────┐
+│               MongoDB Atlas (Cloud)                   │
+│  Collections: users, stations, ports, reservations    │
+└──────────────────────────────────────────────────────┘
+</pre>
+
+            <h3>2.2 Module-wise Detailed Design</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Input</th>
+                        <th>Processing</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Authentication</strong></td>
+                        <td>username, password</td>
+                        <td>Hash password (SHA-256), validate against DB, generate random 32-byte token</td>
+                        <td>Token + user object</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Registration</strong></td>
+                        <td>username, password, vehicle info</td>
+                        <td>Check duplicate username, hash password, create user document</td>
+                        <td>Token + new user object</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Profile Management</strong></td>
+                        <td>name, email, vehicleType, vehicleModel, batteryRangeKm</td>
+                        <td>Validate and update user document in MongoDB</td>
+                        <td>Updated profile</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Station Locator</strong></td>
+                        <td>lat, lng, rangeKm</td>
+                        <td>Fetch all stations, apply Haversine distance formula, filter by range, sort by distance</td>
+                        <td>Filtered and sorted station list</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Port Status Engine</strong></td>
+                        <td>portId</td>
+                        <td>Seed-based deterministic algorithm using portId + timestamp to simulate real-time status</td>
+                        <td>{functional, occupancy, lastUpdated}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slot Generation</strong></td>
+                        <td>portId</td>
+                        <td>Generate 96 consecutive 30-min slots (48 hours), cross-check with confirmed reservations</td>
+                        <td>Slot array with available/reserved status</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reservation</strong></td>
+                        <td>portId, startTime, endTime</td>
+                        <td>Conflict check (same port + same startTime), create reservation if no conflict</td>
+                        <td>Reservation confirmation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trip Planner</strong></td>
+                        <td>startLocation, endLocation, batteryRange</td>
+                        <td>Geocode locations (Nominatim), calculate total distance, divide into segments (80% of range), find nearest station per segment</td>
+                        <td>Route with charging stops</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Community Station</strong></td>
+                        <td>name, address, lat, lng, operator</td>
+                        <td>Create station document, create default port (Type 2, 22 kW)</td>
+                        <td>New station on map</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Admin Panel</strong></td>
+                        <td>admin token</td>
+                        <td>Fetch all users (excluding passwords), enable station deletion</td>
+                        <td>User list, management controls</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </div>
+
+        <!-- Slide: Coding -->
+        <div class="slide page-break">
+            <h2>3. Coding (Key Code Snippets)</h2>
+
+            <h3>3.1 Haversine Distance Calculation (server.js)</h3>
+<pre style="font-family: monospace; font-size: 0.85rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+</pre>
+
+            <h3>3.2 Real-Time Port Status Simulation (server.js)</h3>
+<pre style="font-family: monospace; font-size: 0.85rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+function getPortStatus(portId) {
+  const t    = Math.floor(Date.now() / 10000);
+  const seed = (portId + t).split('').reduce((a, c) =&gt; a + c.charCodeAt(0), 0);
+  return {
+    functional:  seed % 10 &gt; 1,  // 80% chance functional
+    occupancy:   (seed + t) % 4 === 0 ? 'occupied' : 'free',
+    lastUpdated: new Date().toISOString(),
+  };
+}
+</pre>
+
+            <h3>3.3 Password Hashing &amp; Token-Based Authentication (server.js)</h3>
+<pre style="font-family: monospace; font-size: 0.85rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+// Login Route
+app.post('/api/auth/login', async (req, res) =&gt; {
+  const { username, password } = req.body || {};
+  const user = await User.findOne({ username: username.toLowerCase() });
+  if (!user || user.passwordHash !== hashPassword(password))
+    return res.status(401).json({ error: 'Invalid username or password' });
+
+  const token = crypto.randomBytes(32).toString('hex');
+  sessions[token] = { userId: user.userId, role: user.role };
+  const { passwordHash, ...safe } = user.toObject();
+  res.json({ token, user: { ...safe, id: safe.userId } });
+});
+</pre>
+
+            <h3>3.4 Range-Based Station Filtering (server.js)</h3>
+<pre style="font-family: monospace; font-size: 0.85rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+app.get('/api/stations', async (req, res) =&gt; {
+  let stations = await Station.find({});
+  const lat     = parseFloat(req.query.lat);
+  const lng     = parseFloat(req.query.lng);
+  const rangeKm = parseFloat(req.query.rangeKm);
+
+  let result = stations.map(s =&gt; ({ ...s.toObject(), id: s.stationId }));
+
+  if (Number.isFinite(lat) &amp;&amp; Number.isFinite(lng) &amp;&amp;
+      Number.isFinite(rangeKm) &amp;&amp; rangeKm &gt; 0) {
+    result = result.filter(s =&gt; haversineKm(lat, lng, s.lat, s.lng) &lt;= rangeKm);
+    result.sort((a, b) =&gt;
+      haversineKm(lat, lng, a.lat, a.lng) - haversineKm(lat, lng, b.lat, b.lng)
+    );
+  }
+  res.json(result);
+});
+</pre>
+
+            <h3>3.5 Trip Planner – Charging Stop Calculation (app.js)</h3>
+<pre style="font-family: monospace; font-size: 0.85rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+async function calculateTrip(startLatLng, destLatLng, startName, destName) {
+  const rangeKm   = parseFloat(rangeInput.value) || 80;
+  const totalDist  = startLatLng.distanceTo(destLatLng) / 1000;
+  const step       = rangeKm * 0.8; // 80% of battery range per segment
+  const numStops   = Math.floor(totalDist / step);
+
+  let stops = [];
+  for (let i = 1; i &lt;= numStops; i++) {
+    const fraction = (i * step) / totalDist;
+    const idealLat = startLatLng.lat + dLat * fraction;
+    const idealLng = startLatLng.lng + dLng * fraction;
+    const stations = await fetchStations({ lat: idealLat, lng: idealLng, rangeKm: 30 });
+    // Select nearest non-duplicate station
+    const best = stations.find(st =&gt;
+      !stops.some(s =&gt; L.latLng(s.lat, s.lng).distanceTo(L.latLng(st.lat, st.lng)) / 1000 &lt; 10)
+    );
+    if (best) stops.push(best);
+  }
+}
+</pre>
+
+            <h3>3.6 Reservation Conflict Check (server.js)</h3>
+<pre style="font-family: monospace; font-size: 0.85rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+app.post('/api/reservations', async (req, res) =&gt; {
+  const { portId, startTime, endTime } = req.body;
+  // Conflict check in DB
+  const conflict = await Reservation.findOne({
+    portId,
+    status: 'confirmed',
+    startTime: new Date(startTime),
+  });
+  if (conflict) return res.status(409).json({ error: 'Slot already reserved' });
+
+  const reservation = await Reservation.create({
+    reservationId: `res_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    userId, portId,
+    startTime: new Date(startTime),
+    endTime:   new Date(endTime),
+    status:    'confirmed',
+  });
+  res.status(201).json({ ...reservation.toObject(), id: reservation.reservationId });
+});
+</pre>
+
+            <h3>3.7 Mongoose Schema – Station Model (Station.js)</h3>
+<pre style="font-family: monospace; font-size: 0.85rem; background: #f9f9f9; padding: 1rem; border: 1px solid #000; overflow-x: auto;">
+const stationSchema = new mongoose.Schema({
+  stationId: { type: String, required: true, unique: true },
+  name:      { type: String, required: true, trim: true },
+  address:   { type: String, required: true, trim: true },
+  lat:       { type: Number, required: true },
+  lng:       { type: Number, required: true },
+  operator:  { type: String, default: 'Unknown', trim: true },
+  city:      { type: String, default: '' },
+  state:     { type: String, default: '' },
+  addedBy:   { type: String, default: 'system' },
+}, { timestamps: true });
+
+stationSchema.index({ lat: 1, lng: 1 });
+</pre>
+        </div>
+
+        <!-- Slide: Software Justification -->
         <div class="slide page-break">
             <h2>4. Software Used & Justifications</h2>
             <table>
@@ -485,30 +736,136 @@
             </table>
         </div>
 
-        <!-- Slide 8: Testing & Next Steps -->
+        <!-- Slide: Testing Strategies and Test Cases -->
         <div class="slide page-break">
-            <h2>5. Core Integrations & Testing</h2>
+            <h2>5. Testing Strategies and Test Cases</h2>
 
-            <h3>Crucial Validations Performed:</h3>
-            <ul>
-                <li><strong>Dynamic Haversine Operations:</strong> Modifying vehicle battery range instantly updates
-                    strict radius limits across map features. PWA enforces limits reliably.</li>
-                <li><strong>Offline Mode Preservation:</strong> Loading the platform URL without network connectivity
-                    immediately falls gracefully to cached `sw.js` handlers.</li>
-                <li><strong>Trip Constraints:</strong> Plotted routes > 50km are allowed; attempting 30km ranges
-                    triggers Custom Low Battery Interruption Modals.</li>
-                <li><strong>WebSocket Telemetry:</strong> Starting a session opens 2-way data flow mapping precise
-                    incremental percentage and cost (INR) into the floating Action view.</li>
-                <li><strong>Immutable Ledger Logic:</strong> Ending a session mathematically restricts and triggers
-                    automatic valid transaction debits based on usage, validating > ₹0 balances before initiation.</li>
-            </ul>
+            <h3>5.1 Testing Strategy</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Unit Testing</strong></td><td>Individual functions tested in isolation (e.g., haversineKm, hashPassword, getPortStatus)</td></tr>
+                    <tr><td><strong>Integration Testing</strong></td><td>API endpoints tested with database interactions (login, station CRUD, reservation flow)</td></tr>
+                    <tr><td><strong>Functional Testing</strong></td><td>End-to-end user workflows tested through the UI (login → search → reserve → cancel)</td></tr>
+                    <tr><td><strong>Boundary Testing</strong></td><td>Edge cases tested (zero range, empty fields, duplicate usernames, slot conflicts)</td></tr>
+                    <tr><td><strong>UI Testing</strong></td><td>Responsive layout, modal interactions, map rendering, and navigation across tabs verified on Chrome</td></tr>
+                </tbody>
+            </table>
 
-            <h3 class="mt-8">Implementation Summary</h3>
-            <p>The system robustly enforces data boundaries avoiding any overlapping reservations and prevents offline
-                errors via standardized PWA protocols. Anticipated future iterations include expanding generic device
-                camera parsing capabilities and integrating direct financial gateway API pipelines to productionize the
-                internal wallet system.</p>
+            <h3>5.2 Test Cases (10 Important)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>TC ID</th>
+                        <th>Module</th>
+                        <th>Test Case Description</th>
+                        <th>Input</th>
+                        <th>Expected Output</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>TC-01</td><td>Authentication</td><td>Login with valid credentials</td><td>username: "demo", password: "demo123"</td><td>Login successful, token generated, redirect to dashboard</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-02</td><td>Authentication</td><td>Login with invalid password</td><td>username: "demo", password: "wrong"</td><td>Error message: "Invalid username or password", status 401</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-03</td><td>Registration</td><td>Register with duplicate username</td><td>username: "demo" (already exists)</td><td>Error message: "Username already taken", status 409</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-04</td><td>Station Locator</td><td>Search stations within 50 km range</td><td>lat: 12.9716, lng: 77.5946, rangeKm: 50</td><td>Returns only stations within 50 km radius, sorted by distance</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-05</td><td>Port Status</td><td>Verify real-time port status changes</td><td>Refresh station detail after 10 seconds</td><td>Port status (free/occupied/defective) updates based on time-seeded algorithm</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-06</td><td>Reservation</td><td>Reserve an available slot</td><td>portId: "p_st_001_1", valid time slot</td><td>Reservation created with status "confirmed", status 201</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-07</td><td>Reservation</td><td>Reserve an already-booked slot</td><td>Same portId and startTime as TC-06</td><td>Error: "Slot already reserved", status 409</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-08</td><td>Trip Planner</td><td>Plan trip with charging stops needed</td><td>Start: "Bangalore", End: "Chennai", Range: 150 km</td><td>Route displayed with intermediate charging stops, total distance ~350 km</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-09</td><td>Community Station</td><td>Add new station with valid data</td><td>name, address, lat: 13.0, lng: 77.5</td><td>Station created with default port (Type 2, 22 kW), appears on map</td><td>✅ Pass</td></tr>
+                    <tr><td>TC-10</td><td>Reservation</td><td>Cancel an existing reservation</td><td>Valid reservationId</td><td>Reservation status changed to "cancelled", removed from user's list</td><td>✅ Pass</td></tr>
+                </tbody>
+            </table>
         </div>
+
+        <!-- Slide: Implementation Issues -->
+        <div class="slide page-break">
+            <h2>6. Implementation Issues</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Issue</th>
+                        <th>Description</th>
+                        <th>Resolution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><strong>Simulated Port Status</strong></td>
+                        <td>Real-time port status is simulated using a deterministic algorithm (seed-based) instead of actual IoT sensor data. Status changes every ~10 seconds automatically.</td>
+                        <td>Acceptable for proof-of-concept. Architecture is IoT-ready — can replace getPortStatus() with MQTT/webhook integration in production.</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><strong>In-Memory Session Store</strong></td>
+                        <td>User sessions (token → userId mapping) are stored in server memory using a JavaScript object. Sessions are lost when the server restarts.</td>
+                        <td>Sufficient for development and demo. For production, sessions should be stored in Redis or MongoDB with token expiry.</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><strong>Straight-Line Distance for Trip Planning</strong></td>
+                        <td>The trip planner uses Haversine (great-circle) distance between origin and destination rather than actual road distance. This may suggest more or fewer stops than actually needed.</td>
+                        <td>For accurate road-based routing, integration with Google Directions API or OSRM is required as a future enhancement.</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><strong>No HTTPS in Development</strong></td>
+                        <td>The application runs on HTTP during development, meaning tokens are transmitted in plain text over the network.</td>
+                        <td>HTTPS must be enabled in production using SSL/TLS certificates (e.g., via Let's Encrypt or cloud load balancer).</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><strong>CORS Open Policy</strong></td>
+                        <td>The server uses cors() with no origin restrictions, allowing requests from any domain.</td>
+                        <td>For production, CORS should be configured to allow only the specific frontend domain.</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><strong>Geocoding Rate Limits</strong></td>
+                        <td>The Nominatim API (OpenStreetMap) used for geocoding in the trip planner has a usage policy of 1 request per second and no commercial use without permission.</td>
+                        <td>For high-traffic production use, a paid geocoding service (Google Geocoding API, Mapbox) should replace Nominatim.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide: Sample Screenshots -->
+        <div class="slide page-break">
+            <h2>7. Sample Screenshots</h2>
+            <p><strong>Note:</strong> Take screenshots from the running application at <code>http://localhost:3001</code>.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Screen</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td><strong>Login Page</strong></td><td>Dark-themed login/register tabbed interface with username, password fields, and vehicle information fields for registration.</td></tr>
+                    <tr><td>2</td><td><strong>Dashboard – Map View</strong></td><td>Main dashboard showing interactive OpenStreetMap with green ⚡ markers for all charging stations. Left sidebar with station list, range input, and locate button.</td></tr>
+                    <tr><td>3</td><td><strong>Station Detail Panel</strong></td><td>Right-side panel showing selected station name, address, real-time port status (Free/Occupied/Defective badges), Reserve button, and Navigate to Station button.</td></tr>
+                    <tr><td>4</td><td><strong>Slot Reservation Modal</strong></td><td>Modal popup with 30-minute time slot dropdown and Confirm Reservation button.</td></tr>
+                    <tr><td>5</td><td><strong>Reservation Success</strong></td><td>Custom branded success modal confirming slot has been reserved.</td></tr>
+                    <tr><td>6</td><td><strong>My Reservations Panel</strong></td><td>Bottom panel showing all active reservations with Port ID, time slot, and Cancel button.</td></tr>
+                    <tr><td>7</td><td><strong>Stations Tab – List View</strong></td><td>Searchable, paginated list of all 130+ charging stations with operator name and city. Right panel shows selected station details with port information and Navigate/View on Map buttons.</td></tr>
+                    <tr><td>8</td><td><strong>Trip Planner Modal</strong></td><td>Modal with Start Location, End Location, Battery Range inputs. Use My Location button, Calculate Route button. Results show total distance, recommended charging stops with distances between each stop, and Navigate Route button.</td></tr>
+                    <tr><td>9</td><td><strong>Trip Route on Map</strong></td><td>Map view showing dashed blue polyline route from start to destination with numbered stop markers at each charging station.</td></tr>
+                    <tr><td>10</td><td><strong>Add Station Modal</strong></td><td>Modal with fields for Station Name, Address, Latitude, Longitude, and Operator. Used for community station contribution.</td></tr>
+                    <tr><td>11</td><td><strong>Profile Modal</strong></td><td>Modal showing editable fields: Name, Email, Vehicle Type, Vehicle Model, and Battery Range (km).</td></tr>
+                    <tr><td>12</td><td><strong>Admin Panel</strong></td><td>Separate admin page showing all registered users with user details.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
 </body>
 
 </html>
