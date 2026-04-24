@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valence — Fleet Management</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .fleet-container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+    .fleet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem; }
+    .fleet-header h1 { font-size: 1.4rem; font-weight: 800; }
+
+    .fleet-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px; padding: 0.8rem; text-align: center; }
+    .stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; }
+    .stat-value { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-top: 0.15rem; }
+
+    .add-form { background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem; }
+    .add-form h3 { font-size: 0.9rem; margin-bottom: 0.6rem; }
+    .form-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end; }
+    .form-row input { flex: 1; min-width: 120px; }
+    .form-row select { min-width: 100px; }
+
+    .vehicle-grid { display: flex; flex-direction: column; gap: 0.6rem; }
+    .vehicle-card {
+      background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px;
+      padding: 1rem; display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center;
+      transition: border-color 0.2s;
+    }
+    .vehicle-card:hover { border-color: rgba(0,230,118,0.3); }
+    .vehicle-icon { font-size: 2rem; }
+    .vehicle-name { font-weight: 700; font-size: 0.95rem; }
+    .vehicle-plate { font-size: 0.78rem; color: var(--text-muted); font-family: monospace; letter-spacing: 1px; }
+    .vehicle-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .vehicle-stats { text-align: right; }
+    .vehicle-stats .cost { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+    .vehicle-stats .energy { font-size: 0.75rem; color: var(--text-muted); }
+
+    .status-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+    .status-badge.active { background: rgba(0,230,118,0.15); color: #00e676; }
+    .status-badge.maintenance { background: rgba(255,171,0,0.15); color: #ffab00; }
+    .status-badge.retired { background: rgba(255,82,82,0.15); color: #ff5252; }
+
+    .delete-btn { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; padding: 0.3rem; border-radius: 6px; }
+    .delete-btn:hover { background: rgba(255,82,82,0.1); }
+
+    @media (max-width: 640px) {
+      .fleet-stats { grid-template-columns: repeat(2, 1fr); }
+      .vehicle-card { grid-template-columns: 1fr; }
+      .vehicle-stats { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="fleet-container">
+    <div class="fleet-header">
+      <h1>🚗 Fleet Management</h1>
+      <div style="display:flex; gap:0.75rem;">
+        <a href="/dashboard.html" class="btn btn-small btn-secondary">← Dashboard</a>
+        <a href="/" class="btn btn-small btn-secondary">← Map</a>
+      </div>
+    </div>
+
+    <div class="fleet-stats" id="fleet-stats">
+      <div class="stat-card"><div class="stat-label">Vehicles</div><div class="stat-value" id="fs-vehicles">—</div></div>
+      <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value" id="fs-active">—</div></div>
+      <div class="stat-card"><div class="stat-label">Sessions</div><div class="stat-value" id="fs-sessions">—</div></div>
+      <div class="stat-card"><div class="stat-label">Energy (kWh)</div><div class="stat-value" id="fs-energy">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Cost</div><div class="stat-value" id="fs-cost">—</div></div>
+    </div>
+
+    <div class="add-form">
+      <h3>➕ Add Vehicle to Fleet</h3>
+      <div class="form-row">
+        <input type="text" id="v-name" placeholder="Vehicle name (e.g. Tata Nexon)" />
+        <input type="text" id="v-plate" placeholder="License plate" style="text-transform:uppercase;" />
+        <select id="v-type">
+          <option value="car">🚗 Car</option>
+          <option value="bike">🏍️ Bike</option>
+          <option value="bus">🚌 Bus</option>
+          <option value="van">🚐 Van</option>
+        </select>
+        <input type="number" id="v-battery" placeholder="Battery kWh" value="40" style="max-width:90px;" />
+        <button class="btn btn-primary" onclick="addVehicle()">Add</button>
+      </div>
+    </div>
+
+    <div class="vehicle-grid" id="vehicle-list">
+      <div style="text-align:center; padding:2rem; color:var(--text-muted);">⏳ Loading fleet...</div>
+    </div>
+  </div>
+
+  <script>
+    const API = window.location.origin + '/api';
+    const token = localStorage.getItem('valence_token');
+    if (!token) { window.location.href = '/login.html'; throw new Error('redirect'); }
+    function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
+
+    const icons = { car: '🚗', bike: '🏍️', bus: '🚌', van: '🚐' };
+
+    async function loadFleet() {
+      try {
+        const res = await fetch(API + '/fleet/vehicles', { headers: authHeaders() });
+        const data = await res.json();
+
+        const { stats, vehicles } = data;
+        document.getElementById('fs-vehicles').textContent = stats.totalVehicles;
+        document.getElementById('fs-active').textContent = stats.activeVehicles;
+        document.getElementById('fs-sessions').textContent = stats.totalSessions;
+        document.getElementById('fs-energy').textContent = stats.totalEnergy.toFixed(1);
+        document.getElementById('fs-cost').textContent = '₹' + stats.totalCost.toFixed(0);
+
+        if (vehicles.length === 0) {
+          document.getElementById('vehicle-list').innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">🚗 No vehicles yet. Add your first fleet vehicle above!</div>';
+          return;
+        }
+
+        document.getElementById('vehicle-list').innerHTML = vehicles.map(v => `
+          <div class="vehicle-card">
+            <div class="vehicle-icon">${icons[v.vehicleType] || '🚗'}</div>
+            <div>
+              <div class="vehicle-name">${v.vehicleName}</div>
+              <div class="vehicle-plate">${v.licensePlate}</div>
+              <div class="vehicle-meta">
+                ${v.batteryCapacity} kWh · ${v.totalSessions} sessions
+                · <span class="status-badge ${v.status}">${v.status}</span>
+                ${v.lastCharged ? ' · Last: ' + new Date(v.lastCharged).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : ''}
+              </div>
+            </div>
+            <div class="vehicle-stats">
+              <div class="cost">₹${v.totalCost.toFixed(0)}</div>
+              <div class="energy">${v.totalEnergy.toFixed(1)} kWh</div>
+              <button class="delete-btn" onclick="deleteVehicle('${v._id}')" title="Remove">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('vehicle-list').innerHTML = '<div style="text-align:center; padding:2rem; color:var(--danger);">❌ Error: ' + e.message + '</div>';
+      }
+    }
+
+    async function addVehicle() {
+      const name = document.getElementById('v-name').value.trim();
+      const plate = document.getElementById('v-plate').value.trim();
+      const type = document.getElementById('v-type').value;
+      const battery = parseFloat(document.getElementById('v-battery').value) || 40;
+
+      if (!name || !plate) { alert('Vehicle name and plate required'); return; }
+
+      await fetch(API + '/fleet/vehicles', {
+        method: 'POST', headers: authHeaders(),
+        body: JSON.stringify({ vehicleName: name, licensePlate: plate, vehicleType: type, batteryCapacity: battery }),
+      });
+      document.getElementById('v-name').value = '';
+      document.getElementById('v-plate').value = '';
+      loadFleet();
+    }
+
+    async function deleteVehicle(id) {
+      if (!confirm('Remove this vehicle from fleet?')) return;
+      await fetch(API + '/fleet/vehicles/' + id, { method: 'DELETE', headers: authHeaders() });
+      loadFleet();
+    }
+
+    loadFleet();
+  </script>
+</body>
+</html>

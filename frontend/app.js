@@ -123,6 +123,7 @@ let selectedStation = null;
 let currentLatLng = [12.9716, 77.5946];
 let userMarker = null;
 let lastStations = [];
+let currentTileLayer = null;
 
 async function fetchStations(opts = {}) {
   const url = new URL(API_BASE + '/stations');
@@ -256,7 +257,11 @@ async function addStation(data) {
 
 function initMap() {
   map = L.map('map').setView(currentLatLng, 12);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  const savedTheme = localStorage.getItem('valence-theme') || 'dark';
+  const tileUrl = savedTheme === 'light'
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  currentTileLayer = L.tileLayer(tileUrl, {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 20,
@@ -354,6 +359,27 @@ function showStationDetail(stationId) {
     });
     body.appendChild(portList);
 
+    // Watch button for full stations
+    const allOccupied = (station.ports || []).every(p => !p.functional || p.occupancy !== 'free');
+    if (allOccupied && (station.ports || []).length > 0) {
+      const isWatched = !!watchedStations[stationId];
+      const watchBtn = document.createElement('button');
+      watchBtn.className = 'btn btn-secondary';
+      watchBtn.style.cssText = 'margin-top:0.5rem; width:100%; font-size:0.78rem;';
+      watchBtn.textContent = isWatched ? '👁️ Watching — Click to stop' : '👁️ Watch for Availability';
+      watchBtn.onclick = () => {
+        if (watchedStations[stationId]) {
+          unwatchStation(stationId);
+          watchBtn.textContent = '👁️ Watch for Availability';
+          showToast('Stopped watching station', 'info');
+        } else {
+          watchStation(stationId, station.name);
+          watchBtn.textContent = '👁️ Watching — Click to stop';
+        }
+      };
+      body.appendChild(watchBtn);
+    }
+
     // Navigation button
     const navBtn = document.createElement('button');
     navBtn.className = 'btn btn-secondary';
@@ -364,6 +390,19 @@ function showStationDetail(stationId) {
       window.open(`https://www.google.com/maps/dir/?api=1&destination=${station.lat},${station.lng}`, '_blank');
     };
     body.appendChild(navBtn);
+
+    // Compare button
+    const compareBtn = document.createElement('button');
+    compareBtn.className = 'btn btn-secondary';
+    compareBtn.style.cssText = 'margin-top:0.5rem; width:100%; font-size:0.82rem;';
+    const isInCompare = compareList.some(c => (c.id || c.stationId) === stationId);
+    compareBtn.textContent = isInCompare ? '✓ Remove from Compare' : '⚖️ Add to Compare';
+    compareBtn.onclick = () => {
+      toggleCompare(stationId);
+      const nowIn = compareList.some(c => (c.id || c.stationId) === stationId);
+      compareBtn.textContent = nowIn ? '✓ Remove from Compare' : '⚖️ Add to Compare';
+    };
+    body.appendChild(compareBtn);
 
     // ── Reviews Section ──
     const reviewSection = document.createElement('div');
@@ -1280,6 +1319,18 @@ async function calculateTrip(startLatLng, destLatLng, startName, destName) {
       navBtn.onclick = () => window.open(mapsUrl, '_blank');
       navBtn.style.display = 'inline-block';
     }
+
+    // Store trip data for save route feature
+    const startText = document.getElementById('trip-start-text')?.value?.trim() || '';
+    const endText = document.getElementById('trip-end-text')?.value?.trim() || '';
+    lastTripData = {
+      start: startText,
+      end: endText,
+      range: rangeKm,
+      stops: stops.length,
+    };
+    const saveBtn = document.getElementById('btn-save-route');
+    if (saveBtn) saveBtn.style.display = 'inline-block';
   }
 }
 
@@ -1863,3 +1914,891 @@ async function checkActiveSession() {
 
 // Run on page load
 checkActiveSession();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 1: Dark / Light Theme Toggle
+// ══════════════════════════════════════════════════════════════════════════════
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('valence-theme', next);
+
+  const btn = document.getElementById('btn-theme-toggle');
+  if (btn) btn.textContent = next === 'dark' ? '🌙' : '☀️';
+
+  // Swap map tiles
+  swapMapTiles(next);
+}
+
+function swapMapTiles(theme) {
+  if (!map) return;
+  if (currentTileLayer) map.removeLayer(currentTileLayer);
+
+  const tileUrl = theme === 'light'
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+  currentTileLayer = L.tileLayer(tileUrl, {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20,
+  }).addTo(map);
+}
+
+// Apply saved theme on load
+(function applyStoredTheme() {
+  const saved = localStorage.getItem('valence-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('btn-theme-toggle');
+  if (btn) btn.textContent = saved === 'dark' ? '🌙' : '☀️';
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 8: Charging Cost Estimator
+// ══════════════════════════════════════════════════════════════════════════════
+function openCostEstimator() {
+  document.getElementById('modal-cost-estimator').style.display = 'flex';
+  document.body.classList.add('modal-open');
+  document.getElementById('estimator-result').style.display = 'none';
+}
+
+function calculateEstimate() {
+  const currentPct = parseFloat(document.getElementById('est-battery-current').value) || 0;
+  const targetPct = parseFloat(document.getElementById('est-battery-target').value) || 80;
+  const capacity = parseFloat(document.getElementById('est-battery-capacity').value) || 40;
+  const rate = parseFloat(document.getElementById('est-rate').value) || 15;
+
+  if (targetPct <= currentPct) {
+    showToast('⚠️ Target must be higher than current battery %', 'warn');
+    return;
+  }
+
+  const pctDiff = (targetPct - currentPct) / 100;
+  const energyNeeded = (pctDiff * capacity).toFixed(2);
+  const cost = (energyNeeded * rate).toFixed(2);
+  const timeMin = Math.round((energyNeeded / 7.4) * 60); // ~7.4 kW average charger
+
+  document.getElementById('est-result-cost').textContent = '₹' + cost;
+  document.getElementById('est-result-detail').innerHTML = `
+    ${energyNeeded} kWh needed · ~${timeMin} min at 7.4 kW charger<br>
+    <span style="font-size:0.72rem; color:var(--text-muted);">
+      ${currentPct}% → ${targetPct}% on a ${capacity} kWh battery @ ₹${rate}/kWh
+    </span>
+  `;
+  document.getElementById('estimator-result').style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 15: Carbon Footprint Tracker
+// ══════════════════════════════════════════════════════════════════════════════
+async function openCarbonTracker() {
+  document.getElementById('modal-carbon').style.display = 'flex';
+  document.body.classList.add('modal-open');
+
+  // Fetch charging history to calculate stats
+  try {
+    const res = await fetch(API_BASE + '/sessions/history', {
+      headers: authHeaders(),
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('Failed');
+    const sessions = await res.json();
+
+    // Calculate totals
+    let totalKwh = 0;
+    sessions.forEach(s => {
+      totalKwh += s.energyKwh || 0;
+    });
+
+    // Constants for Indian market:
+    // - Average petrol car: 15 km/L, CO2 = 2.31 kg/L
+    // - Average EV: 6 km/kWh
+    // - Grid emission factor India: ~0.7 kg CO2/kWh
+    // - Petrol price: ~₹105/L
+    const evKmPerKwh = 6;
+    const petrolKmPerL = 15;
+    const co2PerLitrePetrol = 2.31; // kg
+    const gridEmissionFactor = 0.7; // kg CO2 per kWh
+    const petrolPricePerL = 105;
+    const evCostPerKm = 15 / evKmPerKwh; // ₹/km (₹15/kWh average)
+    const petrolCostPerKm = petrolPricePerL / petrolKmPerL;
+    const treeAbsorptionPerYear = 21; // kg CO2 per tree per year
+
+    const kmDriven = totalKwh * evKmPerKwh;
+    const petrolNeeded = kmDriven / petrolKmPerL;
+    const co2Petrol = petrolNeeded * co2PerLitrePetrol;
+    const co2EV = totalKwh * gridEmissionFactor;
+    const co2Saved = Math.max(0, co2Petrol - co2EV);
+    const treesEquiv = Math.round(co2Saved / treeAbsorptionPerYear * 10) / 10;
+    const moneySaved = Math.round(kmDriven * (petrolCostPerKm - evCostPerKm));
+
+    document.getElementById('carbon-co2-saved').textContent = co2Saved.toFixed(1) + ' kg';
+    document.getElementById('carbon-petrol-saved').textContent = petrolNeeded.toFixed(1) + ' L';
+    document.getElementById('carbon-trees').textContent = treesEquiv || '0';
+    document.getElementById('carbon-km-driven').textContent = Math.round(kmDriven).toLocaleString() + ' km';
+    document.getElementById('carbon-money-saved').textContent = '₹' + moneySaved.toLocaleString();
+
+  } catch (e) {
+    // If no history available, show zeros (already set in HTML defaults)
+    console.log('Carbon tracker: no session data', e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 5: Battery Health Tips
+// ══════════════════════════════════════════════════════════════════════════════
+const batteryTips = [
+  { icon: '🔋', title: 'Charge between 20-80%', text: 'Keeping your battery between 20% and 80% significantly extends its lifespan. Avoid regularly charging to 100%.' },
+  { icon: '🌡️', title: 'Avoid extreme temperatures', text: 'Park in shade during summer. Extreme heat (>40°C) or cold (<0°C) degrades battery health faster.' },
+  { icon: '⚡', title: 'Use slow charging when possible', text: 'DC fast charging is convenient but generates more heat. Use Level 2 (AC) charging for daily needs.' },
+  { icon: '🚗', title: 'Don\'t let it sit at 0%', text: 'Deep discharge stresses the cells. If you won\'t drive for weeks, keep the battery at ~50%.' },
+  { icon: '📊', title: 'Precondition before fast charging', text: 'If your EV supports it, precondition the battery before DC fast charging for optimal charging speed.' },
+  { icon: '🔌', title: 'Unplug after full charge', text: 'Leaving your EV plugged in at 100% for extended periods causes unnecessary stress on the battery.' },
+  { icon: '🏎️', title: 'Gentle acceleration helps', text: 'Aggressive driving with sudden acceleration draws heavy current, which generates excess heat in the battery.' },
+  { icon: '🔄', title: 'Charge regularly, not deeply', text: 'Frequent shallow charges (30%→70%) are better than rare deep cycles (5%→100%) for battery longevity.' },
+  { icon: '📱', title: 'Update your BMS firmware', text: 'Manufacturers push Battery Management System updates that optimize charge curves. Keep your car software updated.' },
+  { icon: '🌙', title: 'Schedule overnight charging', text: 'Charging at night during off-peak hours is cheaper and cooler ambient temperatures are gentler on the battery.' },
+];
+
+let currentTipIndex = 0;
+
+function showNextTip() {
+  currentTipIndex = (currentTipIndex + 1) % batteryTips.length;
+  renderBatteryTip();
+}
+
+function renderBatteryTip() {
+  const container = document.getElementById('battery-tips-container');
+  if (!container) return;
+  const tip = batteryTips[currentTipIndex];
+  container.innerHTML = `
+    <div class="health-tip">
+      <span class="tip-icon">${tip.icon}</span>
+      <div class="tip-text">
+        <strong>${tip.title}</strong><br>
+        ${tip.text}
+      </div>
+    </div>
+  `;
+}
+
+// Show first tip on load
+setTimeout(renderBatteryTip, 500);
+
+// Auto-rotate tips every 30 seconds
+setInterval(() => {
+  currentTipIndex = (currentTipIndex + 1) % batteryTips.length;
+  renderBatteryTip();
+}, 30000);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 7: Station Comparison
+// ══════════════════════════════════════════════════════════════════════════════
+let compareList = [];
+
+function toggleCompare(stationId) {
+  const idx = compareList.findIndex(s => s.id === stationId || s.stationId === stationId);
+  if (idx >= 0) {
+    compareList.splice(idx, 1);
+  } else {
+    if (compareList.length >= 3) {
+      showToast('⚖️ Maximum 3 stations can be compared', 'warn');
+      return;
+    }
+    const station = lastStations.find(s => (s.id || s.stationId) === stationId);
+    if (station) compareList.push(station);
+  }
+  updateCompareBar();
+}
+
+function updateCompareBar() {
+  const bar = document.getElementById('compare-bar');
+  const countEl = document.getElementById('compare-count');
+  if (!bar) return;
+  if (compareList.length > 0) {
+    bar.style.display = 'block';
+    countEl.textContent = compareList.length;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function clearCompare() {
+  compareList = [];
+  updateCompareBar();
+  document.getElementById('modal-compare').style.display = 'none';
+  document.body.classList.remove('modal-open');
+  showToast('⚖️ Comparison cleared', 'info');
+}
+
+async function showComparison() {
+  if (compareList.length < 2) {
+    showToast('⚖️ Select at least 2 stations to compare', 'warn');
+    return;
+  }
+
+  // Fetch port details for each station
+  const stationsData = [];
+  for (const st of compareList) {
+    try {
+      const res = await fetch(API_BASE + '/stations/' + (st.id || st.stationId), { headers: authHeaders() });
+      if (res.ok) {
+        stationsData.push(await res.json());
+      } else {
+        stationsData.push(st);
+      }
+    } catch (_) {
+      stationsData.push(st);
+    }
+  }
+
+  // Build comparison table
+  const cols = stationsData.map(s => {
+    const ports = s.ports || [];
+    const totalPorts = ports.length;
+    const maxPower = ports.reduce((max, p) => Math.max(max, p.powerKw || 0), 0);
+    const types = [...new Set(ports.map(p => p.connectorType || 'Unknown'))].join(', ');
+    const dist = s.distance != null ? s.distance.toFixed(1) + ' km' : '—';
+    const rating = s.avgRating ? (s.avgRating.toFixed(1) + ' ⭐') : 'No ratings';
+    return { name: s.name, operator: s.operator || '—', address: s.address || '—', city: s.city || '—', totalPorts, maxPower, types, dist, rating };
+  });
+
+  const rows = [
+    { label: 'Operator', key: 'operator' },
+    { label: 'City', key: 'city' },
+    { label: 'Distance', key: 'dist' },
+    { label: 'Rating', key: 'rating' },
+    { label: 'Total Ports', key: 'totalPorts' },
+    { label: 'Max Power', key: 'maxPower', suffix: ' kW' },
+    { label: 'Connector Types', key: 'types' },
+  ];
+
+  let html = '<table class="compare-table"><thead><tr><th>Attribute</th>';
+  cols.forEach(c => { html += `<th><span class="compare-station-name">${c.name}</span></th>`; });
+  html += '</tr></thead><tbody>';
+
+  rows.forEach(r => {
+    html += '<tr><td style="font-weight:600; color:var(--text-muted);">' + r.label + '</td>';
+    cols.forEach(c => {
+      const val = c[r.key];
+      html += `<td>${val}${r.suffix || ''}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+
+  document.getElementById('compare-table-container').innerHTML = html;
+  document.getElementById('modal-compare').style.display = 'flex';
+  document.body.classList.add('modal-open');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 9: Booking Reminders
+// ══════════════════════════════════════════════════════════════════════════════
+let reminderShown = new Set(); // Track which reservations we already alerted
+
+async function checkBookingReminders() {
+  try {
+    const res = await fetch(API_BASE + '/reservations', {
+      headers: authHeaders(),
+      cache: 'no-store',
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const reservations = data.reservations || data || [];
+
+    const now = Date.now();
+
+    reservations.forEach(r => {
+      if (r.status !== 'confirmed') return;
+      const start = new Date(r.startTime).getTime();
+      const diff = start - now;
+      const id = r.reservationId || r._id || r.id;
+
+      // Remind 15 min before (between 15 min and 14 min window)
+      if (diff > 0 && diff <= 15 * 60 * 1000 && !reminderShown.has(id)) {
+        reminderShown.add(id);
+        const mins = Math.round(diff / 60000);
+        const timeStr = new Date(r.startTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        // Show a styled reminder toast
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'reminder-toast';
+        toast.style.cssText = `
+          background: linear-gradient(135deg, rgba(0,200,83,0.95), rgba(0,168,67,0.95));
+          color: #000; padding: 0.85rem 1.5rem; border-radius: 12px;
+          font-weight: 600; font-size: 0.88rem; pointer-events: auto;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.3); cursor: pointer;
+          border: 1px solid rgba(255,255,255,0.2); max-width: 380px;
+        `;
+        toast.innerHTML = `
+          <div style="display:flex; align-items:center; gap:0.6rem;">
+            <span style="font-size:1.4rem;">🔔</span>
+            <div>
+              <div style="font-weight:700;">Reservation in ${mins} min!</div>
+              <div style="font-size:0.78rem; opacity:0.8; margin-top:0.15rem;">
+                Port ${r.portId || '—'} at ${timeStr}
+              </div>
+            </div>
+          </div>
+        `;
+        toast.onclick = () => toast.remove();
+        container.appendChild(toast);
+
+        // Auto-remove after 10 seconds
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 10000);
+      }
+    });
+  } catch (e) {
+    // Silent fail — don't disrupt user
+  }
+}
+
+// Check reminders every 60 seconds
+setInterval(checkBookingReminders, 60000);
+// Initial check after 5 seconds
+setTimeout(checkBookingReminders, 5000);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 2: Station Availability Alerts
+// ══════════════════════════════════════════════════════════════════════════════
+let watchedStations = JSON.parse(localStorage.getItem('valence-watched') || '{}');
+// watchedStations = { stationId: { name, wasFull: true } }
+
+function watchStation(stationId, stationName) {
+  watchedStations[stationId] = { name: stationName, wasFull: true };
+  localStorage.setItem('valence-watched', JSON.stringify(watchedStations));
+  showToast(`👁️ Watching "${stationName}" — we'll alert you when a port is free`, 'success');
+}
+
+function unwatchStation(stationId) {
+  delete watchedStations[stationId];
+  localStorage.setItem('valence-watched', JSON.stringify(watchedStations));
+}
+
+async function checkWatchedStations() {
+  const ids = Object.keys(watchedStations);
+  if (ids.length === 0) return;
+
+  for (const id of ids) {
+    try {
+      const res = await fetch(API_BASE + '/stations/' + id, { headers: authHeaders() });
+      if (!res.ok) continue;
+      const station = await res.json();
+      const ports = station.ports || [];
+      const freePorts = ports.filter(p => p.functional && p.occupancy === 'free');
+
+      if (freePorts.length > 0 && watchedStations[id]?.wasFull) {
+        // Station now has free ports!
+        const container = document.getElementById('toast-container');
+        if (container) {
+          const toast = document.createElement('div');
+          toast.style.cssText = `
+            background: linear-gradient(135deg, rgba(0,176,255,0.95), rgba(0,200,83,0.95));
+            color: #000; padding: 0.85rem 1.5rem; border-radius: 12px;
+            font-weight: 600; font-size: 0.88rem; pointer-events: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); cursor: pointer;
+            max-width: 380px; animation: slideInToast 0.4s ease;
+          `;
+          toast.innerHTML = `
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <span style="font-size:1.4rem;">🟢</span>
+              <div>
+                <div style="font-weight:700;">${watchedStations[id].name} is available!</div>
+                <div style="font-size:0.78rem; opacity:0.8;">${freePorts.length} port(s) now free — tap to view</div>
+              </div>
+            </div>
+          `;
+          toast.onclick = () => { toast.remove(); showStationDetail(id); };
+          container.appendChild(toast);
+          setTimeout(() => { if (toast.parentNode) toast.remove(); }, 12000);
+        }
+        // Mark as no longer full so we don't repeat the alert
+        watchedStations[id].wasFull = false;
+        localStorage.setItem('valence-watched', JSON.stringify(watchedStations));
+      } else if (freePorts.length === 0) {
+        // Station is full again — reset watch
+        if (watchedStations[id]) watchedStations[id].wasFull = true;
+        localStorage.setItem('valence-watched', JSON.stringify(watchedStations));
+      }
+    } catch (_) { /* silent */ }
+  }
+}
+
+// Check watched stations every 90 seconds
+setInterval(checkWatchedStations, 90000);
+setTimeout(checkWatchedStations, 8000);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 4: Multi-language Support (i18n)
+// ══════════════════════════════════════════════════════════════════════════════
+const translations = {
+  en: {
+    'Battery range': 'Battery range',
+    'Enter your current range (km) to see stations within reach.': 'Enter your current range (km) to see stations within reach.',
+    'Locate stations': 'Locate stations',
+    'Trip Planner': 'Trip Planner',
+    'Going somewhere far? Plan your charging stops.': 'Going somewhere far? Plan your charging stops.',
+    'Plan Long Trip': 'Plan Long Trip',
+    'Tools': '🛠 Tools',
+    'Cost Estimator': '💰 Cost Estimator',
+    'Carbon Footprint': '🌱 Carbon Footprint',
+    'Battery Health Tips': '🔋 Battery Health Tips',
+    'Next Tip': 'Next Tip →',
+    'My reservations': 'My reservations',
+    'Add charging station': '+ Add charging station',
+    'Profile': 'Profile',
+    'Logout': 'Logout',
+    'Map': '🗺 Map',
+    'Stations': '📍 Stations',
+  },
+  hi: {
+    'Battery range': 'बैटरी रेंज',
+    'Enter your current range (km) to see stations within reach.': 'आस-पास के स्टेशन देखने के लिए अपनी रेंज (किमी) दर्ज करें।',
+    'Locate stations': 'स्टेशन खोजें',
+    'Trip Planner': 'यात्रा योजना',
+    'Going somewhere far? Plan your charging stops.': 'कहीं दूर जा रहे हैं? चार्जिंग स्टॉप की योजना बनाएं।',
+    'Plan Long Trip': 'लंबी यात्रा की योजना',
+    'Tools': '🛠 उपकरण',
+    'Cost Estimator': '💰 लागत अनुमान',
+    'Carbon Footprint': '🌱 कार्बन फुटप्रिंट',
+    'Battery Health Tips': '🔋 बैटरी स्वास्थ्य सुझाव',
+    'Next Tip': 'अगला सुझाव →',
+    'My reservations': 'मेरी बुकिंग',
+    'Add charging station': '+ स्टेशन जोड़ें',
+    'Profile': 'प्रोफ़ाइल',
+    'Logout': 'लॉगआउट',
+    'Map': '🗺 नक्शा',
+    'Stations': '📍 स्टेशन',
+  },
+  ta: {
+    'Battery range': 'பேட்டரி வரம்பு',
+    'Enter your current range (km) to see stations within reach.': 'அருகிலுள்ள நிலையங்களைக் காண உங்கள் வரம்பை (கிமீ) உள்ளிடவும்.',
+    'Locate stations': 'நிலையங்களை கண்டறி',
+    'Trip Planner': 'பயண திட்டம்',
+    'Going somewhere far? Plan your charging stops.': 'தூரமாக செல்கிறீர்களா? சார்ஜிங் நிறுத்தங்களை திட்டமிடுங்கள்.',
+    'Plan Long Trip': 'நீண்ட பயணம் திட்டம்',
+    'Tools': '🛠 கருவிகள்',
+    'Cost Estimator': '💰 செலவு மதிப்பீடு',
+    'Carbon Footprint': '🌱 கார்பன் தடம்',
+    'Battery Health Tips': '🔋 பேட்டரி குறிப்புகள்',
+    'Next Tip': 'அடுத்த குறிப்பு →',
+    'My reservations': 'எனது முன்பதிவுகள்',
+    'Add charging station': '+ நிலையம் சேர்',
+    'Profile': 'சுயவிவரம்',
+    'Logout': 'வெளியேறு',
+    'Map': '🗺 வரைபடம்',
+    'Stations': '📍 நிலையங்கள்',
+  }
+};
+
+let currentLang = localStorage.getItem('valence-lang') || 'en';
+
+function t(key) {
+  return (translations[currentLang] && translations[currentLang][key]) || key;
+}
+
+function switchLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('valence-lang', lang);
+  applyTranslations();
+  showToast('🌐 Language changed', 'info');
+}
+
+function applyTranslations() {
+  // Map translatable elements using data-i18n attribute or known selectors
+  const mapping = [
+    { sel: '.range-section h2', key: 'Battery range' },
+    { sel: '.range-section .hint', key: 'Enter your current range (km) to see stations within reach.' },
+    { sel: '#btn-locate', key: 'Locate stations' },
+    { sel: '.trip-planner-section h2', key: 'Trip Planner' },
+    { sel: '.trip-planner-section .hint', key: 'Going somewhere far? Plan your charging stops.' },
+    { sel: '#btn-open-trip', key: 'Plan Long Trip' },
+    { sel: '#btn-profile', key: 'Profile' },
+    { sel: '#btn-logout', key: 'Logout' },
+    { sel: '#navtab-map', key: 'Map' },
+    { sel: '#navtab-stations', key: 'Stations' },
+  ];
+
+  mapping.forEach(m => {
+    const el = document.querySelector(m.sel);
+    if (el) el.textContent = t(m.key);
+  });
+
+  // Set selector value
+  const sel = document.getElementById('lang-selector');
+  if (sel) sel.value = currentLang;
+}
+
+// Apply on load
+setTimeout(applyTranslations, 300);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 10: Route History (Save/Load Trip Plans)
+// ══════════════════════════════════════════════════════════════════════════════
+let lastTripData = null; // Store last calculated trip for saving
+
+function saveCurrentRoute() {
+  if (!lastTripData) {
+    showToast('⚠️ No trip calculated to save', 'warn');
+    return;
+  }
+
+  const routes = JSON.parse(localStorage.getItem('valence-routes') || '[]');
+
+  // Prevent duplicates
+  const exists = routes.some(r => r.start === lastTripData.start && r.end === lastTripData.end);
+  if (exists) {
+    showToast('📁 This route is already saved', 'info');
+    return;
+  }
+
+  routes.unshift({
+    id: Date.now(),
+    start: lastTripData.start,
+    end: lastTripData.end,
+    range: lastTripData.range,
+    stops: lastTripData.stops || 0,
+    date: new Date().toISOString(),
+  });
+
+  // Keep max 10 routes
+  if (routes.length > 10) routes.length = 10;
+
+  localStorage.setItem('valence-routes', JSON.stringify(routes));
+  showToast('💾 Route saved!', 'success');
+  renderSavedRoutes();
+}
+
+function deleteSavedRoute(routeId) {
+  let routes = JSON.parse(localStorage.getItem('valence-routes') || '[]');
+  routes = routes.filter(r => r.id !== routeId);
+  localStorage.setItem('valence-routes', JSON.stringify(routes));
+  renderSavedRoutes();
+  showToast('🗑️ Route deleted', 'info');
+}
+
+function loadSavedRoute(route) {
+  const startInput = document.getElementById('trip-start-text');
+  const endInput = document.getElementById('trip-end-text');
+  const rangeInput = document.getElementById('trip-range');
+
+  if (startInput) startInput.value = route.start;
+  if (endInput) endInput.value = route.end;
+  if (rangeInput) rangeInput.value = route.range;
+
+  showToast(`📍 Route loaded: ${route.start} → ${route.end}`, 'success');
+}
+
+function renderSavedRoutes() {
+  const container = document.getElementById('saved-routes-list');
+  if (!container) return;
+
+  const routes = JSON.parse(localStorage.getItem('valence-routes') || '[]');
+
+  if (routes.length === 0) {
+    container.innerHTML = '<p style="font-size:0.75rem; color:var(--text-muted); text-align:center; padding:0.5rem;">No saved routes yet</p>';
+    return;
+  }
+
+  container.innerHTML = routes.map(r => {
+    const date = new Date(r.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    return `
+      <div class="saved-route" onclick="loadSavedRoute(${JSON.stringify(r).replace(/"/g, '&quot;')})">
+        <div class="route-info">
+          <div class="route-name">📍 ${r.start} → ${r.end}</div>
+          <div class="route-meta">${date} · ${r.range} km range · ${r.stops} stops</div>
+        </div>
+        <button class="route-delete" onclick="event.stopPropagation(); deleteSavedRoute(${r.id})" title="Delete">🗑️</button>
+      </div>
+    `;
+  }).join('');
+}
+
+// Render saved routes when trip modal opens
+const origOpenTrip = window.voltPathOpenTrip || (() => {});
+window.voltPathOpenTrip = function() {
+  const tripModal = document.getElementById('modal-trip');
+  if (tripModal) tripModal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+  renderSavedRoutes();
+};
+
+// Hook into trip open button
+const btnOpenTrip = document.getElementById('btn-open-trip');
+if (btnOpenTrip) {
+  btnOpenTrip.onclick = () => window.voltPathOpenTrip();
+}
+
+// Also render on initial load in case modal is already open
+setTimeout(renderSavedRoutes, 1000);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 6: Referral System
+// ══════════════════════════════════════════════════════════════════════════════
+let myReferralCode = '';
+
+async function openReferralModal() {
+  document.getElementById('modal-referral').style.display = 'flex';
+  document.body.classList.add('modal-open');
+
+  try {
+    const res = await fetch(API_BASE + '/referrals/my-code', { headers: authHeaders() });
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+
+    myReferralCode = data.referralCode;
+    document.getElementById('my-referral-code').textContent = data.referralCode;
+    document.getElementById('ref-count').textContent = data.referredCount;
+    document.getElementById('ref-earned').textContent = '₹' + data.totalEarned;
+  } catch (e) {
+    document.getElementById('my-referral-code').textContent = 'Error';
+  }
+}
+
+function copyReferralCode() {
+  if (!myReferralCode) {
+    showToast('⚠️ No code to copy', 'warn');
+    return;
+  }
+  const shareText = `Join Valence EV Charging! Use my referral code ${myReferralCode} and we both get ₹50 credits! 🚗⚡`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'Valence Referral', text: shareText }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(myReferralCode).then(() => {
+      showToast('📋 Referral code copied!', 'success');
+    });
+  } else {
+    showToast('📋 Code: ' + myReferralCode, 'info');
+  }
+}
+
+async function applyReferralCode() {
+  const input = document.getElementById('apply-referral-input');
+  const code = input?.value?.trim();
+  if (!code) {
+    showToast('⚠️ Enter a referral code', 'warn');
+    return;
+  }
+
+  try {
+    const res = await fetch(API_BASE + '/referrals/apply', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast('❌ ' + (data.error || 'Failed'), 'error');
+      return;
+    }
+    showToast('🎁 ' + data.message, 'success');
+    input.value = '';
+    // Refresh referral modal data
+    openReferralModal();
+  } catch (e) {
+    showToast('❌ Failed to apply code', 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 13: Dynamic Pricing Engine
+// ══════════════════════════════════════════════════════════════════════════════
+async function openPricingModal() {
+  document.getElementById('modal-pricing').style.display = 'flex';
+  document.body.classList.add('modal-open');
+
+  try {
+    const res = await fetch(API_BASE + '/pricing/current');
+    if (!res.ok) throw new Error('Failed');
+    const data = await res.json();
+
+    document.getElementById('pricing-rate').textContent = '₹' + data.effectiveRate + '/kWh';
+    document.getElementById('pricing-rate').style.color = data.color;
+    document.getElementById('pricing-tier-label').textContent = data.label;
+    document.getElementById('pricing-tier-label').style.color = data.color;
+    document.getElementById('pricing-multiplier').textContent =
+      `Base ₹${data.baseRate}/kWh × ${data.multiplier} multiplier`;
+
+    // Render schedule
+    const scheduleEl = document.getElementById('pricing-schedule');
+    if (data.schedule && scheduleEl) {
+      scheduleEl.innerHTML = `
+        <div style="font-weight:600; margin-bottom:0.4rem; font-size:0.82rem;">📅 Daily Schedule</div>
+        ${data.schedule.map(s => `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0.5rem; border-radius:6px; margin-bottom:0.25rem; background:var(--surface2);">
+            <span>${s.period}</span>
+            <span style="font-weight:700;">₹${s.rate}/kWh <span style="font-size:0.7rem; opacity:0.7;">(${s.multiplier}x)</span></span>
+          </div>
+        `).join('')}
+        <p style="font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem; text-align:center;">
+          🎉 10% weekend discount on all tiers!
+        </p>
+      `;
+    }
+  } catch (e) {
+    document.getElementById('pricing-rate').textContent = '—';
+    document.getElementById('pricing-tier-label').textContent = 'Unable to load';
+  }
+}
+
+// Show live pricing indicator in header
+async function updatePricingIndicator() {
+  try {
+    const res = await fetch(API_BASE + '/pricing/current');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    let indicator = document.getElementById('pricing-indicator');
+    if (!indicator) {
+      indicator = document.createElement('span');
+      indicator.id = 'pricing-indicator';
+      indicator.style.cssText = `
+        font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem;
+        border-radius: 6px; cursor: pointer; transition: all 0.2s;
+      `;
+      indicator.onclick = openPricingModal;
+      const headerRight = document.querySelector('.header-right');
+      if (headerRight) headerRight.insertBefore(indicator, headerRight.firstChild);
+    }
+    indicator.textContent = `${data.label.split(' ')[0]} ₹${data.effectiveRate}/kWh`;
+    indicator.style.background = data.color + '22';
+    indicator.style.color = data.color;
+    indicator.style.border = `1px solid ${data.color}44`;
+  } catch (_) { /* silent */ }
+}
+
+// Update pricing indicator on load and every 5 minutes
+setTimeout(updatePricingIndicator, 2000);
+setInterval(updatePricingIndicator, 300000);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 11: Real-time Chat Support
+// ══════════════════════════════════════════════════════════════════════════════
+let chatOpen = false;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const panel = document.getElementById('chat-panel');
+  const fab = document.getElementById('chat-fab');
+  if (panel) panel.style.display = chatOpen ? 'flex' : 'none';
+  if (fab) fab.style.transform = chatOpen ? 'scale(0.9)' : 'scale(1)';
+
+  if (chatOpen) {
+    loadChatHistory();
+    setTimeout(() => document.getElementById('chat-input')?.focus(), 200);
+  }
+}
+
+async function loadChatHistory() {
+  try {
+    const res = await fetch(API_BASE + '/chat/history', { headers: authHeaders() });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.messages && data.messages.length > 0) {
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = data.messages.map(m => renderChatBubble(m)).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+  } catch (_) { /* silent */ }
+}
+
+function renderChatBubble(msg) {
+  const isUser = msg.sender === 'user';
+  const align = isUser ? 'flex-end' : 'flex-start';
+  const bg = isUser ? 'var(--accent)' : 'var(--surface2)';
+  const color = isUser ? '#000' : 'var(--text)';
+  const time = new Date(msg.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  const name = isUser ? 'You' : (msg.senderName || '🤖 Bot');
+
+  return `
+    <div style="display:flex; flex-direction:column; align-items:${align}; max-width:85%;">
+      <div style="font-size:0.65rem; color:var(--text-muted); margin-bottom:0.1rem;">${name} · ${time}</div>
+      <div style="background:${bg}; color:${color}; padding:0.45rem 0.7rem; border-radius:12px; font-size:0.82rem; line-height:1.4;">
+        ${msg.text}
+      </div>
+    </div>
+  `;
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input?.value?.trim();
+  if (!text) return;
+
+  const container = document.getElementById('chat-messages');
+
+  // Show user message immediately
+  container.innerHTML += renderChatBubble({
+    sender: 'user', senderName: 'You', text, timestamp: new Date()
+  });
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+
+  // Show typing indicator
+  const typingId = 'typing-' + Date.now();
+  container.innerHTML += `<div id="${typingId}" style="display:flex; align-items:flex-start;">
+    <div style="background:var(--surface2); padding:0.45rem 0.7rem; border-radius:12px; font-size:0.82rem; color:var(--text-muted);">
+      <span style="animation: blink 1s infinite;">●●●</span>
+    </div>
+  </div>`;
+  container.scrollTop = container.scrollHeight;
+
+  try {
+    const res = await fetch(API_BASE + '/chat/send', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+
+    // Remove typing indicator
+    const typing = document.getElementById(typingId);
+    if (typing) typing.remove();
+
+    if (data.botReply) {
+      container.innerHTML += renderChatBubble(data.botReply);
+      container.scrollTop = container.scrollHeight;
+    }
+  } catch (e) {
+    const typing = document.getElementById(typingId);
+    if (typing) typing.remove();
+    container.innerHTML += renderChatBubble({
+      sender: 'bot', senderName: '🤖 Bot', text: '⚠️ Connection error. Please try again.', timestamp: new Date()
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 12 & 14: Fleet + Owner Nav Links (in header)
+// ══════════════════════════════════════════════════════════════════════════════
+(function addAdvancedNavLinks() {
+  const headerRight = document.querySelector('.header-right');
+  if (!headerRight || document.getElementById('btn-fleet')) return;
+
+  const fleetBtn = document.createElement('a');
+  fleetBtn.href = '/fleet.html';
+  fleetBtn.id = 'btn-fleet';
+  fleetBtn.className = 'btn btn-small btn-secondary';
+  fleetBtn.textContent = '🚗 Fleet';
+  fleetBtn.style.marginRight = '0.25rem';
+
+  const ownerBtn = document.createElement('a');
+  ownerBtn.href = '/owner.html';
+  ownerBtn.id = 'btn-owner';
+  ownerBtn.className = 'btn btn-small btn-secondary';
+  ownerBtn.textContent = '🏢 Owner';
+  ownerBtn.style.marginRight = '0.25rem';
+
+  // Insert after dashboard button if it exists
+  const dashBtn = document.getElementById('btn-dashboard');
+  const refNode = dashBtn ? dashBtn.nextSibling : headerRight.firstChild;
+  headerRight.insertBefore(ownerBtn, refNode);
+  headerRight.insertBefore(fleetBtn, ownerBtn);
+})();

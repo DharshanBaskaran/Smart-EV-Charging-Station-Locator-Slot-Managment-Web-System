@@ -77,15 +77,40 @@
       .session-card { grid-template-columns: 1fr; gap: 0.5rem; }
       .session-cost { text-align: left; }
     }
+
+    .export-btn {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .export-btn:hover { background: var(--accent); color: #000; }
+
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .history-container { max-width: 100%; padding: 0; }
+      .export-btn, .back-link, .invoice-btn { display: none !important; }
+      .summary-card { border: 1px solid #ddd; background: #f9f9f9; }
+      .summary-value { color: #00a843; }
+      .session-card { border: 1px solid #ddd; background: #fff; page-break-inside: avoid; }
+      .session-cost { color: #00a843; }
+    }
   </style>
 </head>
 <body>
   <div class="history-container">
     <div class="history-header">
       <h1>⚡ Charging History</h1>
-      <div>
+      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <button class="export-btn" onclick="exportHistoryPDF()">📄 Export PDF</button>
         <a href="/dashboard.html" class="back-link">← Dashboard</a>
-        <a href="/" class="back-link" style="margin-left: 1rem;">← Map</a>
+        <a href="/" class="back-link">← Map</a>
       </div>
     </div>
 
@@ -232,6 +257,22 @@
     }
 
     loadHistory();
+
+    function exportHistoryPDF() {
+      // Add a print header temporarily
+      const header = document.createElement('div');
+      header.id = 'print-header';
+      header.innerHTML = `
+        <div style="text-align:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid #00a843;">
+          <h1 style="color:#00a843; font-size:1.6rem; margin:0;">⚡ Valence — Charging Report</h1>
+          <p style="color:#666; font-size:0.85rem; margin-top:0.25rem;">Generated on ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} at ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</p>
+        </div>
+      `;
+      const container = document.querySelector('.history-container');
+      container.insertBefore(header, container.firstChild);
+      window.print();
+      setTimeout(() => header.remove(), 500);
+    }
   </script>
 </body>
 </html>

@@ -511,3 +511,291 @@ body.modal-open .map {
   from { opacity: 0; transform: translateY(30px) scale(0.95); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Light Theme
+   ══════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #e4e6ea;
+  --accent: #00a843;
+  --accent-dim: #008835;
+  --text: #1a1a2e;
+  --text-muted: #5f6368;
+  --danger: #d93025;
+  --warn: #f9a825;
+}
+
+[data-theme="light"] .header {
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .modal-content {
+  background: #ffffff;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+[data-theme="light"] .nav-tabs {
+  background: #ffffff;
+  border-bottom-color: #e4e6ea;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: #f8f9fa;
+  color: #1a1a2e;
+  border-color: #dadce0;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--surface2);
+  color: var(--text-muted);
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  line-height: 1;
+}
+.theme-toggle:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Cost Estimator Modal
+   ══════════════════════════════════════════════════════════ */
+.estimator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.estimator-grid label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.estimator-result {
+  background: linear-gradient(135deg, rgba(0,200,83,0.08), rgba(0,176,255,0.05));
+  border: 1px solid rgba(0,200,83,0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+.estimator-result .big-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.estimator-result .sub-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Carbon Footprint Tracker
+   ══════════════════════════════════════════════════════════ */
+.carbon-card {
+  background: linear-gradient(135deg, #0d3320 0%, #1a2332 100%);
+  border: 1px solid rgba(0,200,83,0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.75rem;
+}
+[data-theme="light"] .carbon-card {
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border-color: rgba(0,168,67,0.2);
+}
+.carbon-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.carbon-stat:last-child { margin-bottom: 0; }
+.carbon-stat .icon { font-size: 1.5rem; }
+.carbon-stat .value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.carbon-stat .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Battery Health Tips
+   ══════════════════════════════════════════════════════════ */
+.health-tip {
+  background: var(--surface);
+  border: 1px solid var(--surface2);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.health-tip:hover {
+  border-color: var(--accent);
+}
+.health-tip .tip-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+.health-tip .tip-text {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.health-tip .tip-text strong {
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Station Comparison
+   ══════════════════════════════════════════════════════════ */
+.compare-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--accent);
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  z-index: 2;
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.compare-table th {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--surface2);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+}
+.compare-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--surface2);
+  vertical-align: top;
+}
+.compare-table tr:hover td {
+  background: rgba(0,200,83,0.03);
+}
+.compare-station-name {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Booking Reminder
+   ══════════════════════════════════════════════════════════ */
+@keyframes reminderPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,83,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(0,200,83,0); }
+}
+.reminder-toast {
+  animation: slideInToast 0.4s ease, reminderPulse 2s ease-in-out 0.5s 3;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Language Selector
+   ══════════════════════════════════════════════════════════ */
+.lang-select {
+  background: transparent;
+  border: 1px solid var(--surface2);
+  color: var(--text-muted);
+  padding: 0.3rem 0.4rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: all 0.2s;
+}
+.lang-select:hover { border-color: var(--accent); color: var(--text); }
+.lang-select option { background: var(--surface); color: var(--text); }
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Saved Routes
+   ══════════════════════════════════════════════════════════ */
+.saved-route {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  border: 1px solid transparent;
+}
+.saved-route:hover { border-color: var(--accent); }
+.saved-route .route-info { flex: 1; min-width: 0; }
+.saved-route .route-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saved-route .route-meta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+.saved-route .route-delete {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.2rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.saved-route .route-delete:hover { background: rgba(255,82,82,0.1); }
+
+/* ══════════════════════════════════════════════════════════
+   FEATURE: Availability Alert Badge
+   ══════════════════════════════════════════════════════════ */
+.alert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(0,200,83,0.12);
+  border: 1px solid rgba(0,200,83,0.25);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  animation: reminderPulse 2s ease-in-out infinite;
+}

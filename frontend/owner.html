@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valence — Station Owner Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .owner-container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+    .owner-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem; }
+    .owner-header h1 { font-size: 1.4rem; font-weight: 800; }
+
+    .owner-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
+    .ostat { background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px; padding: 0.8rem; text-align: center; }
+    .ostat .label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; }
+    .ostat .val { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-top: 0.15rem; }
+
+    .station-owner-card {
+      background: var(--surface); border: 1px solid var(--surface2); border-radius: 14px;
+      padding: 1.2rem; margin-bottom: 0.75rem; transition: border-color 0.2s;
+    }
+    .station-owner-card:hover { border-color: rgba(0,230,118,0.3); }
+    .soc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+    .soc-name { font-weight: 800; font-size: 1rem; }
+    .soc-addr { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.1rem; }
+
+    .port-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.4rem; margin-top: 0.6rem; }
+    .port-mini {
+      background: var(--surface2); border-radius: 8px; padding: 0.5rem;
+      display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem;
+    }
+    .port-mini .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.3rem; }
+    .dot.free { background: #00e676; }
+    .dot.occupied { background: #00b0ff; }
+    .dot.defective { background: #ff5252; }
+
+    .util-bar { height: 6px; border-radius: 3px; background: var(--surface2); overflow: hidden; margin-top: 0.4rem; }
+    .util-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #00e676, #00b0ff); transition: width 0.3s; }
+
+    .metric-row { display: flex; gap: 1.5rem; margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-muted); flex-wrap: wrap; }
+    .metric-row strong { color: var(--text); }
+
+    @media (max-width: 640px) {
+      .owner-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="owner-container">
+    <div class="owner-header">
+      <h1>🏢 Station Owner Portal</h1>
+      <div style="display:flex; gap:0.75rem;">
+        <a href="/dashboard.html" class="btn btn-small btn-secondary">← Dashboard</a>
+        <a href="/" class="btn btn-small btn-secondary">← Map</a>
+      </div>
+    </div>
+
+    <div class="owner-stats" id="owner-stats">
+      <div class="ostat"><div class="label">My Stations</div><div class="val" id="os-stations">—</div></div>
+      <div class="ostat"><div class="label">Total Ports</div><div class="val" id="os-ports">—</div></div>
+      <div class="ostat"><div class="label">Avg Utilization</div><div class="val" id="os-util">—</div></div>
+      <div class="ostat"><div class="label">Total Revenue</div><div class="val" id="os-revenue">—</div></div>
+      <div class="ostat"><div class="label">Avg Rating</div><div class="val" id="os-rating">—</div></div>
+    </div>
+
+    <div id="owner-station-list">
+      <div style="text-align:center; padding:2rem; color:var(--text-muted);">⏳ Loading your stations...</div>
+    </div>
+
+    <div style="text-align:center; margin-top:1.5rem; padding:1rem; background:var(--surface); border-radius:12px; border:1px solid var(--surface2);">
+      <p style="font-size:0.85rem; color:var(--text-muted);">Want to add a new station?</p>
+      <a href="/" class="btn btn-primary" style="margin-top:0.5rem;">Go to Map → Add Station</a>
+    </div>
+  </div>
+
+  <script>
+    const API = window.location.origin + '/api';
+    const token = localStorage.getItem('valence_token');
+    if (!token) { window.location.href = '/login.html'; throw new Error('redirect'); }
+    function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
+
+    async function loadOwnerStations() {
+      try {
+        const res = await fetch(API + '/owner/stations', { headers: authHeaders() });
+        const data = await res.json();
+        const { stats, stations } = data;
+
+        document.getElementById('os-stations').textContent = stats.totalStations;
+        document.getElementById('os-ports').textContent = stats.totalPorts;
+        document.getElementById('os-util').textContent = stats.avgUtilization + '%';
+        document.getElementById('os-revenue').textContent = '₹' + stats.totalRevenue.toLocaleString();
+        document.getElementById('os-rating').textContent = stats.avgRating + ' ⭐';
+
+        if (stations.length === 0) {
+          document.getElementById('owner-station-list').innerHTML =
+            '<div style="text-align:center; padding:2rem; color:var(--text-muted);">🏢 No stations owned yet. Add a station from the map to see it here!</div>';
+          return;
+        }
+
+        document.getElementById('owner-station-list').innerHTML = stations.map(s => `
+          <div class="station-owner-card">
+            <div class="soc-top">
+              <div>
+                <div class="soc-name">⚡ ${s.name}</div>
+                <div class="soc-addr">${s.address} · ${s.city}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:1.1rem; font-weight:800; color:var(--accent);">₹${s.estimatedRevenue.toLocaleString()}</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Est. Revenue</div>
+              </div>
+            </div>
+
+            <div class="metric-row">
+              <span>🔌 Ports: <strong>${s.totalPorts}</strong></span>
+              <span>🟢 Free: <strong>${s.freePorts}</strong></span>
+              <span>🔵 Occupied: <strong>${s.occupiedPorts}</strong></span>
+              <span>🔴 Defective: <strong>${s.defectivePorts}</strong></span>
+              <span>⭐ ${s.avgRating.toFixed(1)} (${s.totalReviews} reviews)</span>
+            </div>
+
+            <div class="util-bar">
+              <div class="util-fill" style="width: ${s.utilization}%;"></div>
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.2rem;">Utilization: ${s.utilization}%</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('owner-station-list').innerHTML =
+          '<div style="text-align:center; padding:2rem; color:var(--danger);">❌ Error: ' + e.message + '</div>';
+      }
+    }
+
+    loadOwnerStations();
+  </script>
+</body>
+</html>

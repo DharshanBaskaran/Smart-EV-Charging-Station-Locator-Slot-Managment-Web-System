@@ -274,6 +274,12 @@
         <div id="header-fullname" style="font-size:0.9rem; font-weight:600; color:var(--text);"></div>
         <div id="header-username" style="font-size:0.75rem; color:var(--text-muted);"></div>
       </div>
+      <select class="lang-select" id="lang-selector" onchange="switchLanguage(this.value)" title="Language">
+        <option value="en">🇬🇧 EN</option>
+        <option value="hi">🇮🇳 हिं</option>
+        <option value="ta">🇮🇳 தமி</option>
+      </select>
+      <button class="theme-toggle" id="btn-theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
       <a href="#" id="btn-profile" class="btn btn-small btn-secondary">Profile</a>
       <a href="#" id="btn-admin" class="btn btn-small btn-secondary" style="display:none;">Admin</a>
       <a href="#" id="btn-logout" class="btn btn-small btn-secondary">Logout</a>
@@ -303,6 +309,18 @@
         <h2>Trip Planner</h2>
         <p class="hint">Going somewhere far? Plan your charging stops.</p>
         <button type="button" class="btn btn-secondary" id="btn-open-trip" style="width:100%;">Plan Long Trip</button>
+      </section>
+      <section class="panel-section">
+        <h2>🛠 Tools</h2>
+        <button type="button" class="btn btn-secondary" onclick="openCostEstimator()" style="width:100%; margin-bottom:0.5rem;">💰 Cost Estimator</button>
+        <button type="button" class="btn btn-secondary" onclick="openCarbonTracker()" style="width:100%; margin-bottom:0.5rem;">🌱 Carbon Footprint</button>
+        <button type="button" class="btn btn-secondary" onclick="openPricingModal()" style="width:100%; margin-bottom:0.5rem;">⚡ Live Pricing</button>
+        <button type="button" class="btn btn-secondary" onclick="openReferralModal()" style="width:100%;">🎁 Refer & Earn</button>
+      </section>
+      <section class="panel-section" id="battery-tips-section">
+        <h2>🔋 Battery Health Tips</h2>
+        <div id="battery-tips-container"></div>
+        <button type="button" class="btn btn-small btn-secondary" onclick="showNextTip()" style="margin-top:0.5rem; width:100%; font-size:0.78rem;">Next Tip →</button>
       </section>
       <section class="panel-section" style="display:none">
         <h2>Stations <span id="station-count"></span></h2>
@@ -437,7 +455,12 @@
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-primary" id="btn-navigate-trip" style="display:none;">Navigate Route</button>
+        <button type="button" class="btn btn-primary" id="btn-save-route" style="display:none;" onclick="saveCurrentRoute()">💾 Save Route</button>
         <button type="button" class="btn btn-secondary" onclick="window.voltPathCloseTrip()">Close</button>
+      </div>
+      <div id="saved-routes-section" style="margin-top:1rem; border-top:1px solid var(--surface2); padding-top:0.75rem;">
+        <h4 style="font-size:0.82rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-muted);">📁 Saved Routes</h4>
+        <div id="saved-routes-list"></div>
       </div>
     </div>
   </div>
@@ -601,6 +624,189 @@
     </div>
     <div style="background: var(--surface2); border-radius: 6px; height: 4px; margin-top: 0.5rem; overflow: hidden;">
       <div id="float-bar" style="height: 100%; border-radius: 6px; background: linear-gradient(90deg, #00e676, #00b0ff); width: 0%; transition: width 0.5s ease;"></div>
+    </div>
+  </div>
+
+  <!-- ── Cost Estimator Modal ── -->
+  <div id="modal-cost-estimator" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 420px;">
+      <div style="text-align:center; margin-bottom:0.5rem;">
+        <div style="font-size: 2.5rem;">💰</div>
+        <h3 style="color: var(--accent);">Charging Cost Estimator</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Estimate how much your next charge will cost</p>
+      </div>
+      <div class="estimator-grid">
+        <div>
+          <label>Current Battery %</label>
+          <input type="number" id="est-battery-current" value="20" min="0" max="99" />
+        </div>
+        <div>
+          <label>Target Battery %</label>
+          <input type="number" id="est-battery-target" value="80" min="1" max="100" />
+        </div>
+        <div>
+          <label>Battery Capacity (kWh)</label>
+          <input type="number" id="est-battery-capacity" value="40" min="10" max="200" />
+        </div>
+        <div>
+          <label>Rate (₹/kWh)</label>
+          <input type="number" id="est-rate" value="15" min="1" max="100" step="0.5" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calculateEstimate()" style="width:100%;">Calculate</button>
+      <div id="estimator-result" class="estimator-result" style="display:none;">
+        <div class="big-number" id="est-result-cost">₹0</div>
+        <div class="sub-text" id="est-result-detail"></div>
+      </div>
+      <div class="modal-actions" style="justify-content:center; margin-top:1rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-cost-estimator').style.display='none'; document.body.classList.remove('modal-open');">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Carbon Footprint Modal ── -->
+  <div id="modal-carbon" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 420px;">
+      <div style="text-align:center; margin-bottom:0.75rem;">
+        <div style="font-size: 2.5rem;">🌱</div>
+        <h3 style="color: var(--accent);">Your Carbon Impact</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">See how much CO₂ you've saved by driving electric</p>
+      </div>
+      <div id="carbon-stats-body">
+        <div class="carbon-card">
+          <div class="carbon-stat">
+            <span class="icon">🌍</span>
+            <div>
+              <div class="value" id="carbon-co2-saved">0 kg</div>
+              <div class="label">CO₂ Emissions Avoided</div>
+            </div>
+          </div>
+          <div class="carbon-stat">
+            <span class="icon">⛽</span>
+            <div>
+              <div class="value" id="carbon-petrol-saved">0 L</div>
+              <div class="label">Petrol Equivalent Saved</div>
+            </div>
+          </div>
+          <div class="carbon-stat">
+            <span class="icon">🌳</span>
+            <div>
+              <div class="value" id="carbon-trees">0</div>
+              <div class="label">Equivalent Trees Planted (1 year)</div>
+            </div>
+          </div>
+          <div class="carbon-stat">
+            <span class="icon">🚗</span>
+            <div>
+              <div class="value" id="carbon-km-driven">0 km</div>
+              <div class="label">Clean Kilometers Driven</div>
+            </div>
+          </div>
+          <div class="carbon-stat">
+            <span class="icon">💰</span>
+            <div>
+              <div class="value" id="carbon-money-saved">₹0</div>
+              <div class="label">Fuel Cost Savings vs Petrol</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions" style="justify-content:center; margin-top:1rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-carbon').style.display='none'; document.body.classList.remove('modal-open');">Close</button>
+      </div>
+    </div>
+  </div>
+  <!-- ── Station Comparison Modal ── -->
+  <div id="modal-compare" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+      <div style="text-align:center; margin-bottom:0.75rem;">
+        <div style="font-size: 2.5rem;">⚖️</div>
+        <h3 style="color: var(--accent);">Station Comparison</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Side-by-side comparison of selected stations</p>
+      </div>
+      <div id="compare-table-container"></div>
+      <div class="modal-actions" style="justify-content:center; margin-top:1rem;">
+        <button class="btn btn-secondary" onclick="clearCompare()">Clear All</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-compare').style.display='none'; document.body.classList.remove('modal-open');">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Referral Modal ── -->
+  <div id="modal-referral" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 420px; text-align:center;">
+      <div style="font-size: 2.5rem;">🎁</div>
+      <h3 style="color: var(--accent); margin-bottom:0.25rem;">Refer & Earn</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Share your code — both you and your friend get <strong style="color:var(--accent);">₹50</strong> wallet credits!</p>
+      <div style="background:var(--surface2); border-radius:10px; padding:1rem; margin-bottom:0.75rem;">
+        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.3rem;">Your Referral Code</div>
+        <div id="my-referral-code" style="font-size:1.8rem; font-weight:800; letter-spacing:3px; color:var(--accent);">———</div>
+      </div>
+      <button class="btn btn-primary" onclick="copyReferralCode()" style="width:100%; margin-bottom:0.5rem;">📋 Copy Code</button>
+      <div style="background:var(--surface2); border-radius:8px; padding:0.6rem; margin-bottom:0.75rem; text-align:left;">
+        <div style="font-size:0.75rem; color:var(--text-muted);">👥 Friends Referred: <strong id="ref-count">0</strong></div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">💰 Total Earned: <strong id="ref-earned" style="color:var(--accent);">₹0</strong></div>
+      </div>
+      <div style="border-top:1px solid var(--surface2); padding-top:0.75rem; margin-top:0.5rem;">
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem;">Have a referral code?</p>
+        <div style="display:flex; gap:0.4rem;">
+          <input type="text" id="apply-referral-input" placeholder="Enter code" style="flex:1;" />
+          <button class="btn btn-primary btn-small" onclick="applyReferralCode()">Apply</button>
+        </div>
+      </div>
+      <div class="modal-actions" style="justify-content:center; margin-top:1rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-referral').style.display='none'; document.body.classList.remove('modal-open');">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Dynamic Pricing Modal ── -->
+  <div id="modal-pricing" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 420px;">
+      <div style="text-align:center; margin-bottom:0.75rem;">
+        <div style="font-size: 2.5rem;">⚡</div>
+        <h3 style="color: var(--accent);">Dynamic Pricing</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Rates change based on time of day</p>
+      </div>
+      <div id="pricing-current" style="background:var(--surface2); border-radius:10px; padding:1rem; text-align:center; margin-bottom:0.75rem;">
+        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Current Rate</div>
+        <div id="pricing-rate" style="font-size:2rem; font-weight:800; color:var(--accent);">—</div>
+        <div id="pricing-tier-label" style="font-size:0.82rem; font-weight:600;">—</div>
+        <div id="pricing-multiplier" style="font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem;">—</div>
+      </div>
+      <div id="pricing-schedule" style="font-size:0.8rem;"></div>
+      <div class="modal-actions" style="justify-content:center; margin-top:1rem;">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-pricing').style.display='none'; document.body.classList.remove('modal-open');">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Floating Compare Bar ── -->
+  <div id="compare-bar" style="display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9997; background:var(--surface); border:1px solid var(--accent); border-radius:12px; padding:0.5rem 1.25rem; box-shadow:0 8px 32px rgba(0,0,0,0.4); backdrop-filter:blur(10px);">
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <span style="font-size:0.82rem; color:var(--text-muted);">⚖️ <strong id="compare-count">0</strong> stations selected</span>
+      <button class="btn btn-primary btn-small" onclick="showComparison()" id="btn-show-compare">Compare</button>
+      <button class="btn btn-secondary btn-small" onclick="clearCompare()" style="font-size:0.75rem;">✕ Clear</button>
+    </div>
+  </div>
+
+  <!-- ── Chat Widget ── -->
+  <div id="chat-fab" onclick="toggleChat()" style="position:fixed; bottom:24px; right:24px; z-index:9998; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg, #00e676, #00b0ff); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 6px 24px rgba(0,200,83,0.4); transition:transform 0.2s; font-size:1.5rem;">
+    💬
+  </div>
+  <div id="chat-panel" style="display:none; position:fixed; bottom:90px; right:24px; z-index:9998; width:360px; max-height:480px; background:var(--surface); border:1px solid var(--surface2); border-radius:16px; box-shadow:0 12px 48px rgba(0,0,0,0.5); overflow:hidden; flex-direction:column;">
+    <div style="background:linear-gradient(135deg, #00e676, #00b0ff); padding:0.75rem 1rem; display:flex; align-items:center; justify-content:space-between;">
+      <span style="font-weight:700; color:#000; font-size:0.9rem;">💬 Valence Support</span>
+      <button onclick="toggleChat()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#000;">✕</button>
+    </div>
+    <div id="chat-messages" style="flex:1; overflow-y:auto; padding:0.75rem; min-height:280px; max-height:340px; display:flex; flex-direction:column; gap:0.5rem;">
+      <div style="text-align:center; padding:1rem; color:var(--text-muted); font-size:0.8rem;">
+        👋 Welcome! Ask anything about Valence.<br>Our bot responds instantly!
+      </div>
+    </div>
+    <div style="padding:0.5rem; border-top:1px solid var(--surface2); display:flex; gap:0.4rem;">
+      <input type="text" id="chat-input" placeholder="Type a message..." style="flex:1; font-size:0.85rem;" onkeydown="if(event.key==='Enter')sendChatMessage()" />
+      <button class="btn btn-primary btn-small" onclick="sendChatMessage()" style="padding:0.4rem 0.75rem;">Send</button>
     </div>
   </div>
 

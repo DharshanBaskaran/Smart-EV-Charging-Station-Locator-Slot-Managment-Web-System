@@ -39,6 +39,11 @@ const sessionRoutes       = require('./routes/sessions');
 const walletRoutes        = require('./routes/wallet');
 const qrRoutes            = require('./routes/qr');
 const docsRoutes          = require('./routes/docs');
+const referralRoutes      = require('./routes/referrals');
+const pricingRoutes       = require('./routes/pricing');
+const chatRoutes          = require('./routes/chat');
+const fleetRoutes         = require('./routes/fleet');
+const ownerRoutes         = require('./routes/owner');
 
 // ── WebSocket Manager ────────────────────────────────────────────────────────
 const { initSocketIO } = require('./utils/socketManager');
@@ -104,6 +109,11 @@ app.use('/api/sessions',      sessionRoutes);   // /api/sessions/start, /api/ses
 app.use('/api/wallet',        walletRoutes);    // /api/wallet/balance, /topup, /transactions, /invoice
 app.use('/api/qr',            qrRoutes);        // /api/qr/station/:id, /api/qr/session/:id
 app.use('/api/docs',          docsRoutes);      // /api/docs — Swagger UI, /api/docs/spec — OpenAPI JSON
+app.use('/api/referrals',     referralRoutes);   // /api/referrals/my-code, /api/referrals/apply
+app.use('/api/pricing',       pricingRoutes);    // /api/pricing/current, /api/pricing/calculate
+app.use('/api/chat',          chatRoutes);       // /api/chat/history, /api/chat/send, /api/chat/close
+app.use('/api/fleet',         fleetRoutes);      // /api/fleet/vehicles CRUD
+app.use('/api/owner',         ownerRoutes);      // /api/owner/stations, port mgmt
 
 // ── Backward-compatible review routes ────────────────────────────────────────
 // Frontend calls GET/POST /api/stations/:id/reviews — redirect to review routes
