@@ -24,6 +24,61 @@
     .dash-header .nav-links a:hover { background: var(--surface2); color: var(--text); }
     .dash-header .nav-links a.active { background: var(--accent); color: #000; }
 
+    /* ── Hamburger Button ── */
+    .hamburger-btn {
+      background: none; border: none; cursor: pointer;
+      display: flex; flex-direction: column; gap: 5px;
+      padding: 6px; border-radius: 8px; transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .hamburger-btn:hover { background: var(--surface2); }
+    .hamburger-btn span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text); border-radius: 2px; transition: all 0.3s;
+    }
+
+    /* ── Side Drawer ── */
+    .nav-drawer-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 8888;
+      backdrop-filter: blur(2px);
+    }
+    .nav-drawer-overlay.open { display: block; }
+    .nav-drawer {
+      position: fixed; top: 0; left: -280px; bottom: 0; width: 260px;
+      background: var(--surface); border-right: 1px solid var(--surface2);
+      z-index: 8889; transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column; padding: 0;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+    }
+    .nav-drawer.open { left: 0; }
+    .nav-drawer-header {
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 1px solid var(--surface2);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-drawer-logo { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+    .nav-drawer-close {
+      background: none; border: none; color: var(--text-muted);
+      font-size: 1.2rem; cursor: pointer; padding: 4px;
+      border-radius: 6px; transition: all 0.15s;
+    }
+    .nav-drawer-close:hover { background: var(--surface2); color: var(--text); }
+    .nav-drawer-links { padding: 0.75rem 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+    .nav-drawer-links a {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 0.85rem; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; color: var(--text-muted);
+      text-decoration: none; transition: all 0.15s; border: 1px solid transparent;
+    }
+    .nav-drawer-links a:hover { background: var(--surface2); color: var(--text); }
+    .nav-drawer-links a.active {
+      background: rgba(0,230,118,0.12); color: var(--accent);
+      border-color: rgba(0,230,118,0.2);
+    }
+    .nav-drawer-links .nav-icon { font-size: 1.1rem; width: 1.4rem; text-align: center; }
+    .nav-drawer-divider { height: 1px; background: var(--surface2); margin: 0.5rem 0.75rem; }
+
     .dash-container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
 
     .welcome-bar {
@@ -118,8 +173,32 @@
 </head>
 <body>
 
+<!-- ── Side Nav Drawer ── -->
+<div class="nav-drawer-overlay" id="nav-drawer-overlay" onclick="closeNavDrawer()"></div>
+<div class="nav-drawer" id="nav-drawer">
+  <div class="nav-drawer-header">
+    <span class="nav-drawer-logo">⚡ Valence</span>
+    <button class="nav-drawer-close" onclick="closeNavDrawer()">✕</button>
+  </div>
+  <div class="nav-drawer-links">
+    <a href="/dashboard.html" class="active"><span class="nav-icon">📊</span> Dashboard</a>
+    <a href="/"><span class="nav-icon">🗺</span> Map</a>
+    <a href="/history.html"><span class="nav-icon">⚡</span> History</a>
+    <div class="nav-drawer-divider"></div>
+    <a href="/fleet.html"><span class="nav-icon">🚗</span> Fleet</a>
+    <a href="/owner.html"><span class="nav-icon">🏢</span> Owner Portal</a>
+    <div class="nav-drawer-divider"></div>
+    <a href="#" onclick="document.getElementById('nav-drawer').classList.remove('open'); document.getElementById('nav-drawer-overlay').classList.remove('open'); document.getElementById('btn-logout').click(); return false;"><span class="nav-icon">🚪</span> Logout</a>
+  </div>
+</div>
+
 <div class="dash-header">
-  <h1>⚡ Valence</h1>
+  <div style="display:flex; align-items:center; gap:0.75rem;">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="openNavDrawer()" title="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <h1>⚡ Valence</h1>
+  </div>
   <div class="nav-links">
     <a href="/dashboard.html" class="active">📊 Dashboard</a>
     <a href="/">🗺 Map</a>
@@ -282,11 +361,24 @@
     const msgEl = document.getElementById('dash-alert-msg');
     const iconEl = document.getElementById('dash-alert-icon');
     if (modal && msgEl) {
-      iconEl.textContent = (msg.includes('Error') || msg.includes('fail')) ? '⚠️' : msg.includes('success') ? '✅' : 'ℹ️';
+      const lc = (msg || '').toLowerCase();
+      iconEl.textContent = (lc.includes('error') || lc.includes('fail') || lc.includes('invalid')) ? '⚠️' : lc.includes('success') ? '✅' : 'ℹ️';
       msgEl.textContent = msg;
       modal.style.display = 'flex';
     }
   };
+
+  function openNavDrawer() {
+    document.getElementById('nav-drawer').classList.add('open');
+    document.getElementById('nav-drawer-overlay').classList.add('open');
+  }
+  function closeNavDrawer() {
+    document.getElementById('nav-drawer').classList.remove('open');
+    document.getElementById('nav-drawer-overlay').classList.remove('open');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeNavDrawer();
+  });
 
   const API = window.location.origin + '/api';
   const token = localStorage.getItem('valence_token');

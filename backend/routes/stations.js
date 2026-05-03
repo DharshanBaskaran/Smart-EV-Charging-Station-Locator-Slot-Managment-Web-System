@@ -8,15 +8,24 @@ const router = express.Router();
 const Station = require('../models/Station');
 const Port = require('../models/Port');
 const Review = require('../models/Review');
-const { requireAuth, requireAdmin } = require('../middleware/auth');
+const User = require('../models/User');
+const { requireAuth, requireAdmin, optionalAuth } = require('../middleware/auth');
 const { haversineKm, getPortStatus } = require('../utils/helpers');
 const { createNotification } = require('../utils/notifications');
 const logger = require('../utils/logger');
 
 // ── GET /api/stations ────────────────────────────────────────────────────────
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
-    let stations = await Station.find({});
+    // Admins see all stations; regular users only see approved
+    const filter = (req.userRole === 'admin') ? {} : { status: { $ne: 'rejected' } };
+    // Show pending only to the user who added them + admins
+    let stations = await Station.find(filter);
+    if (req.userRole !== 'admin') {
+      stations = stations.filter(s =>
+        s.status === 'approved' || (s.status === 'pending' && s.addedBy === req.userId)
+      );
+    }
     const lat    = parseFloat(req.query.lat);
     const lng    = parseFloat(req.query.lng);
     const rangeKm = parseFloat(req.query.rangeKm);
@@ -68,6 +77,7 @@ router.post('/', requireAuth, [
 
     const { name, address, lat, lng, operator, city, state } = req.body;
     const stationId = `st_community_${Date.now()}`;
+    const isAdmin = req.userRole === 'admin';
     const station = await Station.create({
       stationId,
       name: name.trim(),
@@ -78,6 +88,7 @@ router.post('/', requireAuth, [
       city: city || '',
       state: state || '',
       addedBy: req.userId,
+      status: isAdmin ? 'approved' : 'pending',
     });
 
     // Create a default port
@@ -89,10 +100,21 @@ router.post('/', requireAuth, [
       pricePerKwh: 12,
     });
 
-    await createNotification(req.userId, 'station_added', 'Station Added ⚡',
-      `Your station "${name}" has been added to the VoltPath network.`);
+    if (isAdmin) {
+      await createNotification(req.userId, 'station_added', 'Station Added ⚡',
+        `Your station "${name}" has been added to the Valence network.`);
+    } else {
+      await createNotification(req.userId, 'station_pending', 'Station Pending Approval ⏳',
+        `Your station "${name}" has been submitted and is pending admin approval.`);
+      // Notify all admins
+      const admins = await User.find({ role: 'admin' });
+      for (const admin of admins) {
+        await createNotification(admin.userId, 'admin_review', 'New Station Needs Approval 🔔',
+          `User submitted station "${name}" at ${address}. Review it in the Admin Panel.`);
+      }
+    }
 
-    logger.info('Station created', { stationId, by: req.userId });
+    logger.info('Station created', { stationId, by: req.userId, status: station.status });
     res.status(201).json({ ...station.toObject(), id: station.stationId });
   } catch (e) {
     logger.error('Station creation error', { error: e.message });

@@ -41,6 +41,48 @@
       border-color: var(--accent);
     }
 
+    /* ── Hamburger Button ── */
+    .hamburger-btn {
+      background: none; border: none; cursor: pointer;
+      display: flex; flex-direction: column; gap: 5px;
+      padding: 6px; border-radius: 8px; transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .hamburger-btn:hover { background: var(--surface2); }
+    .hamburger-btn span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+
+    /* ── Side Drawer ── */
+    .nav-drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 8888; backdrop-filter: blur(2px); }
+    .nav-drawer-overlay.open { display: block; }
+    .nav-drawer {
+      position: fixed; top: 0; left: -280px; bottom: 0; width: 260px;
+      background: var(--surface); border-right: 1px solid var(--surface2);
+      z-index: 8889; transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column; padding: 0;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+    }
+    .nav-drawer.open { left: 0; }
+    .nav-drawer-header { padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid var(--surface2); display: flex; align-items: center; justify-content: space-between; }
+    .nav-drawer-logo { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+    .nav-drawer-close { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 4px; border-radius: 6px; transition: all 0.15s; }
+    .nav-drawer-close:hover { background: var(--surface2); color: var(--text); }
+    .nav-drawer-links { padding: 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; overflow-y: auto; }
+    .nav-drawer-links a, .nav-drawer-links button.nav-drawer-btn {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 0.85rem; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; color: var(--text-muted);
+      text-decoration: none; transition: all 0.15s; border: 1px solid transparent;
+      cursor: pointer; background: none; width: 100%; font-family: inherit;
+    }
+    .nav-drawer-links a:hover, .nav-drawer-links button.nav-drawer-btn:hover { background: var(--surface2); color: var(--text); }
+    .nav-drawer-links a.active { background: rgba(0,230,118,0.12); color: var(--accent); border-color: rgba(0,230,118,0.2); }
+    .nav-drawer-links .nav-icon { font-size: 1.1rem; width: 1.4rem; text-align: center; flex-shrink: 0; }
+    .nav-drawer-divider { height: 1px; background: var(--surface2); margin: 0.5rem 0; }
+    .nav-drawer-section-label {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--text-muted); padding: 0.4rem 0.85rem 0.1rem;
+    }
+
     /* ── Stations Tab Panel ───────────────────── */
     #stations-tab-panel {
       display: none;
@@ -264,10 +306,41 @@
 </head>
 
 <body>
+
+  <!-- ── Side Nav Drawer ── -->
+  <div class="nav-drawer-overlay" id="nav-drawer-overlay" onclick="closeNavDrawer()"></div>
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-drawer-header">
+      <span class="nav-drawer-logo">⚡ Valence</span>
+      <button class="nav-drawer-close" onclick="closeNavDrawer()">✕</button>
+    </div>
+    <div class="nav-drawer-links">
+      <span class="nav-drawer-section-label">Navigation</span>
+      <a href="/" class="active"><span class="nav-icon">🗺</span> Map</a>
+      <a href="/dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="/history.html"><span class="nav-icon">⚡</span> History</a>
+      <div class="nav-drawer-divider"></div>
+      <span class="nav-drawer-section-label">Management</span>
+      <a href="/fleet.html"><span class="nav-icon">🚗</span> Fleet</a>
+      <a href="/owner.html"><span class="nav-icon">🏢</span> Owner Portal</a>
+      <div class="nav-drawer-divider"></div>
+      <span class="nav-drawer-section-label">Tools</span>
+      <button class="nav-drawer-btn" onclick="closeNavDrawer(); setTimeout(openCostEstimator,100);"><span class="nav-icon">💰</span> Cost Estimator</button>
+      <button class="nav-drawer-btn" onclick="closeNavDrawer(); setTimeout(openCarbonTracker,100);"><span class="nav-icon">🌱</span> Carbon Footprint</button>
+      <button class="nav-drawer-btn" onclick="closeNavDrawer(); setTimeout(openPricingModal,100);"><span class="nav-icon">⚡</span> Live Pricing</button>
+      <button class="nav-drawer-btn" onclick="closeNavDrawer(); setTimeout(openReferralModal,100);"><span class="nav-icon">🎁</span> Refer & Earn</button>
+    </div>
+  </div>
+
   <header class="header">
-    <div class="header-left">
-      <h1>Valence</h1>
-      <p class="tagline">Smart EV Charging Station Locator & Slot Management</p>
+    <div class="header-left" style="display:flex; align-items:center; gap:0.75rem;">
+      <button class="hamburger-btn" id="hamburger-btn" onclick="openNavDrawer()" title="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div>
+        <h1>Valence</h1>
+        <p class="tagline">Smart EV Charging Station Locator & Slot Management</p>
+      </div>
     </div>
     <div class="header-right">
       <div style="text-align:right; margin-right:0.25rem;">
@@ -310,13 +383,7 @@
         <p class="hint">Going somewhere far? Plan your charging stops.</p>
         <button type="button" class="btn btn-secondary" id="btn-open-trip" style="width:100%;">Plan Long Trip</button>
       </section>
-      <section class="panel-section">
-        <h2>🛠 Tools</h2>
-        <button type="button" class="btn btn-secondary" onclick="openCostEstimator()" style="width:100%; margin-bottom:0.5rem;">💰 Cost Estimator</button>
-        <button type="button" class="btn btn-secondary" onclick="openCarbonTracker()" style="width:100%; margin-bottom:0.5rem;">🌱 Carbon Footprint</button>
-        <button type="button" class="btn btn-secondary" onclick="openPricingModal()" style="width:100%; margin-bottom:0.5rem;">⚡ Live Pricing</button>
-        <button type="button" class="btn btn-secondary" onclick="openReferralModal()" style="width:100%;">🎁 Refer & Earn</button>
-      </section>
+
       <section class="panel-section" id="battery-tips-section">
         <h2>🔋 Battery Health Tips</h2>
         <div id="battery-tips-container"></div>
@@ -817,6 +884,17 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="app.js"></script>
   <script>
+    // ── Nav Drawer Controls ──
+    function openNavDrawer() {
+      document.getElementById('nav-drawer').classList.add('open');
+      document.getElementById('nav-drawer-overlay').classList.add('open');
+    }
+    function closeNavDrawer() {
+      document.getElementById('nav-drawer').classList.remove('open');
+      document.getElementById('nav-drawer-overlay').classList.remove('open');
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeNavDrawer(); });
+
     // PWA Service Worker Registration
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')

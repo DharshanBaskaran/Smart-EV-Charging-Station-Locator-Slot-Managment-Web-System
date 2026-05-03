@@ -44,6 +44,7 @@ const pricingRoutes       = require('./routes/pricing');
 const chatRoutes          = require('./routes/chat');
 const fleetRoutes         = require('./routes/fleet');
 const ownerRoutes         = require('./routes/owner');
+const adminRoutes         = require('./routes/admin');
 
 // ── WebSocket Manager ────────────────────────────────────────────────────────
 const { initSocketIO } = require('./utils/socketManager');
@@ -114,6 +115,7 @@ app.use('/api/pricing',       pricingRoutes);    // /api/pricing/current, /api/p
 app.use('/api/chat',          chatRoutes);       // /api/chat/history, /api/chat/send, /api/chat/close
 app.use('/api/fleet',         fleetRoutes);      // /api/fleet/vehicles CRUD
 app.use('/api/owner',         ownerRoutes);      // /api/owner/stations, port mgmt
+app.use('/api/admin',         adminRoutes);      // /api/admin/pending-stations, approve, reject, users, broadcast
 
 // ── Backward-compatible review routes ────────────────────────────────────────
 // Frontend calls GET/POST /api/stations/:id/reviews — redirect to review routes

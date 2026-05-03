@@ -88,4 +88,4 @@ async function optionalAuth(req, res, next) {
   next();
 }
 
-module.exports = { generateToken, requireAuth, requireAdmin, optionalAuth };
+module.exports = { generateToken, requireAuth, verifyToken: requireAuth, requireAdmin, optionalAuth };

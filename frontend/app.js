@@ -785,24 +785,26 @@ function renderHeader() {
   if (usernameEl) usernameEl.textContent = currentUser ? ('@' + (currentUser.username || '')) : '';
   if (adminBtn)   adminBtn.style.display = (currentUser && currentUser.role === 'admin') ? '' : 'none';
 
-  // Add Dashboard + Notification bell to header-right if not already there
-  const headerRight = document.querySelector('.header-right');
-  if (headerRight && !document.getElementById('btn-dashboard')) {
-    const dashBtn = document.createElement('a');
-    dashBtn.href = '/dashboard.html';
-    dashBtn.id = 'btn-dashboard';
-    dashBtn.className = 'btn btn-small btn-secondary';
-    dashBtn.textContent = '📊 Dashboard';
-    dashBtn.style.marginRight = '0.25rem';
-    headerRight.insertBefore(dashBtn, headerRight.firstChild);
+  // Show ADMIN badge in header
+  if (currentUser && currentUser.role === 'admin' && !document.getElementById('admin-badge')) {
+    const badge = document.createElement('span');
+    badge.id = 'admin-badge';
+    badge.textContent = 'ADMIN';
+    badge.style.cssText = 'font-size:0.6rem;font-weight:800;background:rgba(255,82,82,0.15);color:#ff5252;padding:0.15rem 0.45rem;border-radius:4px;margin-left:0.3rem;letter-spacing:1px;';
+    const nameEl = document.getElementById('header-fullname');
+    if (nameEl) nameEl.parentNode.insertBefore(badge, nameEl.nextSibling);
+  }
 
+  // Add Notification bell to header-right if not already there
+  const headerRight = document.querySelector('.header-right');
+  if (headerRight && !document.getElementById('btn-notif')) {
     const notifBtn = document.createElement('a');
     notifBtn.href = '/dashboard.html';
     notifBtn.id = 'btn-notif';
     notifBtn.className = 'btn btn-small btn-secondary';
     notifBtn.innerHTML = '🔔 <span id="notif-count-badge" style="background:var(--danger);color:#fff;font-size:0.65rem;padding:0.05rem 0.35rem;border-radius:8px;margin-left:0.2rem;display:none;"></span>';
     notifBtn.style.marginRight = '0.25rem';
-    headerRight.insertBefore(notifBtn, dashBtn.nextSibling);
+    headerRight.insertBefore(notifBtn, headerRight.firstChild);
 
     // Load notification count
     fetchNotificationCount().then(count => {
@@ -2688,7 +2690,10 @@ function toggleChat() {
   const panel = document.getElementById('chat-panel');
   const fab = document.getElementById('chat-fab');
   if (panel) panel.style.display = chatOpen ? 'flex' : 'none';
-  if (fab) fab.style.transform = chatOpen ? 'scale(0.9)' : 'scale(1)';
+  if (fab) {
+    fab.style.transform = chatOpen ? 'scale(0.9)' : 'scale(1)';
+    fab.textContent = chatOpen ? '✕' : '💬';
+  }
 
   if (chatOpen) {
     loadChatHistory();
@@ -2701,28 +2706,34 @@ async function loadChatHistory() {
     const res = await fetch(API_BASE + '/chat/history', { headers: authHeaders() });
     if (!res.ok) return;
     const data = await res.json();
+    const container = document.getElementById('chat-messages');
     if (data.messages && data.messages.length > 0) {
-      const container = document.getElementById('chat-messages');
       container.innerHTML = data.messages.map(m => renderChatBubble(m)).join('');
       container.scrollTop = container.scrollHeight;
     }
   } catch (_) { /* silent */ }
 }
 
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function renderChatBubble(msg) {
   const isUser = msg.sender === 'user';
   const align = isUser ? 'flex-end' : 'flex-start';
-  const bg = isUser ? 'var(--accent)' : 'var(--surface2)';
-  const color = isUser ? '#000' : 'var(--text)';
-  const time = new Date(msg.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-  const name = isUser ? 'You' : (msg.senderName || '🤖 Bot');
+  const bubbleClass = isUser ? 'chat-bubble-user' : 'chat-bubble-bot';
+  const time = msg.timestamp
+    ? new Date(msg.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+    : '';
+  const name = isUser ? 'You' : (msg.senderName || '🤖 Valence Bot');
+
+  // Convert newlines to <br> for multi-line bot responses
+  const formattedText = escapeHtml(msg.text || '').replace(/\n/g, '<br>');
 
   return `
-    <div style="display:flex; flex-direction:column; align-items:${align}; max-width:85%;">
-      <div style="font-size:0.65rem; color:var(--text-muted); margin-bottom:0.1rem;">${name} · ${time}</div>
-      <div style="background:${bg}; color:${color}; padding:0.45rem 0.7rem; border-radius:12px; font-size:0.82rem; line-height:1.4;">
-        ${msg.text}
-      </div>
+    <div style="display:flex; flex-direction:column; align-items:${align}; max-width:88%; align-self:${align};">
+      <div style="font-size:0.63rem; color:var(--text-muted); margin-bottom:0.15rem; padding:0 0.2rem;">${name}${time ? ' · ' + time : ''}</div>
+      <div class="${bubbleClass}">${formattedText}</div>
     </div>
   `;
 }
@@ -2734,6 +2745,10 @@ async function sendChatMessage() {
 
   const container = document.getElementById('chat-messages');
 
+  // Remove welcome message if present
+  const welcome = container.querySelector('[data-welcome]');
+  if (welcome) welcome.remove();
+
   // Show user message immediately
   container.innerHTML += renderChatBubble({
     sender: 'user', senderName: 'You', text, timestamp: new Date()
@@ -2741,13 +2756,13 @@ async function sendChatMessage() {
   input.value = '';
   container.scrollTop = container.scrollHeight;
 
-  // Show typing indicator
+  // Show animated typing indicator
   const typingId = 'typing-' + Date.now();
-  container.innerHTML += `<div id="${typingId}" style="display:flex; align-items:flex-start;">
-    <div style="background:var(--surface2); padding:0.45rem 0.7rem; border-radius:12px; font-size:0.82rem; color:var(--text-muted);">
-      <span style="animation: blink 1s infinite;">●●●</span>
-    </div>
-  </div>`;
+  container.innerHTML += `
+    <div id="${typingId}" style="display:flex; flex-direction:column; align-items:flex-start; max-width:88%; align-self:flex-start;">
+      <div style="font-size:0.63rem; color:var(--text-muted); margin-bottom:0.15rem; padding:0 0.2rem;">🤖 Valence Bot</div>
+      <div class="chat-typing"><span></span><span></span><span></span></div>
+    </div>`;
   container.scrollTop = container.scrollHeight;
 
   try {
@@ -2770,35 +2785,12 @@ async function sendChatMessage() {
     const typing = document.getElementById(typingId);
     if (typing) typing.remove();
     container.innerHTML += renderChatBubble({
-      sender: 'bot', senderName: '🤖 Bot', text: '⚠️ Connection error. Please try again.', timestamp: new Date()
+      sender: 'bot', senderName: '🤖 Valence Bot',
+      text: '⚠️ Connection error. Please try again.',
+      timestamp: new Date()
     });
+    container.scrollTop = container.scrollHeight;
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// FEATURE 12 & 14: Fleet + Owner Nav Links (in header)
-// ══════════════════════════════════════════════════════════════════════════════
-(function addAdvancedNavLinks() {
-  const headerRight = document.querySelector('.header-right');
-  if (!headerRight || document.getElementById('btn-fleet')) return;
 
-  const fleetBtn = document.createElement('a');
-  fleetBtn.href = '/fleet.html';
-  fleetBtn.id = 'btn-fleet';
-  fleetBtn.className = 'btn btn-small btn-secondary';
-  fleetBtn.textContent = '🚗 Fleet';
-  fleetBtn.style.marginRight = '0.25rem';
-
-  const ownerBtn = document.createElement('a');
-  ownerBtn.href = '/owner.html';
-  ownerBtn.id = 'btn-owner';
-  ownerBtn.className = 'btn btn-small btn-secondary';
-  ownerBtn.textContent = '🏢 Owner';
-  ownerBtn.style.marginRight = '0.25rem';
-
-  // Insert after dashboard button if it exists
-  const dashBtn = document.getElementById('btn-dashboard');
-  const refNode = dashBtn ? dashBtn.nextSibling : headerRight.firstChild;
-  headerRight.insertBefore(ownerBtn, refNode);
-  headerRight.insertBefore(fleetBtn, ownerBtn);
-})();

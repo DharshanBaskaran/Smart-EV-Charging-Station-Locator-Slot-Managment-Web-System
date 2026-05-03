@@ -3,82 +3,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Valence – Admin</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Valence – Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    .admin-page { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
-    .admin-page h1 { color: var(--accent); margin-bottom: 0.5rem; }
-    .admin-page a { color: var(--accent); }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--surface2); }
-    th { color: var(--text-muted); font-weight: 600; font-size: 0.85rem; }
-    .admin-error { color: var(--danger); margin-top: 1rem; }
+    body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); margin:0; }
+    .admin-shell { display:flex; min-height:100vh; }
+
+    /* Sidebar */
+    .admin-sidebar { width:240px; background:var(--surface); border-right:1px solid var(--surface2); display:flex; flex-direction:column; position:fixed; top:0; bottom:0; z-index:100; }
+    .admin-logo { padding:1.25rem; border-bottom:1px solid var(--surface2); }
+    .admin-logo h2 { font-size:1.1rem; font-weight:800; color:var(--accent); margin:0; }
+    .admin-logo span { font-size:0.65rem; background:rgba(255,82,82,0.15); color:#ff5252; padding:0.1rem 0.4rem; border-radius:4px; font-weight:700; margin-left:0.4rem; }
+    .admin-nav { flex:1; padding:0.5rem; display:flex; flex-direction:column; gap:0.15rem; }
+    .admin-nav a { display:flex; align-items:center; gap:0.6rem; padding:0.65rem 0.8rem; border-radius:10px; font-size:0.85rem; font-weight:600; color:var(--text-muted); text-decoration:none; transition:all 0.15s; cursor:pointer; border:none; background:none; width:100%; }
+    .admin-nav a:hover { background:var(--surface2); color:var(--text); }
+    .admin-nav a.active { background:rgba(0,230,118,0.12); color:var(--accent); }
+    .admin-nav .icon { font-size:1rem; width:1.3rem; text-align:center; }
+    .admin-nav-footer { padding:0.75rem; border-top:1px solid var(--surface2); }
+
+    /* Main */
+    .admin-main { margin-left:240px; flex:1; padding:1.5rem; }
+    .admin-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+    .admin-topbar h1 { font-size:1.3rem; font-weight:800; }
+
+    /* Tab panels */
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* KPI Cards */
+    .kpi-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.6rem; margin-bottom:1.25rem; }
+    .kpi { background:var(--surface); border:1px solid var(--surface2); border-radius:12px; padding:0.85rem; text-align:center; }
+    .kpi .label { font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; }
+    .kpi .value { font-size:1.4rem; font-weight:800; color:var(--accent); margin-top:0.15rem; }
+
+    /* Charts */
+    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.25rem; }
+    .chart-card { background:var(--surface); border:1px solid var(--surface2); border-radius:12px; padding:1rem; }
+    .chart-card h3 { font-size:0.85rem; font-weight:700; margin-bottom:0.5rem; }
+
+    /* Tables */
+    .admin-table { width:100%; border-collapse:collapse; }
+    .admin-table th { text-align:left; padding:0.5rem 0.6rem; font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; border-bottom:1px solid var(--surface2); }
+    .admin-table td { padding:0.55rem 0.6rem; font-size:0.82rem; border-bottom:1px solid var(--surface2); }
+    .admin-table tr:hover { background:var(--surface2); }
+
+    /* Badges */
+    .badge { display:inline-block; padding:0.1rem 0.45rem; border-radius:4px; font-size:0.68rem; font-weight:700; text-transform:uppercase; }
+    .badge-admin { background:rgba(255,82,82,0.15); color:#ff5252; }
+    .badge-user { background:rgba(0,176,255,0.15); color:#00b0ff; }
+    .badge-pending { background:rgba(255,171,0,0.15); color:#ffab00; }
+    .badge-approved { background:rgba(0,230,118,0.15); color:#00e676; }
+
+    /* Action buttons */
+    .act-btn { background:none; border:1px solid var(--surface2); color:var(--text-muted); padding:0.25rem 0.5rem; border-radius:6px; font-size:0.72rem; cursor:pointer; transition:all 0.15s; }
+    .act-btn:hover { background:var(--surface2); color:var(--text); }
+    .act-btn.approve { border-color:rgba(0,230,118,0.3); color:#00e676; }
+    .act-btn.approve:hover { background:rgba(0,230,118,0.15); }
+    .act-btn.reject { border-color:rgba(255,82,82,0.3); color:#ff5252; }
+    .act-btn.reject:hover { background:rgba(255,82,82,0.15); }
+
+    /* Search */
+    .search-bar {
+      display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;
+      background: linear-gradient(135deg, var(--surface), var(--surface2));
+      border: 1px solid rgba(0,230,118,0.12);
+      border-radius: 14px; padding: 0.5rem 0.85rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .search-bar:focus-within {
+      border-color: rgba(0,230,118,0.5);
+      box-shadow: 0 2px 20px rgba(0,230,118,0.15), 0 0 0 3px rgba(0,230,118,0.08);
+    }
+    .search-icon {
+      font-size: 1rem; color: var(--text-muted); transition: color 0.3s;
+      flex-shrink: 0;
+    }
+    .search-bar:focus-within .search-icon { color: var(--accent); }
+    .search-bar input {
+      flex:1; background:transparent !important; border:none !important;
+      outline:none !important; color:var(--text); font-size:0.88rem;
+      padding:0.3rem 0; box-shadow:none !important;
+    }
+    .search-bar input::placeholder { color:var(--text-muted); opacity:0.7; }
+    .search-count {
+      font-size:0.65rem; font-weight:700; color:var(--accent);
+      background:rgba(0,230,118,0.1); padding:0.15rem 0.5rem;
+      border-radius:8px; white-space:nowrap; flex-shrink:0;
+    }
+
+    /* Pending count */
+    .pending-dot { background:#ffab00; color:#000; font-size:0.6rem; font-weight:800; padding:0.1rem 0.35rem; border-radius:10px; margin-left:auto; }
+
+    /* Broadcast form */
+    .broadcast-form { background:var(--surface); border:1px solid var(--surface2); border-radius:12px; padding:1rem; max-width:500px; }
+    .broadcast-form textarea { width:100%; min-height:80px; resize:vertical; }
+
+    @media(max-width:768px) {
+      .admin-sidebar { width:60px; }
+      .admin-sidebar .admin-nav a span:not(.icon) { display:none; }
+      .admin-main { margin-left:60px; }
+      .kpi-grid { grid-template-columns:repeat(2,1fr); }
+      .chart-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <h1>Valence</h1>
-      <p class="tagline">Admin – User management</p>
-    </div>
-    <div class="header-right">
-      <a href="/" class="btn btn-small btn-secondary">Back to app</a>
-      <a href="#" id="admin-logout" class="btn btn-small btn-secondary">Logout</a>
-    </div>
-  </header>
-  <main class="admin-page">
-    <h1>User records</h1>
-    <p>Manage user accounts (view only in this demo).</p>
-    <div id="admin-content"></div>
-  </main>
-  <script>
-    const API = window.location.origin + '/api';
-    const token = localStorage.getItem('valence_token');
-    const user = (() => { try { return JSON.parse(localStorage.getItem('valence_user') || 'null'); } catch { return null; } })();
-    if (!token || !user) {
-      window.location.href = '/login.html';
-    }
-    document.getElementById('admin-logout').addEventListener('click', (e) => {
-      e.preventDefault();
-      fetch(API + '/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }).catch(() => {});
-      localStorage.removeItem('valence_token');
-      localStorage.removeItem('valence_user');
-      window.location.href = '/login.html';
-    });
-    fetch(API + '/users', { headers: { Authorization: 'Bearer ' + token } })
-      .then(res => {
-        if (res.status === 403) {
-          document.getElementById('admin-content').innerHTML = '<p class="admin-error">Admin access required.</p>';
-          return;
-        }
-        if (!res.ok) throw new Error('Failed to load users');
-        return res.json();
-      })
-      .then(users => {
-        if (!users) return;
-        document.getElementById('admin-content').innerHTML = `
-          <table>
-            <thead>
-              <tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th>Vehicle</th><th>Range (km)</th></tr>
-            </thead>
-            <tbody>
-              ${users.map(u => `
-                <tr>
-                  <td>${u.username || '-'}</td>
-                  <td>${u.name || '-'}</td>
-                  <td>${u.email || '-'}</td>
-                  <td>${u.role || 'user'}</td>
-                  <td>${u.vehicleType || ''} ${u.vehicleModel || ''}</td>
-                  <td>${u.batteryRangeKm ?? '-'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        `;
-      })
-      .catch(err => {
-        document.getElementById('admin-content').innerHTML = '<p class="admin-error">' + err.message + '</p>';
-      });
-  </script>
+  <div class="admin-shell">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo"><h2>Valence <span>ADMIN</span></h2></div>
+      <nav class="admin-nav" id="admin-nav">
+        <a data-tab="overview" class="active"><span class="icon">📊</span><span>Overview</span></a>
+        <a data-tab="users"><span class="icon">👥</span><span>Users</span></a>
+        <a data-tab="stations"><span class="icon">⚡</span><span>Stations</span><span class="pending-dot" id="pending-count" style="display:none;">0</span></a>
+        <a data-tab="activity"><span class="icon">📋</span><span>Activity</span></a>
+        <a data-tab="system"><span class="icon">🎛️</span><span>System</span></a>
+      </nav>
+      <div class="admin-nav-footer">
+        <a href="/" class="admin-nav" style="padding:0.5rem 0.8rem; display:flex; align-items:center; gap:0.5rem; color:var(--text-muted); text-decoration:none; font-size:0.82rem;">← Back to Map</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <h1 id="tab-title">📊 Overview</h1>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <span id="admin-user" style="font-size:0.8rem;color:var(--text-muted);"></span>
+          <a href="/dashboard.html" class="btn btn-small btn-secondary">Dashboard</a>
+        </div>
+      </div>
+
+      <!-- TAB: Overview -->
+      <div class="tab-panel active" id="panel-overview">
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <div class="chart-grid">
+          <div class="chart-card"><h3>📈 Reservations (7 days)</h3><canvas id="chart-reservations"></canvas></div>
+          <div class="chart-card"><h3>🔌 Connector Distribution</h3><canvas id="chart-connectors"></canvas></div>
+        </div>
+        <div class="chart-card" style="max-width:500px;"><h3>🏆 Top 5 Stations</h3><canvas id="chart-top"></canvas></div>
+      </div>
+
+      <!-- TAB: Users -->
+      <div class="tab-panel" id="panel-users">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="user-search" placeholder="Search users by name, email, or username..." oninput="filterUsers()">
+          <span class="search-count" id="user-count">0 users</span>
+        </div>
+        <div id="user-table-wrap"></div>
+      </div>
+
+      <!-- TAB: Stations -->
+      <div class="tab-panel" id="panel-stations">
+        <div id="pending-section"></div>
+        <h3 style="margin:1rem 0 0.5rem;">All Stations</h3>
+        <div id="all-stations-wrap"></div>
+      </div>
+
+      <!-- TAB: Activity -->
+      <div class="tab-panel" id="panel-activity">
+        <div class="chart-grid">
+          <div class="chart-card"><h3>🔄 Recent Reservations</h3><div id="act-reservations"></div></div>
+          <div class="chart-card"><h3>⭐ Recent Reviews</h3><div id="act-reviews"></div></div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card"><h3>👤 New Signups</h3><div id="act-signups"></div></div>
+          <div class="chart-card"><h3>💬 Open Chats</h3><div id="act-chats"></div></div>
+        </div>
+      </div>
+
+      <!-- TAB: System -->
+      <div class="tab-panel" id="panel-system">
+        <div class="chart-grid">
+          <div class="chart-card"><h3>🖥️ Server Health</h3><div id="sys-health"></div></div>
+          <div class="chart-card">
+            <h3>📢 Broadcast Announcement</h3>
+            <div class="broadcast-form" style="border:none;padding:0;">
+              <input type="text" id="bc-title" placeholder="Title (e.g. Scheduled Maintenance)" style="width:100%;margin-bottom:0.4rem;">
+              <textarea id="bc-message" placeholder="Message to all users..."></textarea>
+              <button class="btn btn-primary" onclick="sendBroadcast()" style="margin-top:0.5rem;width:100%;">📢 Send to All Users</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="admin-app.js"></script>
 </body>
 </html>

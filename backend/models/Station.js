@@ -10,6 +10,7 @@ const stationSchema = new mongoose.Schema({
   city:      { type: String, default: '' },
   state:     { type: String, default: '' },
   addedBy:   { type: String, default: 'system' },
+  status:    { type: String, enum: ['pending', 'approved', 'rejected'], default: 'approved' },
 }, { timestamps: true });
 
 // 2dsphere index for geospatial queries (optional future use)
