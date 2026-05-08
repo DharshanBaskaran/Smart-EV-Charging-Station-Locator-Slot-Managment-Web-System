@@ -13,7 +13,7 @@ module.exports = {
   MONGO_URI: process.env.MONGO_URI,
 
   // JWT
-  JWT_SECRET: process.env.JWT_SECRET || 'voltpath_dev_secret_change_in_production',
+  JWT_SECRET: process.env.JWT_SECRET || 'valence_dev_secret_change_in_production',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
 
   // Bcrypt

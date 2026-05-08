@@ -1,4 +1,4 @@
-# VoltPath – Project Analysis Document
+# Valence – Project Analysis Document
 
 ---
 
@@ -15,7 +15,7 @@ India's electric vehicle (EV) ecosystem is growing rapidly, with **25,000+ publi
 5. **Interoperability** – Stations use diverse connector types (Type 2, CCS2, CHAdeMO, Bharat DC-001, GB/T), and there is no unified system to help users filter by compatibility.
 6. **Long-Trip Planning** – Existing apps support "nearby station" search but do not intelligently break a long route into segments and suggest charging stops based on vehicle range.
 
-**VoltPath** aims to solve these problems by providing a **single, centralized, smart EV charging station locator and slot management platform**.
+**Valence** aims to solve these problems by providing a **single, centralized, smart EV charging station locator and slot management platform**.
 
 ---
 
@@ -151,15 +151,15 @@ India's electric vehicle (EV) ecosystem is growing rapidly, with **25,000+ publi
 
 ---
 
-## 6. Proposed System — VoltPath
+## 6. Proposed System — Valence
 
 ### 6.1 System Overview
 
-**VoltPath** is a centralized, smart EV charging station locator and slot management platform that aggregates stations from **all major operators** (Ather, Tata Power, BESCOM, Zeon, and community-added stations) into a **single, unified interface**.
+**Valence** is a centralized, smart EV charging station locator and slot management platform that aggregates stations from **all major operators** (Ather, Tata Power, BESCOM, Zeon, and community-added stations) into a **single, unified interface**.
 
 ### 6.2 Key Differentiators from Existing Systems
 
-| Feature | Existing Apps | VoltPath (Proposed) |
+| Feature | Existing Apps | Valence (Proposed) |
 |---------|---------------|---------------------|
 | Multi-operator stations | ❌ Only own network | ✅ All operators on one map |
 | Single login/account | ❌ Separate per app | ✅ One account for everything |
@@ -265,5 +265,5 @@ India's electric vehicle (EV) ecosystem is growing rapidly, with **25,000+ publi
 
 ---
 
-*Document prepared for: VoltPath – Smart EV Charging Station Locator & Slot Management*
+*Document prepared for: Valence – Smart EV Charging Station Locator & Slot Management*
 *Date: February 2026*

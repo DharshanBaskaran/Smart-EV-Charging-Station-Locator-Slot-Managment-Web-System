@@ -140,7 +140,7 @@ router.post('/register', authLimiter, registerValidation, async (req, res) => {
     const { passwordHash, securityAnswer: sa, ...safe } = user.toObject();
 
     // Welcome notification
-    await createNotification(userId, 'system', 'Welcome to VoltPath! 🎉',
+    await createNotification(userId, 'system', 'Welcome to Valence! 🎉',
       'Your account has been created. Start exploring charging stations near you.');
 
     logger.info('User registered', { userId });

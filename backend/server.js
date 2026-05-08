@@ -1,5 +1,5 @@
 /**
- * VoltPath — Express + MongoDB Server (Refactored)
+ * Valence — Express + MongoDB Server (Refactored)
  * Smart EV Charging Station Locator & Slot Management
  * 
  * Architecture: Modular routes, JWT auth, bcrypt, rate limiting, helmet.
@@ -145,5 +145,5 @@ try {
 }
 
 server.listen(PORT, () => {
-  console.log(`⚡ VoltPath running on port ${PORT}`);
+  console.log(`⚡ Valence running on port ${PORT}`);
 });

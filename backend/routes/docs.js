@@ -8,10 +8,10 @@ const router = express.Router();
 const apiSpec = {
   openapi: '3.0.3',
   info: {
-    title: 'VoltPath API',
+    title: 'Valence API',
     version: '2.0.0',
     description: 'Smart EV Charging Station Locator & Slot Management Platform API.\n\nFeatures: JWT authentication, station management, charging sessions, wallet/payments, reviews, notifications, and real-time WebSocket updates.',
-    contact: { name: 'VoltPath Team' },
+    contact: { name: 'Valence Team' },
   },
   servers: [{ url: '/api', description: 'Main API' }],
   components: {
@@ -129,7 +129,7 @@ router.get('/spec', (req, res) => {
 router.get('/', (req, res) => {
   res.send(`<!DOCTYPE html>
 <html><head>
-  <title>VoltPath API Docs</title>
+  <title>Valence API Docs</title>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
 </head><body>

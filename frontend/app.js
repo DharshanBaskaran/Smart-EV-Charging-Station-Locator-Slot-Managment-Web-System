@@ -774,8 +774,8 @@ function handleReserveClick() {
     });
 }
 
-window.voltPathCloseModal = closeModal;
-window.voltPathReserve = handleReserveClick;
+window.valenceCloseModal = closeModal;
+window.valenceReserve = handleReserveClick;
 
 function renderHeader() {
   const fullnameEl = document.getElementById('header-fullname');
@@ -859,7 +859,7 @@ function openProfileModal() {
   });
 }
 
-window.voltPathCloseProfile = function () {
+window.valenceCloseProfile = function () {
   document.getElementById('modal-profile').style.display = 'none';
   document.body.classList.remove('modal-open');
 };
@@ -876,7 +876,7 @@ document.getElementById('profile-save').addEventListener('click', async () => {
     localStorage.setItem('valence_user', JSON.stringify(updated));
     document.getElementById('input-range-km').value = updated.batteryRangeKm ?? '';
     renderHeader();
-    window.voltPathCloseProfile();
+    window.valenceCloseProfile();
     alert('Profile saved.');
   } catch (e) {
     alert(e.message);
@@ -904,7 +904,7 @@ function setupAddStation() {
   });
 }
 
-window.voltPathCloseAddStation = function () {
+window.valenceCloseAddStation = function () {
   document.getElementById('modal-add-station').style.display = 'none';
   document.body.classList.remove('modal-open');
 };
@@ -921,7 +921,7 @@ document.getElementById('add-station-submit').addEventListener('click', async ()
   }
   try {
     await addStation({ name, address, lat: Number(lat), lng: Number(lng), operator: operator || 'Community' });
-    window.voltPathCloseAddStation();
+    window.valenceCloseAddStation();
     alert('Station added. It will appear on the map.');
     doLocateStations();
   } catch (e) {
@@ -1002,7 +1002,7 @@ function closeTripPanel() {
   if (overlay) overlay.classList.remove('open');
 }
 
-window.voltPathCloseTrip = closeTripPanel;
+window.valenceCloseTrip = closeTripPanel;
 
 function handleTripPlanClick() {
   const range = document.getElementById('input-range-km')?.value;
@@ -1463,10 +1463,10 @@ function init() {
     if (e.target.id === 'modal') closeModal();
   });
   document.getElementById('modal-profile').addEventListener('click', function (e) {
-    if (e.target.id === 'modal-profile') window.voltPathCloseProfile();
+    if (e.target.id === 'modal-profile') window.valenceCloseProfile();
   });
   document.getElementById('modal-add-station').addEventListener('click', function (e) {
-    if (e.target.id === 'modal-add-station') window.voltPathCloseAddStation();
+    if (e.target.id === 'modal-add-station') window.valenceCloseAddStation();
   });
 
   // Trip panel overlay click handled in openTripPanel()
@@ -2576,8 +2576,8 @@ function renderSavedRoutes() {
 }
 
 // Render saved routes when trip modal opens
-const origOpenTrip = window.voltPathOpenTrip || (() => {});
-window.voltPathOpenTrip = function() {
+const origOpenTrip = window.valenceOpenTrip || (() => {});
+window.valenceOpenTrip = function() {
   const tripModal = document.getElementById('modal-trip');
   if (tripModal) tripModal.style.display = 'flex';
   document.body.classList.add('modal-open');
@@ -2587,7 +2587,7 @@ window.voltPathOpenTrip = function() {
 // Hook into trip open button
 const btnOpenTrip = document.getElementById('btn-open-trip');
 if (btnOpenTrip) {
-  btnOpenTrip.onclick = () => window.voltPathOpenTrip();
+  btnOpenTrip.onclick = () => window.valenceOpenTrip();
 }
 
 // Also render on initial load in case modal is already open

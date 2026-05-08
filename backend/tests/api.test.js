@@ -1,5 +1,5 @@
 /**
- * VoltPath — API Tests
+ * Valence — API Tests
  * Basic test suite for critical endpoints.
  * Run: npx jest --verbose   OR   npm test
  */
@@ -169,4 +169,4 @@ describe('API Documentation', () => {
   });
 });
 
-console.log('\n⚡ VoltPath API Tests — run with: node --test tests/api.test.js\n');
+console.log('\n⚡ Valence API Tests — run with: node --test tests/api.test.js\n');

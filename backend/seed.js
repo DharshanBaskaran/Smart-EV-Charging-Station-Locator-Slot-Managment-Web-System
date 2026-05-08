@@ -1,5 +1,5 @@
 /**
- * VoltPath - MongoDB Seed Script (Updated for bcrypt)
+ * Valence - MongoDB Seed Script (Updated for bcrypt)
  * Seeds users, stations, and ports from JSON files into MongoDB.
  * Run once: node seed.js
  */
@@ -37,7 +37,7 @@ async function seed() {
           userId: 'u1', username: 'admin',
           passwordHash: adminHash,
           role: 'admin', name: 'Admin',
-          email: 'admin@voltpath.com',
+          email: 'admin@valence.com',
           vehicleType: 'bike', vehicleModel: '', batteryRangeKm: 80,
         },
         {
@@ -112,13 +112,13 @@ async function seed() {
           description: 'First charge bonus — ₹100 free credit',
         },
         {
-          code: 'VOLTPATH20', type: 'flat', value: 20,
+          code: 'VALENCE20', type: 'flat', value: 20,
           usageLimit: 5000, perUserLimit: 3,
           validUntil: new Date('2027-12-31'),
           description: 'Repeat user bonus — ₹20 free credit',
         },
       ]);
-      console.log('   ✔ 3 promo codes created (WELCOME50, CHARGE100, VOLTPATH20)');
+      console.log('   ✔ 3 promo codes created (WELCOME50, CHARGE100, VALENCE20)');
     } else {
       console.log(`   ℹ  Promo codes already seeded (${promoCount} found) — skipping.`);
     }
