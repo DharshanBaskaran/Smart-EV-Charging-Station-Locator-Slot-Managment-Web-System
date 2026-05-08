@@ -487,46 +487,55 @@
     </div>
   </div>
 
-  <div id="modal-trip" class="modal" style="display: none;">
-    <div class="modal-content">
-      <h3>Plan Long Trip</h3>
-      <div id="trip-body">
-        <p>1. Enter your battery range (km).</p>
-        <p>2. Enter your Start Location.</p>
-        <p>3. Enter your End Location.</p>
-        <p>4. We will calculate the route and suggest charging stops.</p>
-        <div style="margin-top: 1rem;">
+  <!-- ── Trip Planner Left Panel ── -->
+  <div id="trip-panel" class="trip-panel">
+    <div class="trip-panel-header">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span style="font-size:1.2rem;">🗺️</span>
+        <h3 style="margin:0; font-size:1rem; font-weight:700;">Plan Long Trip</h3>
+      </div>
+      <button class="trip-panel-close" onclick="window.voltPathCloseTrip()" title="Close">✕</button>
+    </div>
+    <div class="trip-panel-body">
+      <div class="trip-panel-instructions">
+        <div class="trip-step"><span class="trip-step-num">1</span> Enter your battery range (km)</div>
+        <div class="trip-step"><span class="trip-step-num">2</span> Enter start location</div>
+        <div class="trip-step"><span class="trip-step-num">3</span> Enter destination</div>
+        <div class="trip-step"><span class="trip-step-num">4</span> We'll find charging stops</div>
+      </div>
+      <div class="trip-panel-form">
+        <div class="trip-field">
           <label>Battery Range (km)</label>
-          <input type="number" id="trip-range" value="80" min="50" style="width: 100%; box-sizing: border-box;" />
-          <span id="trip-range-warning" style="display:none; color:var(--danger); font-size:0.75rem; margin-top:0.25rem;">Minimum range for long trips is 50 km.</span>
+          <input type="number" id="trip-range" value="80" min="50" />
+          <span id="trip-range-warning" style="display:none; color:var(--danger); font-size:0.72rem; margin-top:0.2rem;">Minimum range for long trips is 50 km.</span>
         </div>
-        <div style="margin-top: 1rem;">
+        <div class="trip-field">
           <label>Start Location</label>
-          <div style="display:flex; gap: 0.5rem; width:100%;">
-            <input type="text" id="trip-start-text" placeholder="e.g. Bangalore" style="flex:1; box-sizing: border-box;" />
-            <button type="button" class="btn btn-secondary" id="btn-use-my-loc-trip" title="Use My Location" style="padding: 0 0.75rem;">📍</button>
+          <div style="display:flex; gap:0.4rem;">
+            <input type="text" id="trip-start-text" placeholder="e.g. Bangalore" style="flex:1;" />
+            <button type="button" class="btn btn-secondary" id="btn-use-my-loc-trip" title="Use My Location" style="padding:0 0.6rem; min-height:auto; min-width:auto;">📍</button>
           </div>
         </div>
-        <div style="margin-top: 1rem;">
+        <div class="trip-field">
           <label>End Location</label>
-          <input type="text" id="trip-end-text" placeholder="e.g. Mysore" style="width: 100%; box-sizing: border-box;" />
+          <input type="text" id="trip-end-text" placeholder="e.g. Mysore" />
         </div>
-        <div style="margin-top: 1.5rem; text-align: center;">
-          <button class="btn btn-primary" id="btn-calc-trip-route" style="width: 100%;">Calculate Trip</button>
-        </div>
-        <div id="trip-loading" style="display:none; text-align:center; margin-top:1rem;">Calculating...</div>
-        <div id="trip-results" style="margin-top: 1rem; display: none;">
-          <h4>Trip Plan</h4>
-          <div id="trip-stops-list"></div>
-        </div>
+        <button class="btn btn-primary" id="btn-calc-trip-route" style="width:100%; margin-top:0.5rem;">🔍 Calculate Trip</button>
       </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-primary" id="btn-navigate-trip" style="display:none;">Navigate Route</button>
-        <button type="button" class="btn btn-primary" id="btn-save-route" style="display:none;" onclick="saveCurrentRoute()">💾 Save Route</button>
-        <button type="button" class="btn btn-secondary" onclick="window.voltPathCloseTrip()">Close</button>
+      <div id="trip-loading" class="trip-loading" style="display:none;">
+        <div class="trip-loading-spinner"></div>
+        <span>Calculating route...</span>
       </div>
-      <div id="saved-routes-section" style="margin-top:1rem; border-top:1px solid var(--surface2); padding-top:0.75rem;">
-        <h4 style="font-size:0.82rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-muted);">📁 Saved Routes</h4>
+      <div id="trip-results" style="display:none; margin-top:0.75rem;">
+        <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem; color:var(--accent);">📋 Trip Plan</h4>
+        <div id="trip-stops-list"></div>
+      </div>
+      <div class="trip-panel-actions" id="trip-panel-actions" style="display:none;">
+        <button type="button" class="btn btn-primary" id="btn-navigate-trip" style="display:none; flex:1;">🧭 Navigate</button>
+        <button type="button" class="btn btn-primary" id="btn-save-route" style="display:none; flex:1;" onclick="saveCurrentRoute()">💾 Save</button>
+      </div>
+      <div id="saved-routes-section" class="trip-saved-routes">
+        <h4 style="font-size:0.8rem; font-weight:700; margin-bottom:0.5rem; color:var(--text-muted);">📁 Saved Routes</h4>
         <div id="saved-routes-list"></div>
       </div>
     </div>

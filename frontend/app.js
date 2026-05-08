@@ -978,25 +978,37 @@ let destinationMarker = null;
 let tripRouteLine = null;
 let tripStopMarkers = [];
 
-function openTripModal() {
-  const modal = document.getElementById('modal-trip');
-  if (modal) modal.style.display = 'flex';
-  document.body.classList.add('modal-open');
+function openTripPanel() {
+  const panel = document.getElementById('trip-panel');
+  if (panel) {
+    panel.classList.add('open');
+    // Ensure panel overlay exists
+    let overlay = document.getElementById('trip-panel-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'trip-panel-overlay';
+      overlay.className = 'trip-panel-overlay';
+      overlay.onclick = closeTripPanel;
+      document.body.appendChild(overlay);
+    }
+    overlay.classList.add('open');
+  }
 }
 
-function closeTripModal() {
-  const modal = document.getElementById('modal-trip');
-  if (modal) modal.style.display = 'none';
-  document.body.classList.remove('modal-open');
+function closeTripPanel() {
+  const panel = document.getElementById('trip-panel');
+  if (panel) panel.classList.remove('open');
+  const overlay = document.getElementById('trip-panel-overlay');
+  if (overlay) overlay.classList.remove('open');
 }
 
-window.voltPathCloseTrip = closeTripModal;
+window.voltPathCloseTrip = closeTripPanel;
 
 function handleTripPlanClick() {
   const range = document.getElementById('input-range-km')?.value;
   const tripRange = document.getElementById('trip-range');
   if (range && tripRange) tripRange.value = range;
-  openTripModal();
+  openTripPanel();
 }
 
 async function geocodeLocation(text) {
@@ -1084,12 +1096,29 @@ async function calculateTrip(startLatLng, destLatLng, startName, destName) {
   const dLat = destLatLng.lat - startLatLng.lat;
   const dLng = destLatLng.lng - startLatLng.lng;
 
-  // Clean up previous trip markers
+  // Clean up previous trip markers & route layers
   if (destinationMarker) map.removeLayer(destinationMarker);
   tripStopMarkers.forEach(m => map.removeLayer(m));
   tripStopMarkers = [];
+  if (window._tripRouteGlow) { map.removeLayer(window._tripRouteGlow); window._tripRouteGlow = null; }
+  if (window._tripStartMarker) { map.removeLayer(window._tripStartMarker); window._tripStartMarker = null; }
 
-  destinationMarker = L.marker(destLatLng).addTo(map).bindPopup('Destination').openPopup();
+  // Custom icons for start & destination
+  const startIcon = L.divIcon({
+    className: 'trip-custom-marker',
+    html: '<div style="background:linear-gradient(135deg,#00e676,#00c853); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#000; border:3px solid #fff; box-shadow: 0 2px 12px rgba(0,200,83,0.5);">A</div>',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+  });
+  const destIcon = L.divIcon({
+    className: 'trip-custom-marker',
+    html: '<div style="background:linear-gradient(135deg,#ff5252,#d32f2f); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; border:3px solid #fff; box-shadow: 0 2px 12px rgba(255,82,82,0.5);">B</div>',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+  });
+
+  window._tripStartMarker = L.marker(startLatLng, { icon: startIcon }).addTo(map).bindPopup('<strong>🟢 Start</strong><br>' + (startName || 'Start'));
+  destinationMarker = L.marker(destLatLng, { icon: destIcon }).addTo(map).bindPopup('<strong>🔴 Destination</strong><br>' + (destName || 'Destination')).openPopup();
 
   // ── Phase 1: Find stations along the route ──
   // We walk along the route from the start, and every `safeRange` km we search
@@ -1135,8 +1164,15 @@ async function calculateTrip(startLatLng, destLatLng, startName, destName) {
           waypoints.push([best.lat, best.lng]);
           curLatLng = bestLatLng;
 
-          const m = L.marker([best.lat, best.lng]).addTo(map)
-            .bindPopup(`Stop #${stops.length}: ${best.name} (${best.operator})`);
+          // Custom numbered stop marker with charging icon
+          const stopIcon = L.divIcon({
+            className: 'trip-custom-marker',
+            html: `<div style="background:linear-gradient(135deg,#00b0ff,#0091ea); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; border:2px solid #fff; box-shadow: 0 2px 10px rgba(0,176,255,0.5);">⚡${stops.length}</div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+          });
+          const m = L.marker([best.lat, best.lng], { icon: stopIcon }).addTo(map)
+            .bindPopup(`<strong>⚡ Stop #${stops.length}</strong><br>${best.name}<br><em style="color:#888;">${best.operator}</em>`);
           tripStopMarkers.push(m);
         }
       }
@@ -1151,11 +1187,29 @@ async function calculateTrip(startLatLng, destLatLng, startName, destName) {
 
   waypoints.push([destLatLng.lat, destLatLng.lng]);
 
-  // Draw route line
+  // Draw route line with glow effect
   if (tripRouteLine && map) map.removeLayer(tripRouteLine);
+  if (window._tripRouteGlow && map) map.removeLayer(window._tripRouteGlow);
   if (map) {
-    tripRouteLine = L.polyline(waypoints, { color: '#1976d2', weight: 4, dashArray: '10, 10' }).addTo(map);
-    map.fitBounds(tripRouteLine.getBounds(), { padding: [50, 50] });
+    // Glow layer (wider, semi-transparent)
+    window._tripRouteGlow = L.polyline(waypoints, {
+      color: '#00b0ff',
+      weight: 12,
+      opacity: 0.2,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(map);
+    // Main route line
+    tripRouteLine = L.polyline(waypoints, {
+      color: '#1e88e5',
+      weight: 5,
+      opacity: 0.9,
+      lineCap: 'round',
+      lineJoin: 'round',
+      dashArray: '12, 8'
+    }).addTo(map);
+    // Fit map to show the full route with padding to account for the trip panel
+    map.fitBounds(tripRouteLine.getBounds(), { paddingTopLeft: [400, 50], paddingBottomRight: [50, 50] });
   }
 
   if (loading) loading.style.display = 'none';
@@ -1308,6 +1362,10 @@ async function calculateTrip(startLatLng, destLatLng, startName, destName) {
 
     stopsDiv.innerHTML = html;
 
+    // Show action buttons area
+    const actionsDiv = document.getElementById('trip-panel-actions');
+    if (actionsDiv) actionsDiv.style.display = 'flex';
+
     // Navigate route button
     const navBtn = document.getElementById('btn-navigate-trip');
     if (navBtn) {
@@ -1411,12 +1469,7 @@ function init() {
     if (e.target.id === 'modal-add-station') window.voltPathCloseAddStation();
   });
 
-  const tripModal = document.getElementById('modal-trip');
-  if (tripModal) {
-    tripModal.addEventListener('click', function (e) {
-      if (e.target.id === 'modal-trip') closeTripModal();
-    });
-  }
+  // Trip panel overlay click handled in openTripPanel()
 
   fetchStations()
     .then(stations => {

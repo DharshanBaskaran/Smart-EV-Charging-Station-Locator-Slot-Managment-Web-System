@@ -19,3 +19,6 @@ Thumbs.db
 
 # Docker volumes
 mongo-data/
+
+# Conference Paper (excluded from version control)
+Smart_EV_Charging_Paper.html
